@@ -146,30 +146,31 @@ class AARDataModule(LightningDataModule):
 
 if __name__ == "__main__":
     import logging
-    #from util.featurizer import mol_featurizer
-    #unimol_logger = logging.getLogger("unimol_tools")
-    #unimol_logger.disabled = True
+    from util.featurizer import mol_featurizer
+    unimol_logger = logging.getLogger("unimol_tools")
+    unimol_logger.disabled = True
     
 
     print("Info[iaw]>: Test")
     test_df = "/home/iaw/DATA2/AAReact/DataSet/debug/debug_df.csv"
-    cache_fp = "/home/iaw/DATA2/AAReact/DataSet/debug/debug_df_310m.pt"
-    test_model_size = "310m"
-    #clf = mol_featurizer(test_model_size)
-    #dataset = AARDataSet(test_df, cache_fp, clf)
-    dataset = AARDataSet(test_df, cache_fp, False)
-    train_set, valid_set = train_test_split(dataset, test_size=0.2, random_state=42)
-    print(train_set)
-    dataloader = torch.utils.data.DataLoader(
-        dataset=train_set,
-        batch_size=8,
-        shuffle=True,
-        num_workers=0,
-        pin_memory=True
-    )
-    for batch_idx, batch_data in enumerate(dataloader):
-        print("Info[iaw]>: [{}], num: {}".format(batch_idx, len(batch_data['data_id'])))
-        print("Info[iaw]>: [{}], temp shape: {}".format(batch_idx, batch_data['temp'].shape))
-        print("Info[iaw]>: [{}], product_r shape: {}".format(batch_idx, batch_data['unimol_product_r_embed'].shape))
-        print("Info[iaw]>: [{}], y shape: {}".format(batch_idx, batch_data['y'].shape))
-        break  
+    cache_fp = "/home/iaw/DATA2/AAReact/DataSet/debug/debug_df_84m.pt"
+    test_model_size = "84m"
+    clf = mol_featurizer(test_model_size)
+    dataset = AARDataSet(test_df, cache_fp, clf)
+
+    #dataset = AARDataSet(test_df, cache_fp, False)
+    #train_set, valid_set = train_test_split(dataset, test_size=0.2, random_state=42)
+    #print(train_set)
+    #dataloader = torch.utils.data.DataLoader(
+    #    dataset=train_set,
+    #    batch_size=8,
+    #    shuffle=True,
+    #    num_workers=0,
+    #    pin_memory=True
+    #)
+    #for batch_idx, batch_data in enumerate(dataloader):
+    #    print("Info[iaw]>: [{}], num: {}".format(batch_idx, len(batch_data['data_id'])))
+    #    print("Info[iaw]>: [{}], temp shape: {}".format(batch_idx, batch_data['temp'].shape))
+    #    print("Info[iaw]>: [{}], product_r shape: {}".format(batch_idx, batch_data['unimol_product_r_embed'].shape))
+    #    print("Info[iaw]>: [{}], y shape: {}".format(batch_idx, batch_data['y'].shape))
+    #    break  

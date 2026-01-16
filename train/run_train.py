@@ -56,7 +56,9 @@ if __name__ == "__main__":
         logger=wandb_logger,
         callbacks=[checkpoint_callback],
         deterministic=True,
-        gradient_clip_val=1.0
+        gradient_clip_val=1.0,
+        val_check_interval=1.0,
+        log_every_n_steps=1.0,
     )
     
     # 启动训练

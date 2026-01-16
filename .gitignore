@@ -1,3 +1,5 @@
 
 DataSet/
-AAReact/src/util/logs/
+src/model/__pycache__/
+src/tool/__pycache__/
+src/util/__pycache__/

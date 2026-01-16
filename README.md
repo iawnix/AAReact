@@ -15,20 +15,10 @@
 2. 
 ## 模型思路
 1. 当前任务是构建一个Atropic acid[阿托品酸]加氢还原为Hydratropic acid[氢化阿托酸]的ee预测器, 以实现给定反应条件, 给出预测的ee
-2. 需要考虑底物上取代基对反应的影响, 以及反应条件[P,T]对
+2. 需要考虑催化剂溶剂, 以及反应条件[P,T]对ee的影响
+3. 输出头加入tanh, 使取值在-1, 1之间
 
 ```
-
-
- Reactant_smiles Product_SMILES     
-       ||              ||
-       \/              \/
-             Unimol
-               ||
-               \/
- Reactant_embed  Product_embed
-       ||              ||
-       \/              \/
-       MLP             MLP
-
-```
+## 反思
+1. 小样本的时候, Unimol编码出来的分子潜入特征维度太大
+2. 交叉注意力, 将B的特征融入到A上面, 除了缺少seq_len, 数据量太少，更难以捕捉A与B之间的关系，不如直接concat
