@@ -1,0 +1,30 @@
+[job]
+name = "AAR_test1"
+out_path = "/home/iaw/DATA2/AAReact/train/test1/"
+
+[model]
+mol_in_dim = 1024
+mol_hidden_dim = 24
+unimol_mol_size = "310m"
+cross_n_heads = 1
+cross_dropout = 0
+fuse_embed_mode = "concat"
+
+[train]
+seed = 1
+epoch = 200
+cudu_device =  "cuda"
+gpu_idx = [0]
+
+[data]
+data_fp = "/home/iaw/DATA2/AAReact/DataSet/debug/debug_df.csv"
+cache_fp = "/home/iaw/DATA2/AAReact/DataSet/debug/debug_df_310m.pt"
+init_unimol_embedding = false
+train_valid_test = [0.7, 0.5]
+batch_size = 24
+seed = 1
+
+[optimizer]
+name = "AdamW"
+lr = 1.0e-4
+  
