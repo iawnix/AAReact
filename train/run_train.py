@@ -25,6 +25,7 @@ if __name__ == "__main__":
         name=config.job.name,
         config=namespace_to_double_dict(config),
         save_dir=str(config.job.out_path),
+        offline=False,
         anonymous="allow"
     )
 
