@@ -3,11 +3,17 @@ import torch
 from torch.nn import functional as F
 import pytorch_lightning
 from sklearn.metrics import r2_score
+import os
 import sys
+from pathlib import Path
+project_root = Path(__file__).parent.parent
+sys.path.append(str(project_root))
+from tool.train_tool import set_seed
 
 class AARmodel(pytorch_lightning.LightningModule):
     def __init__(self, config):
         super(AARmodel, self).__init__()
+        set_seed(seed = config.train.seed)
         self.config = config
         self.diff_r_embed = torch.nn.Linear(config.model.mol_in_dim, config.model.mol_hidden_dim)
         self.diff_s_embed = torch.nn.Linear(config.model.mol_in_dim, config.model.mol_hidden_dim)
@@ -57,6 +63,25 @@ class AARmodel(pytorch_lightning.LightningModule):
             , torch.nn.Linear(config.model.mol_hidden_dim, 1)
             , torch.nn.Tanh()                                 # [-1, 1]
         )
+
+        self.__init_weights__()
+
+    def __init_weights__(self):
+        for m in self.modules():
+            if isinstance(m, torch.nn.Linear):
+                torch.nn.init.xavier_uniform_(m.weight)
+                if m.bias is not None:
+                    torch.nn.init.zeros_(m.bias)
+            elif isinstance(m, torch.nn.MultiheadAttention):
+                if m.in_proj_weight is not None:
+                    torch.nn.init.xavier_uniform_(m.in_proj_weight)
+                if m.out_proj.weight is not None:
+                    torch.nn.init.xavier_uniform_(m.out_proj.weight)
+                if m.in_proj_bias is not None:
+                    torch.nn.init.zeros_(m.in_proj_bias)
+                if m.out_proj.bias is not None:
+                    torch.nn.init.zeros_(m.out_proj.bias)
+
 
     def forward(self, batch_data):
         # batch_size, unimol_embed_dim -> batch_size, mol_hidden_dim
