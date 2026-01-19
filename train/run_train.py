@@ -52,14 +52,14 @@ if __name__ == "__main__":
     # 初始化 Trainer
     trainer = pl.Trainer(
         max_epochs=config.train.epoch,
-        accelerator=config.train.cudu_device,
+        accelerator=config.train.cuda_device,
         devices=config.train.gpu_idx,
         logger=wandb_logger,
         callbacks=[checkpoint_callback],
         deterministic=True,
         gradient_clip_val=1.0,
         val_check_interval=1.0,
-        log_every_n_steps=1.0,
+        log_every_n_steps=1,
     )
     
     # 启动训练

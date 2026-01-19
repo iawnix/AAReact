@@ -25,25 +25,29 @@ class AARmodel(pytorch_lightning.LightningModule):
                                         , num_heads=config.model.cross_n_heads
                                         , dropout = config.model.cross_dropout)
         
-        self.tp_hidden_dim = 8
+        self.tp_hidden_dim = config.model.temp_pressure_hidden_dim
         # temp, pressure
         self.other_embed = torch.nn.Linear(2, self.tp_hidden_dim)
 
         # 最后的特征融合
-        #self.fuse_mode = None
-        #if config.model.fuse_embed_mode == "concat":
-        #    self.fuse_embed = torch.nn.Sequential(
-        #          torch.nn.Linear(2 * config.model.mol_hidden_dim+4, config.model.mol_hidden_dim)
-        #        , torch.nn.ReLU()
-        #    )
-        #    self.fuse_mode = "concat"
+        self.fuse_mode = None
+        if config.model.fuse_embed_mode == "concat":
+            self.fuse_embed = torch.nn.Sequential(
+                  torch.nn.Linear(2 * config.model.mol_hidden_dim+self.tp_hidden_dim, config.model.mol_hidden_dim)
+                , torch.nn.ReLU()
+            )
+            self.fuse_mode = "concat"
         #elif config.model.fuse_embed_mode == "weight":
         #    self.embed_weights = torch.nn.Parameter(torch.ones(2, dtype=torch.float32))
         #    self.fuse_embed = torch.nn.Linear(config.model.mol_hidden_dim, config.model.mol_hidden_dim)
         #    self.fuse_mode = "weight"
-        #else:
-        #    raise RuntimeError("Error[iaw]>: please must provide one fuse mode!")
-        self.fuse_embed = torch.nn.Linear(3 * config.model.mol_hidden_dim+self.tp_hidden_dim, config.model.mol_hidden_dim)
+        elif config.model.fuse_embed_mode == "none":
+            self.fuse_embed = torch.nn.Linear(3*config.model.mol_hidden_dim + self.tp_hidden_dim
+                                              , config.model.mol_hidden_dim)
+            self.fuse_mode = "none"
+        else:
+            raise RuntimeError("Error[iaw]>: please must provide one fuse mode!")
+        
         # 输出
         self.output = torch.nn.Sequential(
               torch.nn.Linear(config.model.mol_hidden_dim, config.model.mol_hidden_dim)
@@ -66,41 +70,42 @@ class AARmodel(pytorch_lightning.LightningModule):
                                          , batch_data['unimol_ligand_embed']
                                          , batch_data['unimol_solvent_embed']], dim=-1)
         batch_data_environ = self.environ_embed(batch_data_environ)
+        
+        # other
+        temp_pressure = self.other_embed(torch.cat([batch_data['temp'].unsqueeze(-1), batch_data['pressure'].unsqueeze(-1)], dim=-1))
 
-        ## batch_size, mol_hidden_dim -> batch_size, 1, mol_hidden_dim
-        #batch_data_diff_r = batch_data_diff_r.unsqueeze(1)
-        #batch_data_diff_s = batch_data_diff_s.unsqueeze(1)
-        #batch_data_environ = batch_data_environ.unsqueeze(1)
-#
-        ## cross_atten
-        #r_attn_output, r_attn_weights = self.diff_r_environ(query = batch_data_diff_r
-        #                    , key = batch_data_environ
-        #                    , value = batch_data_environ
-        #                    , need_weights = True)
-        #
-        #s_attn_output, s_attn_weights = self.diff_s_environ(query = batch_data_diff_s
-        #                    , key = batch_data_environ
-        #                    , value = batch_data_environ
-        #                    , need_weights = True)
-        #
-        ## batch_size, 1, mol_hidden_dim -> batch_size, mol_hidden_dim
-        #r_attn_output = r_attn_output.squeeze(1)   
-        #s_attn_output = s_attn_output.squeeze(1)
-#
-        ## other
-        #temp_pressure = self.other_embed(torch.cat([batch_data['temp'].unsqueeze(-1), batch_data['pressure'].unsqueeze(-1)], dim=-1))
-        ## fuse
-        #if self.config.model.fuse_embed_mode == "concat":
-        #    concat_embed = torch.cat([r_attn_output, s_attn_output, temp_pressure], dim=-1)
-        #    fuse_embed = self.fuse_embed(concat_embed)
+        # fuse
+        if self.config.model.fuse_embed_mode == "concat":
+            # batch_size, mol_hidden_dim -> batch_size, 1, mol_hidden_dim
+            batch_data_diff_r = batch_data_diff_r.unsqueeze(1)
+            batch_data_diff_s = batch_data_diff_s.unsqueeze(1)
+            batch_data_environ = batch_data_environ.unsqueeze(1)
+
+            # cross_atten
+            r_attn_output, r_attn_weights = self.diff_r_environ(query = batch_data_diff_r
+                                , key = batch_data_environ
+                                , value = batch_data_environ
+                                , need_weights = True)
+
+            s_attn_output, s_attn_weights = self.diff_s_environ(query = batch_data_diff_s
+                                , key = batch_data_environ
+                                , value = batch_data_environ
+                                , need_weights = True)
+
+            # batch_size, 1, mol_hidden_dim -> batch_size, mol_hidden_dim
+            r_attn_output = r_attn_output.squeeze(1)   
+            s_attn_output = s_attn_output.squeeze(1)
+
+            concat_embed = torch.cat([r_attn_output, s_attn_output, temp_pressure], dim=-1)
+            fuse_embed = self.fuse_embed(concat_embed)
         #elif self.config.model.fuse_embed_mode == "weight":
         #    normalized_weights = torch.nn.functional.softmax(self.embed_weights, dim=0)
         #    fuse_embed = normalized_weights[0] * r_attn_output + normalized_weights[1] * s_attn_output
         #    fuse_embed = self.fuse_embed(fuse_embed)
-
-        temp_pressure = self.other_embed(torch.cat([batch_data['temp'].unsqueeze(-1), batch_data['pressure'].unsqueeze(-1)], dim=-1))
-        concat_embed = torch.cat([batch_data_diff_r, batch_data_diff_s, batch_data_environ, temp_pressure], dim=-1)
-        fuse_embed = self.fuse_embed(concat_embed)
+        elif self.config.model.fuse_embed_mode == "none":
+            concat_embed = torch.cat([batch_data_diff_r, batch_data_diff_s, batch_data_environ, temp_pressure], dim=-1)
+            fuse_embed = self.fuse_embed(concat_embed)
+        
         # output
         output = self.output(fuse_embed)
 

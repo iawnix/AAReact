@@ -1,24 +1,25 @@
 [job]
-name = "AAR_test1"
-out_path = "/home/iaw/DATA2/AAReact/train/test1/"
+name = "AAR_test_v1"
+out_path = "/home/iaw/DATA2/AAReact/train/test/"
 
 [model]
-mol_in_dim = 768
+mol_in_dim = 1024
 mol_hidden_dim = 48
-unimol_mol_size = "84m"
+unimol_mol_size = "310m"
 cross_n_heads = 1
 cross_dropout = 0
-fuse_embed_mode = "concat"
+temp_pressure_hidden_dim = 4
+fuse_embed_mode = "none"
 
 [train]
 seed = 1
 epoch = 200
-cudu_device =  "cuda"
+cuda_device =  "cuda"
 gpu_idx = [0]
 
 [data]
 data_fp = "/home/iaw/DATA2/AAReact/DataSet/debug/debug_df.csv"
-cache_fp = "/home/iaw/DATA2/AAReact/DataSet/debug/debug_df_84m.pt"
+cache_fp = "/home/iaw/DATA2/AAReact/DataSet/debug/debug_df_310m.pt"
 init_unimol_embedding = false
 train_valid_test = [0.9, 0.5]
 batch_size = 48
