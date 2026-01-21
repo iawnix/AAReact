@@ -111,16 +111,17 @@ class AARDataModule(LightningDataModule):
         all_idx = np.arange(dataset_size)
         train_indices, val_test_indices = train_test_split(
             all_idx,
-            test_size=self.train_valid_ratio,
+            train_size=self.train_valid_ratio,
             random_state=self.seed,
             shuffle=True
         )
         val_indices, test_indices = train_test_split(
             val_test_indices,
-            test_size=self.valid_test_ratio,
+            train_size=self.valid_test_ratio,
             random_state=self.seed,
             shuffle=True
         )
+        #print("Info[iaw]>: train: {}, valid: {}, test: {}".format(len(train_indices), len(val_indices), len(test_indices)))
         self.train_dataset = torch.utils.data.Subset(self.full_dataset, train_indices)
         self.val_dataset = torch.utils.data.Subset(self.full_dataset, val_indices)
         self.test_dataset = torch.utils.data.Subset(self.full_dataset, test_indices)
