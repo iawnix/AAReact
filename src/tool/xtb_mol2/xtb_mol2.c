@@ -197,7 +197,7 @@ int read_traj(const char* fpath, MOL2_ATOM** atom_s){
 
         char atom_type[MAX_ATOM_TYPE];
         double x, y, z;
-        if (sscanf(start, "%3s %lf %lf %lf", atom_type, &x, &y, &z) == 4) {
+        if (sscanf(start, "%s %lf %lf %lf", atom_type, &x, &y, &z) == 4) {
             snprintf((*atom_s)[coord_count].atom_name, MAX_ATOM_NAME, "%s%d", atom_type, coord_count+1);
             strncpy((*atom_s)[coord_count].atom_type, atom_type, MAX_ATOM_TYPE-1);
             (*atom_s)[coord_count].atom_type[MAX_ATOM_TYPE-1] = '\0';
