@@ -6,7 +6,7 @@
 ==================================== 速度测试开始 ====================================
 测试命令：
   C版本：./xtb_mol2 -imol2 ./CAT-9.mol2 -itraj ./xtbtrj.xyz -omol2 ./CAT-9_new.mol2
-  Python版本：python xtb_mol2.py
+  Python版本：python xtb_mol2.py -imol2 ./CAT-9.mol2 -itraj ./xtbtrj.xyz -omol2 ./CAT-9_new.mol2
 测试次数：5 次（取平均值）
 --------------------------------------------------------------------------------------
 

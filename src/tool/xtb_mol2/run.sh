@@ -3,7 +3,7 @@
 # ======================== 配置区 ========================
 # 定义要测试的命令
 C_CMD="./xtb_mol2 -imol2 ./CAT-9.mol2 -itraj ./xtbtrj.xyz -omol2 ./CAT-9_new.mol2"
-PY_CMD="python xtb_mol2.py"
+PY_CMD="python xtb_mol2.py -imol2 ./CAT-9.mol2 -itraj ./xtbtrj.xyz -omol2 ./CAT-9_new.mol2"
 # 测试次数（多次运行取平均，减少误差）
 RUN_TIMES=5
 # 临时文件（存储每次运行的耗时）

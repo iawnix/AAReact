@@ -1,3 +1,5 @@
+import argparse
+
 def mol2_xtb(imol2: str, itraj: str, omol2: str) -> None:
     
     file = []
@@ -42,11 +44,24 @@ def mol2_xtb(imol2: str, itraj: str, omol2: str) -> None:
         for i_ss in bond_table_block:
             F.writelines("{}\n".format(i_ss))
 
+
+
+def Parm():
+    parser = argparse.ArgumentParser(description='Merge xtb traj and GV mol2 -> new_mol2')
+    parser.add_argument('-imol2', type=str, nargs=1,help='xx.mol2')
+    parser.add_argument('-itraj', type=str, nargs=1,help='xx.xyz')
+    parser.add_argument('-omol2', type=str, nargs=1,help='xx.mol2')
+    return parser.parse_args()
+
+def main():
+    myp = Parm()
+    imol2 = myp.imol2[0]
+    itraj = myp.itraj[0]
+    omol2 = myp.omol2[0]
+    mol2_xtb(imol2, itraj, omol2)
+
+
 if __name__ == "__main__":
 
-    imol2 = "/home/iaw/DATA2/AAReact/src/tool/xtb_mol2/CAT-9.mol2"
-    itraj = "/home/iaw/DATA2/AAReact/src/tool/xtb_mol2/xtbtrj.xyz"
-    omol2 = "/home/iaw/DATA2/AAReact/src/tool/xtb_mol2/CAT-9_new2.mol2"
+    main()
 
-
-    mol2_xtb(imol2, itraj, omol2)
