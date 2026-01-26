@@ -27,5 +27,6 @@
    * smiles可以保存
    * mogan指纹可以计算
    * unimol2的编码失败, 但是unimol2可以使用
-   
+ 
+4. 二茂铁的smiles
 
