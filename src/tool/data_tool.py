@@ -1,5 +1,3 @@
-
-from ast import Tuple
 import rdkit
 from rdkit import Chem
 from rdkit.Chem import AllChem, Draw, rdmolops, DataStructs, rdFingerprintGenerator, rdDepictor, Descriptors
@@ -54,17 +52,6 @@ def unbond_metal(mol:Mol, meta_idx: List[int]) -> Mol:
     new_mol = rw_mol.GetMol()
     return new_mol
 
-def cal_mogan_fp(smiles: str, radius: int = 2, n_bits: int = 1024, use_features: bool = False) -> ExplicitBitVect:
-    mol = Chem.MolFromSmiles(smiles)
-    morgan_gen = rdFingerprintGenerator.GetMorganGenerator(radius = radius, fpSize = n_bits)
-    fp = morgan_gen.GetFingerprint(mol)
-    return fp
-
-def cal_rdkit_descrip(smiles: str) -> Tuple[List, NDArray]: 
-    mol = Chem.MolFromSmiles(smiles)
-    descs = [desc_name[0] for desc_name in Descriptors._descList]
-    desc_calc = MoleculeDescriptors.MolecularDescriptorCalculator(descs)
-    return descs, np.array(desc_calc.CalcDescriptors(mol))
 
 def gen_3D(smi: str, mol: Union[bool, Mol] = False) -> Mol:
     if mol == False:
@@ -86,11 +73,12 @@ def gen_3D(smi: str, mol: Union[bool, Mol] = False) -> Mol:
 def check_atom_charge(mol: Mol, atom_idx: List[int]) -> None:
     for idx in atom_idx:
         atom = mol.GetAtomWithIdx(idx)
-        print("Info[iaw]>: ATOM[{}], charge: {}, Valence: {}".format(atom.GetSymbol()
+        print("Info[iaw]>: ATOM[{}], Charge: {}, Valence: {}".format(atom.GetSymbol()
                                                                      , atom.GetFormalCharge()
                                                                      , atom.GetTotalValence()))
 
 
-
+def split_cat_smi() -> Tuple[str, str]:
+    pass
 
 
