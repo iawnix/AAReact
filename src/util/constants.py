@@ -10,3 +10,6 @@ UNIMOL_EMBED_DIM = {
     , "570m": 1536
     , "1.1B": 1536
 }
+
+METAL_TYPE = ['Rh','Ir','Co','Ru','Ni','Pd']
+ELEMENT_LIST = ['Fe', 'Cr', 'Pd', 'Mn', 'Rh', 'C', 'P', 'Br', 'H', 'O', 'F', 'N', 'S', 'Cl', 'Co', 'Ni', 'Ru', 'Ir']
