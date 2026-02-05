@@ -9,6 +9,14 @@ import numpy as np
 from numpy.typing import NDArray
 from typing import List, Union, Tuple
 
+import os
+import sys
+from pathlib import Path
+project_root = Path(__file__).parent.parent
+sys.path.append(str(project_root))
+from util.constants import METAL_TYPE, COORD_TYPE
+
+
 #+++++++++++++++++++++++++++++++++++++++# READ ME #++++++++++++++++++++++++++++++++++++++++++++++++#
 # add_dative
 # unbond_metal
@@ -52,6 +60,34 @@ def unbond_metal(mol:Mol, meta_idx: List[int]) -> Mol:
     new_mol = rw_mol.GetMol()
     return new_mol
 
+def unbond_metal_sym(mol:Mol, metal_Sym: List[str] = METAL_TYPE) -> Mol:
+    rw_mol = Chem.RWMol(mol)
+    
+    metal_idx = []
+    for atm in rw_mol.GetAtoms():
+        if atm.GetSymbol() in metal_Sym:
+            metal_idx.append(atm.GetIdx())
+    for idx in metal_idx:
+        atom = rw_mol.GetAtomWithIdx(idx)
+        neighbor_indices = [nbr.GetIdx() for nbr in atom.GetNeighbors()]
+        for nbr_idx in neighbor_indices:
+            rw_mol.RemoveBond(idx, nbr_idx)
+    new_mol = rw_mol.GetMol()
+    return new_mol
+
+def find_coordinating_atoms(mol:Mol) -> List[int]:
+    
+    coord_atom_idx = []
+    for atm in mol.GetAtoms():
+        if atm.GetSymbol() not in COORD_TYPE:
+            continue
+        if atm.GetFormalCharge() > 0:
+            continue
+        hyb = atm.GetHybridization()
+        if hyb in [Chem.HybridizationType.SP2, Chem.HybridizationType.SP3]:
+            coord_atom_idx.append(atm.GetIdx())
+    
+    return coord_atom_idx
 
 def gen_3D(smi: str, mol: Union[bool, Mol] = False) -> Mol:
     if mol == False:

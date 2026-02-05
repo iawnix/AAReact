@@ -59,6 +59,7 @@ class rdkit_featurizer():
 class dscribe_featurizer():
     def __init__(self, sdf_fp: str, sanitize: bool = True) -> None:
         self.mol = Chem.SDMolSupplier(sdf_fp, removeHs=False, sanitize = sanitize)[0]
+        self.fp = sdf_fp
         if self.mol is None:
             print("Error[iaw]>: cannot read mol from sdf file, {}!".format(sdf_fp))
             sys.exit(1)
@@ -77,7 +78,8 @@ class dscribe_featurizer():
         atom_mass = np.concatenate([atom_mass,atom_mass,atom_mass],axis=1)
         mass_center = np.sum(pos*atom_mass,axis=0)/atom_mass.sum()
         mass_center_idx = np.argmin(np.sum((pos - mass_center)**2,axis=1))
-        return mass_center_idx
+
+        return int(mass_center_idx)
 
     def convert_ASE_mol(self) -> ase.atoms.Atoms:
         positions = self.mol.GetConformer().GetPositions()
@@ -120,25 +122,27 @@ class dscribe_featurizer():
         
         match config.mol_type:
             case "reactant":
-                self.center_atom_idx = self.__calc_mol_center_of_mass__()
+                self.center_atom_idx = [self.__calc_mol_center_of_mass__()]
             case "product":
-                self.center_atom_idx = self.__calc_mol_center_of_mass__()
+                self.center_atom_idx = [self.__calc_mol_center_of_mass__()]
             case "solvent":
-                self.center_atom_idx = self.__calc_mol_center_of_mass__()
+                self.center_atom_idx = [self.__calc_mol_center_of_mass__()]
             case "catalyst":
                 self.center_atom_idx = []
                 for atom in self.mol.GetAtoms():
                     if atom.GetSymbol() in self.metal_type:
                         self.center_atom_idx.append(atom.GetIdx())
+                
                 if len(self.center_atom_idx) == 0:
                     self.center_atom_idx = None
-                    print("Warning[iaw]>: no metal atom found in catalyst mol!")
+                    print("Warning[iaw]>: no metal atom found in catalyst mol! fp, {}".format(self.fp))
                     sys.exit(1)
                 elif len(self.center_atom_idx) > 1:
                     print("Warning[iaw]>: more than one metal atom found in catalyst mol, use all metal atoms as center atoms!")
                     # 中心原子需要确定一下, 暂时取第一个
-                    self.center_atom_idx = self.center_atom_idx[0]
-                    
+                    self.center_atom_idx = [self.center_atom_idx[0]]
+                else:
+                    pass
             case _:
                 print("Error[iaw]>: only support 'reactant', 'product', 'solvent' and 'catalyst' mol_type!")
                 sys.exit(1)
