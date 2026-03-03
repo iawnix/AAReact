@@ -57,23 +57,38 @@ def unbond_metal(mol:Mol, meta_idx: List[int]) -> Mol:
         neighbor_indices = [nbr.GetIdx() for nbr in atom.GetNeighbors()]
         for nbr_idx in neighbor_indices:
             rw_mol.RemoveBond(idx, nbr_idx)
+            nbr_atm = rw_mol.GetAtomWithIdx(nbr_idx)
+            new_nbr_chrg = nbr_atm.GetFormalCharge() - 1
+            nbr_atm.SetFormalCharge(new_nbr_chrg)
     new_mol = rw_mol.GetMol()
+    Chem.SanitizeMol(new_mol, sanitizeOps=Chem.SanitizeFlags.SANITIZE_ALL)
     return new_mol
 
-def unbond_metal_sym(mol:Mol, metal_Sym: List[str] = METAL_TYPE) -> Mol:
+def unbond_metal_sym(mol:Mol, metal_Sym: List[str] = METAL_TYPE) -> Tuple[Mol, List[int], List[int]]:
     rw_mol = Chem.RWMol(mol)
     
     metal_idx = []
+    coord_idx = []
     for atm in rw_mol.GetAtoms():
         if atm.GetSymbol() in metal_Sym:
             metal_idx.append(atm.GetIdx())
     for idx in metal_idx:
         atom = rw_mol.GetAtomWithIdx(idx)
         neighbor_indices = [nbr.GetIdx() for nbr in atom.GetNeighbors()]
+        coord_idx.append(neighbor_indices)
         for nbr_idx in neighbor_indices:
             rw_mol.RemoveBond(idx, nbr_idx)
+            nbr_atm = rw_mol.GetAtomWithIdx(nbr_idx)
+            
+            new_nbr_chrg = nbr_atm.GetFormalCharge() - 1
+            nbr_atm.SetFormalCharge(new_nbr_chrg)
+            
+            #new_nbr_valence = nbr_atm.GetExplicitValence() -1
+            #nbr_atm.SetExplicitValence(new_nbr_valence)
+
     new_mol = rw_mol.GetMol()
-    return new_mol
+    Chem.SanitizeMol(new_mol, sanitizeOps=Chem.SanitizeFlags.SANITIZE_ALL)
+    return new_mol, metal_idx, coord_idx
 
 def find_coordinating_atoms(mol:Mol) -> List[int]:
     
@@ -81,6 +96,12 @@ def find_coordinating_atoms(mol:Mol) -> List[int]:
     for atm in mol.GetAtoms():
         if atm.GetSymbol() not in COORD_TYPE:
             continue
+        if atm.GetSymbol() in ["N", "P"]:
+            if atm.GetDegree < 4:
+                # 重N没有排除
+                coord_atom_idx.append(atm.GetIdx())
+        else:
+            pass
         if atm.GetFormalCharge() > 0:
             continue
         hyb = atm.GetHybridization()
