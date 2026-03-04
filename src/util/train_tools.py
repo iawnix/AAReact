@@ -60,7 +60,7 @@ def load_data(data_fp: str, desc_type: str):
     return data_x, data_y, x_label, data_class
 
 # 删除数据中标准差为0的特征
-def del_data_std_zero(data_x: NDArray, x_label: list[str]) -> tuple[NDArray, list[str]]:
+def std_zero_filter(data_x: NDArray, x_label: list[str]) -> tuple[NDArray, list[str]]:
     print("Infor[iaw]>: before del zero std, data_x shape: {}, x_label shape: {}".format(data_x.shape, len(x_label)))
     del_zero_std_idxs = []
     for i, i_txt in enumerate(x_label):
@@ -100,22 +100,27 @@ def pearson_corr_filter(data_x: NDArray, data_y: NDArray, x_label: list[str], th
 
 # 对相关性进行可视化
 def draw_pearson_corr(data_x: NDArray, data_y: NDArray, x_label: list[str]):
+    
     # 计算相关性
     pear = np.corrcoef(np.hstack([data_x, data_y.reshape(-1, 1)]).T)
     pear_y = pear[:, -1]
-    plt.figure(figsize=(30, 8))
     colors = ['red' if c > 0 else 'blue' for c in pear_y]  # 正相关红，负相关蓝
-    bars = plt.bar(x_label+["EE"], pear_y, color=colors, alpha=0.7)
     
+    plt.figure(figsize=(30, 8), dpi=300)
+    bars = plt.bar(x_label+["EE"], pear_y, color=colors, alpha=0.7)
     type_split = [v for k, v in get_desc_type_split_line(x_label).items()]
     
     for i in type_split:
         i_x = [i+0.2, i+0.2]
         i_y = [-1, 1]
         plt.plot(i_x, i_y, color='black', linewidth=1)
+    
+    
     ax = plt.gca()
     ax.set_xticks(type_split)
     ax.set_xticklabels([])
+   
+    plt.ylim([-1, 1])
     plt.xlabel("Feature")
     plt.ylabel("Pearson Correlation")
 
@@ -156,7 +161,7 @@ def get_desc_type_split_line(x_label: list[str]) -> dict[str, int]:
 # 绘制特征的数据分布
 def draw_data_x_distribution(data_x: NDArray, x_label: list[str]):
 
-    plt.figure(figsize=(10, 8))
+    plt.figure(figsize=(12, 7), dpi = 300)
     ax = plt.gca()
     plt.imshow(data_x, aspect='auto', cmap='viridis')
     plt.colorbar()
@@ -165,17 +170,25 @@ def draw_data_x_distribution(data_x: NDArray, x_label: list[str]):
     
     type_split = [v+0.2 for k, v in get_desc_type_split_line(x_label).items()]
     ax.set_xticks(type_split)
+    ax.set_xticklabels([])
 
 # 绘制特征的方差分布
 def draw_data_x_var_distribution(data_x: NDArray, x_label: list[str]):
-
+    plt.figure(figsize=(25, 4), dpi = 300)
     ax = plt.gca()
     plt.bar(range(len(np.var(data_x, axis = 0))), np.var(data_x, axis = 0), color='blue')
     plt.xlabel("Feature")
     plt.ylabel("Variance")
 
     type_split = [v+0.2 for k, v in get_desc_type_split_line(x_label).items()]
+    for i in type_split:
+        i_x = [i+0.2, i+0.2]
+        i_y = [-1, 1]
+        plt.plot(i_x, i_y, color='black', linewidth=1)
+
     ax.set_xticks(type_split)
+    ax.set_xticklabels([])
+    plt.ylim([0, 0.4])
 
 # 用于输出评分指标的表格, 输入name和数据, 数据必须是一个包含(Train, Valid, Test)的列表
 def print_metric(name: List[str], data_s:List[Tuple[float, float, float]]) ->None:
@@ -261,20 +274,32 @@ def search_parms(model_name: str, X_train, y_train, seed: int) -> dict:
     return grid_search.best_params_
 
 # 用于预测结果的展示
-def draw_pred_scatter(y_true_s: Tuple[NDArray, NDArray], y_pred_s: Tuple[NDArray, NDArray], r2_s: Tuple[float, float], class_s: Tuple[List, List]) -> None:
+def draw_pred_result(y_true_s: Tuple[NDArray, NDArray], y_pred_s: Tuple[NDArray, NDArray], r2_s: Tuple[float, float], class_s: Tuple[List, List]) -> None:
     train_pred, test_pred = y_pred_s
     y_train, y_test = y_true_s
     train_r2, test_r2 = r2_s
     class_train, class_test = class_s   
     # draw scatter
-    color_s = ["#06b6d4", "#8b5cf6", "#14b8a6", "#f43f5e"]
-    fig, ax = plt.subplots(1, 2, figsize = (10, 5))
+    color_s = ["#06b6d4", "#8b5cf6", "#14b8a6", "#60f43f"]
+    fig, ax = plt.subplots(1, 2, figsize = (10, 5), dpi = 300)
     ax[0].scatter(train_pred, y_train, c = [color_s[i] for i in class_train])
-    ax[0].plot([-1, 1], [-1, 1], label = "Train")
-    ax[0].set_title("Train, R2: {:.4f}".format(train_r2))
+    ax[0].plot([-1, 1], [-1, 1], label = "Train, R2: {:.4f}".format(train_r2), c = "gray")
+    ax[0].plot([0, 0], [-1, 1], c = "gray", linestyle = "--")
+    ax[0].plot([-1, 1], [0, 0], c = "gray", linestyle = "--")
+    ax[0].set_xlim([-1, 1])
+    ax[0].set_ylim([-1, 1])
+    ax[0].set_xlabel("Predicted")
+    ax[0].set_ylabel("True")
+    
     ax[1].scatter(test_pred, y_test, c = [color_s[i] for i in class_test])
-    ax[1].plot([-1, 1], [-1, 1], label = "Test")
-    ax[1].set_title("Test, R2: {:.4f}".format(test_r2))
+    ax[1].plot([-1, 1], [-1, 1], label = "Test, R2: {:.4f}".format(test_r2), c = "gray")
+    ax[1].plot([0, 0], [-1, 1], c = "gray", linestyle = "--")
+    ax[1].plot([-1, 1], [0, 0], c = "gray", linestyle = "--")
+    ax[1].set_xlim([-1, 1])
+    ax[1].set_ylim([-1, 1])
+    ax[1].set_xlabel("Predicted")
+    ax[1].set_ylabel("True")
+    
     ax[0].legend()
     ax[1].legend()
 
@@ -311,13 +336,3 @@ def eval_dataset_split(seed_s: List[int], test_size_s: List[int], parms: Dict, m
 
     return train_score_mean_s, train_score_std_s, test_score_mean_s, test_score_std_s
 
-def draw_dataset_split_result(test_size_s: List[float], train_score_mean_s: List[float], train_score_std_s: List[float], test_score_mean_s: List[float], test_score_std_s: List[float], y_label: str) -> None:
-
-    plt.errorbar(test_size_s, train_score_mean_s, yerr=train_score_std_s, label = "Train " + y_label)
-    plt.errorbar(test_size_s, test_score_mean_s, yerr=test_score_std_s, label = "Test " + y_label)
-    plt.plot([0, 1], [0.4, 0.4], label = y_label + "=0.4", linestyle='--')
-    plt.legend()
-    plt.xlim([0, 1])
-    plt.ylim([0, 1])
-    plt.xlabel("test_size")
-    plt.ylabel("r2")
