@@ -47,6 +47,10 @@ class rdkit_featurizer():
         self.rdkit_desc_name = [desc_name[0] for desc_name in Descriptors._descList]
         self.rdkit_desc_generator: Any = MoleculeDescriptors.MolecularDescriptorCalculator(self.rdkit_desc_name)
 
+    def reset_rdkit_desc_generator(self, desc_name_list: List[str]) -> None:
+        self.rdkit_desc_name = desc_name_list
+        self.rdkit_desc_generator = MoleculeDescriptors.MolecularDescriptorCalculator(self.rdkit_desc_name)
+
     def calc_morgan_fp(self, radius: int = 2, n_bits: int = 1024, use_features: bool = False) -> ExplicitBitVect:
         if self.morgan_generator == None:
             self.morgan_generator = rdFingerprintGenerator.GetMorganGenerator(radius = radius, fpSize = n_bits)
