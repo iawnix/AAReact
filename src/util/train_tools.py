@@ -4,12 +4,20 @@ from numpy.typing import NDArray
 
 from matplotlib import pyplot as plt
 
-from typing import Any, List, Union, Tuple
+from typing import Any, List, Union, Tuple, Dict, Callable
 
 
 from rich.table import Table
 from rich import print as rp
 from rich.progress import track
+
+# 绘制模型对不同数据集划分的敏感性
+import sys
+from pathlib import Path
+project_root = Path(__file__).parent.parent
+sys.path.append(str(project_root))
+from util.RegressMetrics import r2_score
+
 
 # 用于加载csv数据集, 并删除nan值
 def load_data(data_fp: str, desc_type: str):
@@ -270,25 +278,15 @@ def draw_pred_scatter(y_true_s: Tuple[NDArray, NDArray], y_pred_s: Tuple[NDArray
     ax[0].legend()
     ax[1].legend()
 
-# 绘制模型对不同数据集划分的敏感性
-import sys
-from pathlib import Path
-project_root = Path(__file__).parent.parent
-sys.path.append(str(project_root))
-from util.RegressMetrics import r2_score
 
-def draw_dataset_split(model_name: str, parms: dict, data_x: NDArray, data_y: NDArray, data_class: List) -> None:
-
-    seed_s = [0, 1, 2, 3]
-    test_size_s = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
-    r2_train_mean_s = []
-    r2_train_std_s = []
-    r2_test_mean_s = []
-    r2_test_std_s = []
-
+def eval_dataset_split(seed_s: List[int], test_size_s: List[int], parms: Dict, model_name: str
+                        , data_x: NDArray, data_y: NDArray, data_class: List
+                        , eval_func: callable) -> Tuple[list[float], list[float], list[float], list[float]]:
+    train_score_mean_s, train_score_std_s = [], []
+    test_score_mean_s, test_score_std_s = [], []
     for i_size in test_size_s:
-        _tmp_r2_train_s = []
-        _tmp_r2_test_s = []
+        train_score_tmp = []
+        test_score_tmp = []
         for i_seed in seed_s:
             _X_train, _X_test, _y_train, _y_test,  _class_train, _class_test = train_test_split(
                 data_x,        
@@ -303,16 +301,21 @@ def draw_dataset_split(model_name: str, parms: dict, data_x: NDArray, data_y: ND
             model.fit(_X_train, _y_train)
             train_pred = model.predict(_X_train)
             test_pred = model.predict(_X_test)
-            _tmp_r2_train_s.append(r2_score(train_pred, _y_train ))
-            _tmp_r2_test_s.append(r2_score(test_pred, _y_test))
-        r2_train_mean_s.append(np.mean(_tmp_r2_train_s))
-        r2_train_std_s.append(np.std(_tmp_r2_train_s))
-        r2_test_mean_s.append(np.mean(_tmp_r2_test_s))
-        r2_test_std_s.append(np.std(_tmp_r2_test_s))
 
-    plt.errorbar(test_size_s, r2_train_mean_s, yerr=r2_train_std_s, label = "Train R2")
-    plt.errorbar(test_size_s, r2_test_mean_s, yerr=r2_test_std_s, label = "Test R2")
-    plt.plot([0, 1], [0.4, 0.4], label = "R2=0.4", linestyle='--')
+            train_score_tmp.append(eval_func(y_pred = train_pred, y_true = _y_train ))
+            test_score_tmp.append(eval_func(y_pred = test_pred, y_true = _y_test))
+        train_score_mean_s.append(np.mean(train_score_tmp))
+        train_score_std_s.append(np.std(train_score_tmp))
+        test_score_mean_s.append(np.mean(test_score_tmp))
+        test_score_std_s.append(np.std(test_score_tmp))
+
+    return train_score_mean_s, train_score_std_s, test_score_mean_s, test_score_std_s
+
+def draw_dataset_split_result(test_size_s: List[float], train_score_mean_s: List[float], train_score_std_s: List[float], test_score_mean_s: List[float], test_score_std_s: List[float], y_label: str) -> None:
+
+    plt.errorbar(test_size_s, train_score_mean_s, yerr=train_score_std_s, label = "Train " + y_label)
+    plt.errorbar(test_size_s, test_score_mean_s, yerr=test_score_std_s, label = "Test " + y_label)
+    plt.plot([0, 1], [0.4, 0.4], label = y_label + "=0.4", linestyle='--')
     plt.legend()
     plt.xlim([0, 1])
     plt.ylim([0, 1])
