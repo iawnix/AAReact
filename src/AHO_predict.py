@@ -59,6 +59,7 @@ def Parm() -> Namespace:
     parser.add_argument("--pressure", type=float, help="The pressure of the reaction.")
     parser.add_argument("--model", type=str, help="The path of the trained model (pkl).")
     parser.add_argument("--feat_label", type=str, help="The path of the feature labels (pkl).")
+    parser.add_argument("--verbose", type=int, default=1, help="The print out level: 1, detail; 0, simple.")
     # parser.add_argument("--feat_norm", type=str, help="The path of the feature Normalization parameters (pkl).")
     args = parser.parse_args()
     return args
@@ -72,12 +73,12 @@ def main():
             model = load(args.model)
             with open(args.feat_label, "rb") as f:
                 feat_label = pickle.load(f)
-            
+
             # min_max_normer
             #data_x_max = np.load("data_x_max.npy")
             #data_x_min = np.load("data_x_min.npy")
             #feature_normer = norm_col_parms(min_col= data_x_min, max_col=data_x_max)
-    
+
             # featurizer
             all_feat = []
             REA_feat_label, SOL_feat_label, CAT_feat_label, TEMP_feat_label, PRESSURE_feat_label = init_feat_label(feat_label)
@@ -101,18 +102,20 @@ def main():
             if len(PRESSURE_feat_label) == 1:
                 all_feat.append(np.array([args.pressure]))
             data_x = np.concatenate(all_feat)
-    
+
             # predict
             ee = model.predict(data_x.reshape(1, -1))[0]
-
-        rp("Info\\[iaw]>:\n\tThe Rea.: {}\n\tThe Sol.: {}\n\tTheCat.: {}\n\tThe Temp: {}\n\tThe Pressure: {}\n\tThe ee: {:.6f}".format(
-            args.rea_smi
-            , args.sol_smi
-            , args.cat_smi
-            , args.temp
-            , args.pressure
-            , ee
-        ))
+        if args.verbose == 1:
+            rp("Info\\[iaw]>:\n\tThe Rea.: {}\n\tThe Sol.: {}\n\tTheCat.: {}\n\tThe Temp: {}\n\tThe Pressure: {}\n\tThe ee: {:.6f}".format(
+                args.rea_smi
+                , args.sol_smi
+                , args.cat_smi
+                , args.temp
+                , args.pressure
+                , ee
+            ))
+        else:
+            rp("Info\\[iaw]>: The ee: {:.6f}".format(ee))
 
 
     elif args.task == "conv":
