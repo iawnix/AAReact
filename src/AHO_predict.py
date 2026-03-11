@@ -60,6 +60,9 @@ def Parm() -> Namespace:
     parser.add_argument("--model", type=str, help="The path of the trained model (pkl).")
     parser.add_argument("--feat_label", type=str, help="The path of the feature labels (pkl).")
     parser.add_argument("--verbose", type=int, default=1, help="The print out level: 1, detail; 0, simple.")
+    parser.add_argument("--save_feat", type=str, default=None, 
+                    help="Path to save the features of data generated during the process (e.g., ./features/xx.npy). "
+                    "If not provided, features will not be saved.")
     # parser.add_argument("--feat_norm", type=str, help="The path of the feature Normalization parameters (pkl).")
     args = parser.parse_args()
     return args
@@ -102,9 +105,13 @@ def main():
             if len(PRESSURE_feat_label) == 1:
                 all_feat.append(np.array([args.pressure]))
             data_x = np.concatenate(all_feat)
-
             # predict
             ee = model.predict(data_x.reshape(1, -1))[0]
+        
+        if args.save_feat is not None:
+            # 保存过程中产生的特征
+            np.save("{}".format(args.save_feat), data_x)
+
         if args.verbose == 1:
             rp("Info\\[iaw]>:\n\tThe Rea.: {}\n\tThe Sol.: {}\n\tTheCat.: {}\n\tThe Temp: {}\n\tThe Pressure: {}\n\tThe ee: {:.6f}".format(
                 args.rea_smi
