@@ -234,15 +234,17 @@ def search_parms(model_name: str, X_train, y_train, seed: int) -> dict:
     if model_name == "rf":
         # grid search
         param_grid = {
-            'n_estimators': list(range(1, 100, 50)) + [120, 130, 140, 145, 150, 155, 160, 200], 
-            'max_depth': [1, 5, 10, 20, 30, 40, 50, None], 
+            'n_estimators': [1, 3, 5, 10, 20, 30, 50, 70, 100, 120, 130, 140, 145, 150, 155, 160, 200], 
+            'max_depth': [1, 3, 5, 8, 10, 20, 30, 40, 50, None], 
             'min_samples_split': [2, 5, 10, 30, 50],  
             'min_samples_leaf': [4, 5, 10, 30, 50], 
         }
     elif model_name == "xgb":
         param_grid = {
-            'n_estimators': list(range(1, 100, 50)) + [120, 130, 140, 145, 150, 155, 160, 200],
-            'max_depth': [1, 5, 10, 20, 30, 40, 50],
+            'n_estimators': [1, 3, 5, 10, 20, 30, 50, 70, 100, 120, 130, 140, 145, 150, 155, 160, 200],
+            'max_depth': [1, 3, 5, 8, 10, 20, 30, 40, 50],
+            "reg_alpha": [0.5, 1.0, 1.5, 2.0],
+            'reg_lambda': [1.0, 1.5, 2.0, 2.5],
             'learning_rate': [0.01, 0.1, 0.2],      
             'min_child_weight': [1, 5, 10],         
             'subsample': [0.8, 0.9, 1.0],  
@@ -268,9 +270,14 @@ def search_parms(model_name: str, X_train, y_train, seed: int) -> dict:
         cv=5,                                  # 5折
         scoring= "neg_mean_squared_error",     # 'neg_mean_squared_error',
         n_jobs=-1,
-        verbose=0
+        verbose=0,
+        return_train_score=True
     )
     grid_search.fit(X_train, y_train)
+    best_idx = grid_search.best_index_
+    train_score = -grid_search.cv_results_['mean_train_score'][best_idx]
+    val_score = -grid_search.cv_results_['mean_test_score'][best_idx]
+    print("Info[iaw]:> the trian mean mse: {:.4f}, the test mean mse: {:.4f}".format(train_score, val_score))
     return grid_search.best_params_
 
 # 用于预测结果的展示
@@ -280,7 +287,7 @@ def draw_pred_result(y_true_s: Tuple[NDArray, NDArray], y_pred_s: Tuple[NDArray,
     train_r2, test_r2 = r2_s
     class_train, class_test = class_s   
     # draw scatter
-    color_s = ["#06b6d4", "#8b5cf6", "#14b8a6", "#60f43f"]
+    color_s = ["#06b6d4", "#8b5cf6", "#14b8a6", "#60f43f", "#d45a5a"]
     fig, ax = plt.subplots(1, 2, figsize = (10, 5), dpi = 300)
     ax[0].scatter(train_pred, y_train, c = [color_s[i] for i in class_train])
     ax[0].plot([-1, 1], [-1, 1], label = "Train, R2: {:.4f}".format(train_r2), c = "gray")
