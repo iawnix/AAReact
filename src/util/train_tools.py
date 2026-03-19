@@ -241,14 +241,14 @@ def search_parms(model_name: str, X_train, y_train, seed: int) -> dict:
         }
     elif model_name == "xgb":
         param_grid = {
-            'n_estimators': [1, 3, 5, 10, 20, 30, 50, 70, 100, 120, 130, 140, 145, 150, 155, 160, 200],
-            'max_depth': [1, 3, 5, 8, 10, 20, 30, 40, 50],
-            "reg_alpha": [0.5, 1.0, 1.5, 2.0],
-            'reg_lambda': [1.0, 1.5, 2.0, 2.5],
-            'learning_rate': [0.01, 0.1, 0.2],      
-            'min_child_weight': [1, 5, 10],         
-            'subsample': [0.8, 0.9, 1.0],  
-            'colsample_bytree': [0.8, 0.9, 1.0],    
+            'n_estimators': [1, 3, 5, 7, 10, 15, 20, 25, 30],  #1, 3, 5, 10, 20 , 30, 50, 70, 100, 120, 130, 140, 145, 150, 155, 160, 200, 太容易过拟合了
+            'max_depth': [1, 3, 5, 8, 10, 20], # , 30, 40, 50
+            "reg_alpha": [0.5, 1.0, 1.5, 2.0, 3.0, 5.0],
+            'reg_lambda': [0.5, 1.0, 1.5, 2.0, 3.0, 5.0],
+            'learning_rate': [0.01, 0.1],      
+            'min_child_weight': [5, 10],         
+            'subsample': [0.8, 0.9],  
+            'colsample_bytree': [0.8, 0.9],    
         }
     elif model_name == "lgb":
         param_grid = {

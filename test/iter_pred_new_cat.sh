@@ -12,7 +12,7 @@ function xgb_pred() {
 		--cat_smi $cat_smi \
 		--temp $temp \
 		--pressure $press \
-		--model "/home/iaw/DATA2/AAReact/train/xgb_model_seed_1_split_0-2.pkl" \
+		--model "/home/iaw/DATA2/AAReact/train/xgb_model_seed_1_split_0-2_hyper2.pkl" \
 		--feat_label "/home/iaw/DATA2/AAReact/DataSet/AtropicAcid_416/4_gen_feature/rdkit_3_x_label.pkl" \
 		--verbose 0 \
 		--save_feat $save_feat
@@ -32,7 +32,7 @@ function rf_pred() {
 		--cat_smi $cat_smi \
 		--temp $temp \
 		--pressure $press \
-		--model "/home/iaw/DATA2/AAReact/train/rf_model_seed_1_split_0-2.pkl" \
+		--model "/home/iaw/DATA2/AAReact/train/rf_model_seed_1_split_0-2_hyper2.pkl" \
 		--feat_label "/home/iaw/DATA2/AAReact/DataSet/AtropicAcid_416/4_gen_feature/rdkit_3_x_label.pkl" \
 		--verbose 0 \
 		--save_feat $save_feat

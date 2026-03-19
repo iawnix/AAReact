@@ -5,13 +5,14 @@ function xgb_pred() {
 	cat_smi=$3
 	temp=$4
 	press=$5
+    model=$6
 	python ../src/AHO_predict.py --task "ee" \
 		--rea_smi $rea_smi \
 		--sol_smi $sol_smi \
 		--cat_smi $cat_smi \
 		--temp $temp \
 		--pressure $press \
-		--model "/home/iaw/DATA2/AAReact/train/xgb_model_seed_1_split_0-2.pkl" \
+		--model  \
 		--feat_label "/home/iaw/DATA2/AAReact/DataSet/AtropicAcid_416/4_gen_feature/rdkit_3_x_label.pkl" \
 		--verbose 0
 }
@@ -28,13 +29,16 @@ function rf_pred() {
 		--cat_smi $cat_smi \
 		--temp $temp \
 		--pressure $press \
-		--model "/home/iaw/DATA2/AAReact/train/rf_model_seed_1_split_0-2.pkl" \
+		--model "/home/iaw/DATA2/AAReact/train/rf_model_seed_1_split_0-2_hyper2.pkl" \
 		--feat_label "/home/iaw/DATA2/AAReact/DataSet/AtropicAcid_416/4_gen_feature/rdkit_3_x_label.pkl" \
 		--verbose 0
 }
 
 
 echo "#+++++++++++++++++++++++++++++++++++++++++++++++++# Rea #++++++++++++++++++++++++++++++++++++++++++++++#"
+
+
+
 rea_smi_1="C/C(C)=C(C(O)=O)\C1=CC=C(F)C=C1"
 rea_smi_2="CC1=CC=CC(/C(C(O)=O)=C(C)\C)=C1"
 rea_smi_3="C/C(C)=C(C(O)=O)\C1=CC=C(C)C=C1"
