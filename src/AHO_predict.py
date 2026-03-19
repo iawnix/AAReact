@@ -6,7 +6,7 @@ from pathlib import Path
 from joblib import dump, load
 import pickle
 
-from typing import Any, List, Tuple
+from typing import Any, List, Tuple, Union, Dict
 
 import numpy as np
 from numpy.typing import NDArray
@@ -20,10 +20,14 @@ from util.featurizer import rdkit_featurizer
 from rich import print as rp
 from rich.status import Status
 
-def init_feat_label(feat_label: list[str]) -> Tuple[List[str], List[str], List[str], List[str], List[str]]:
+
+def _split_feat(feat_label_value: List[str], warning: bool = True) -> Tuple[List[str], List[str], List[str], List[str]]:
+    if warning:
+        print("Warning[iaw]:> This function is only help function`init_feat_label` to split feat!")
+
     REA, SOL, CAT, TEMP, PRESSURE = [], [], [], [], []
     REA_idx, SOL_idx, CAT_idx, TEMP_idx, PRESSURE_idx = [], [], [], [], []
-    for i, feat in enumerate(feat_label):
+    for i, feat in enumerate(feat_label_value):
         if feat == "TEMP":
             TEMP.append(feat)
             TEMP_idx.append(i)
@@ -43,10 +47,26 @@ def init_feat_label(feat_label: list[str]) -> Tuple[List[str], List[str], List[s
             else:
                 print("Error[iaw]>: Unrecognized feature label: {}".format(feat))
     # Check feat的顺序必须是REA, SOL, CAT, TEMP, PRESSURE
-    if REA_idx + SOL_idx + CAT_idx + TEMP_idx + PRESSURE_idx != list(range(len(feat_label))):
+    if REA_idx + SOL_idx + CAT_idx + TEMP_idx + PRESSURE_idx != list(range(len(feat_label_value))):
         print("Error[iaw]>: Feature label order is not REA, SOL, CAT, TEMP, PRESSURE")
     return REA, SOL, CAT, TEMP, PRESSURE
 
+
+def init_feat_label(feat_label: Dict[str, List[str]]) -> List[Tuple[str, Tuple[List[str], List[str], List[str], List[str]]]]:
+
+    """
+    Dict[str, List[str]]: 嵌套的, 可以根据key的前半部分判断是何种描述符
+        - 例如: `label1_rdkit`
+
+    """
+    out = []
+    key_s = list(feat_label.keys())
+    feat_key_withsign = sorted(key_s, key=lambda x: int(x.split('_')[0].replace('label', '')))
+    feat_key = [item.split('_')[1] for item in feat_key_withsign]
+    for i, i_feat_name in enumerate(feat_key):
+        i_feat_splited = _split_feat(feat_label_value = feat_label[feat_key_withsign[i]], warning = False)
+        out.append((i_feat_name, i_feat_splited))
+    return out
 
 
 def Parm() -> Namespace:
