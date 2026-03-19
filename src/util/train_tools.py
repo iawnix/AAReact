@@ -247,7 +247,7 @@ def search_parms(model_name: str, X_train, y_train, seed: int) -> dict:
             'reg_lambda': [0.5, 1.0, 1.5, 2.0, 3.0, 5.0],
             'learning_rate': [0.01, 0.1],      
             'min_child_weight': [5, 10],         
-            'subsample': [0.8, 0.9],  
+            'subsample': [0.5, 0.6, 0.8],  
             'colsample_bytree': [0.8, 0.9],    
         }
     elif model_name == "lgb":

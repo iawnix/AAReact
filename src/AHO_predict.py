@@ -115,7 +115,7 @@ def _check_in_mol_type_is_sdf(mol_s: Tuple[str, str, str], warning: bool = True)
             raise RuntimeError("Error[iaw]:> the mol must only be smi or sdf!")
 
 
-def _calc_soap_feat(mol_type: str, sdf_fp: str, feat_label: List[str], warning: bool = True) -> List:
+def _calc_soap_feat(mol_type: str, sdf_fp: str, feat_label: List[str], warning: bool = True) -> NDArray:
     if warning:
         print("Warning[iaw]:> This function is only used to calc soap in main function!")
 
@@ -127,11 +127,15 @@ def _calc_soap_feat(mol_type: str, sdf_fp: str, feat_label: List[str], warning: 
         , "lmax": 3})
     rea_featurizer = dscribe_featurizer(sdf_fp = sdf_fp)
     tmp_feat = rea_featurizer.calc_soap(soap_config)
+    # tmp_feat: 1, n_soap
     n_tmp_feat = tmp_feat.shape[-1]
     tmp_feat_name = {"SOAP{}".format(j): j for j in range(n_tmp_feat)}
     select_idx = [tmp_feat_name[i] for i in feat_label]
-
-    return tmp_feat[select_idx]
+    #print("Debug[iaw]:> the tmp_feat shape, {}, type, {}".format(tmp_feat.shape, type(tmp_feat)))
+    out = tmp_feat[:, select_idx]
+    # 1, n_select_soap -> n_select_soap,
+    out = out.flatten()
+    return out
 
 def init_features(  mol_s: Tuple[str, str, str]
                    , feat_type: str
@@ -141,9 +145,9 @@ def init_features(  mol_s: Tuple[str, str, str]
 
     all_feat = []
     REA_feat_label, SOL_feat_label, CAT_feat_label, TEMP_feat_label, PRESSURE_feat_label = feat
-    if not first:
+    if first:
         # 如果first为True的时候, 必须要检查一下temp跟pressure其中的一个存在
-        if len(TEMP_feat_label) != 0 or len(PRESSURE_feat_label) != 0:
+        if len(TEMP_feat_label) == 0 and len(PRESSURE_feat_label) == 0:
             print("Error[iaw]:> please put the TEMP and PRESSURE in first feature_class!")
     
     _extract_smi_from_sdf: Callable = lambda sdf_fp: Chem.SDMolSupplier(sdf_fp, removeHs=False, sanitize=False)[0].GetProp("SMILES")
@@ -254,9 +258,16 @@ def main():
                         i_feat = init_features( (args.rea, args.sol, args.cat) , feat_type , feat , args.temp, args.pressure , first_sign)
                     case _:
                         raise RuntimeError("Error[iaw]:> please input feat, rdkit, soap!")
-                all_feat.append(i_feat)
+                all_feat.extend(i_feat)
             
+            #for i in all_feat:
+            #    if isinstance(i, list):
+            #        print(type(i), len(i))
+            #    elif isinstance(i, np.ndarray):
+            #        print(type(i), i.shape)
+
             data_x = np.concatenate(all_feat)
+            #print("Debug[iaw]:> the data_x.shape = {}".format(data_x.shape))
             # predict
             ee = model.predict(data_x.reshape(1, -1))[0]
         
