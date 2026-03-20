@@ -135,6 +135,16 @@ def check_atom_charge(mol: Mol, atom_idx: List[int]) -> None:
                                                                      , atom.GetTotalValence()))
 
 
+def correct_valence(mol: Mol, infos: Tuple[int, int, int]) -> Mol:
+    mol = Chem.RWMol(mol)
+    idx, radical, charge = infos
+    atom = mol.GetAtomWithIdx(idx)
+    atom.SetFormalCharge(charge)
+    atom.SetNumRadicalElectrons(radical)
+    mol = mol.GetMol()
+    return mol
+
+
 def split_cat_smi() -> Tuple[str, str]:
     pass
 
