@@ -14,4 +14,5 @@ UNIMOL_EMBED_DIM = {
 METAL_TYPE = ['Rh','Ir','Co','Ru','Ni','Pd', 'Mn', "Fe"]
 ELEMENT_LIST = ['Fe', 'Cr', 'Pd', 'Mn', 'Rh', 'C', 'P', 'Br', 'H', 'O', 'F', 'N', 'S', 'Cl', 'Co', 'Ni', 'Ru', 'Ir', "B"]
 COORD_TYPE = ['N', 'O', 'S', 'P']
-HOMO_LUMO_GAP_NUM = 4
+HOMO_LUMO_GAP_NUM_2 = 2
+HOMO_LUMO_GAP_NUM_4 = 4

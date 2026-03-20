@@ -24,7 +24,7 @@ import sys
 from pathlib import Path
 project_root = Path(__file__).parent.parent
 sys.path.append(str(project_root))
-from util.constants import METAL_TYPE, ELEMENT_LIST, HOMO_LUMO_GAP_NUM
+from util.constants import METAL_TYPE, ELEMENT_LIST, HOMO_LUMO_GAP_NUM_2, HOMO_LUMO_GAP_NUM_4
 from tool.cli import CMD_RUN
 from tool.molden_xtb import molden_mol
 
@@ -193,9 +193,9 @@ class dscribe_featurizer():
 
 
 
-def xtb_log_to_data(log_path: str, sign: str) -> Union[Tuple[Tuple[Union[NDArray, None], bool], Tuple[Union[NDArray, None], bool]], Tuple[Union[NDArray, None], bool]]:
+def xtb_log_to_data(log_path: str, sign: str, addition: Any = None) -> Union[Tuple[Tuple[Union[NDArray, None], bool], Tuple[Union[NDArray, None], bool]], Tuple[Union[NDArray, None], bool]]:
     """
-    这个函数会依赖于grep命令
+    这个函数会依赖于grep命令, addition 主要为了给HomoLumoGap传入HOMO_LUMO_GAP_NUM
     """
 
     if sign == "Vipea":
@@ -230,7 +230,6 @@ def xtb_log_to_data(log_path: str, sign: str) -> Union[Tuple[Tuple[Union[NDArray
         return (ip, ip_error_if), (ea, ea_error_if)
     elif sign == "Vfukui":
         # Fukui Index
-        # 这里需要额外的一个参数
 
         with open(log_path, "r+") as F:
             lines = F.readlines()
@@ -297,17 +296,23 @@ def xtb_log_to_data(log_path: str, sign: str) -> Union[Tuple[Tuple[Union[NDArray
 
     elif sign == "HomoLumoGap":
         hlg_error_if = False
+        
+        # 这个时候必须需要这个额外的参数
+        if addition == None and isinstance(addition, int):
+            return (None, True)
+        
+        n_hlg = addition
         try:
             molden = molden_mol(log_path)
 
             # 计算homo_lumo的gap
             lumo_ene, homo_ene = molden.FO()
-            if (n_l := lumo_ene.shape[0]) >= HOMO_LUMO_GAP_NUM and ( n_h := homo_ene.shape[0]) >= HOMO_LUMO_GAP_NUM:
+            if (n_l := lumo_ene.shape[0]) < n_hlg and ( n_h := homo_ene.shape[0]) < n_hlg:
                 print("Error[iaw]:> The number of molecular orbitals of this molecule is not sufficient to calculate a sufficient gap: HOMO: {}, LUMO: {}".format(
                     n_h, n_l))
             
-            lumo_ene_select = lumo_ene[:HOMO_LUMO_GAP_NUM]
-            homo_ene_select = homo_ene[:HOMO_LUMO_GAP_NUM]
+            lumo_ene_select = lumo_ene[:n_hlg]
+            homo_ene_select = homo_ene[:n_hlg]
 
             lumo_homo_diff = np.subtract.outer(lumo_ene_select, homo_ene_select)
         except:
@@ -353,47 +358,69 @@ class xtb_featurizer():
         return root_path
     
     def calc_xtb(self, config) -> Union[NDArray, None]:
-        
-        chrg, uhf = self.__calc_chrg_uhf__()
-        self.bachend = config.bachend
-        self.workpath = config.workpath
-
         self.root_path = self.__init_featurizer__(config)
-        CMD_RUN("{} {} --opt normal --ohess --gfn 2 --chrg {} --uhf {}  --molden > opt.log".format(
-                    config.bachend, self.fp, chrg, uhf))
-        CMD_RUN("mv wbo wbo.opt")
-        CMD_RUN("mv charges charges.opt")
-
-        CMD_RUN("{} xtbopt.sdf --gfn 1 --chrg {} --uhf {} --vipea > Vipea.log".format(
-                config.bachend, chrg, uhf))  
         
-        # 这里加入--sp会造成错误
-        CMD_RUN("mv wbo wbo.Vipea")
-        CMD_RUN("mv charges charges.Vipea")
-        CMD_RUN("{} xtbopt.sdf --gfn 2 --chrg {} --uhf {} --vfukui > Vfukui.log".format(
-                config.bachend, chrg, uhf))
+        try:
+            chrg, uhf = self.__calc_chrg_uhf__()
+            # 这SB 不支持V3000 的SDF
+            _tmp_xyz = os.path.basename(self.fp)[:-len(".sdf")]
+            CMD_RUN("{} -isdf {} -oxyz -O {}.xyz".format(config.obabel_bachend, self.fp, _tmp_xyz))
+            CMD_RUN("{} {}.xyz --opt normal --ohess --gfn 2 --chrg {} --uhf {}  --molden > opt.log".format(
+                        config.xtb_bachend, _tmp_xyz, chrg, uhf))
+            CMD_RUN("mv wbo wbo.opt")
+            CMD_RUN("mv charges charges.opt")
+
+            CMD_RUN("{} xtbopt.xyz --gfn 1 --chrg {} --uhf {} --vipea > Vipea.log".format(
+                    config.xtb_bachend, chrg, uhf))  
         
-        CMD_RUN("mv wbo wbo.Vfukui")
-        CMD_RUN("mv charges charges.Vfukui")
-        CMD_RUN("{} xtbopt.sdf --gfn 1 --chrg {} --uhf {} --vomega > Vomega.log".format(
-                config.bachend, chrg, uhf))
-        CMD_RUN("mv wbo wbo.Vomega")
-        CMD_RUN("mv charges charges.Vomega")
+            # 这里加入--sp会造成错误
+            CMD_RUN("mv wbo wbo.Vipea")
+            CMD_RUN("mv charges charges.Vipea")
+            CMD_RUN("{} xtbopt.xyz --gfn 2 --chrg {} --uhf {} --vfukui > Vfukui.log".format(
+                    config.xtb_bachend, chrg, uhf))
+        
+            CMD_RUN("mv wbo wbo.Vfukui")
+            CMD_RUN("mv charges charges.Vfukui")
+            CMD_RUN("{} xtbopt.xyz --gfn 1 --chrg {} --uhf {} --vomega > Vomega.log".format(
+                    config.xtb_bachend, chrg, uhf))
+            CMD_RUN("mv wbo wbo.Vomega")
+            CMD_RUN("mv charges charges.Vomega")
 
-        # 读取数据
-        (ip, ip_error_if), (ea, ea_error_if) = xtb_log_to_data(
-            log_path="./Vipea.log", sign="Vipea"
-        )
-        #fukui_data, fukui_error_if = xtb_log_to_data(
-        #    log_path="./Vfukui.log", sign="Vfukui"
-        #)
-        gei, gei_error_if = xtb_log_to_data(log_path="./Vomega.log", sign="Vomega")
-        hlg, hlg_error_if = xtb_log_to_data(log_path="./molden.input", sign="HomoLumoGap")
+            # 读取数据
+            (ip, ip_error_if), (ea, ea_error_if) = xtb_log_to_data(
+                log_path="./Vipea.log", sign="Vipea"
+            )
+            #fukui_data, fukui_error_if = xtb_log_to_data(
+            #    log_path="./Vfukui.log", sign="Vfukui"
+            #)
+            gei, gei_error_if = xtb_log_to_data(log_path="./Vomega.log", sign="Vomega")
+            match config.mol_type:
+                case "reactant":
+                    n_homo_lumo_gap = HOMO_LUMO_GAP_NUM_4
+                case "product":
+                    n_homo_lumo_gap = HOMO_LUMO_GAP_NUM_4
+                case "solvent":
+                    n_homo_lumo_gap = HOMO_LUMO_GAP_NUM_4
+                case "catalyst":
+                    n_homo_lumo_gap = HOMO_LUMO_GAP_NUM_4
+                case _:
+                    print("Error[iaw]>: only support 'reactant', 'product', 'solvent' and 'catalyst' mol_type!")
+                    sys.exit(-1)
+            hlg, hlg_error_if = xtb_log_to_data(log_path="./molden.input", sign="HomoLumoGap", addition=n_homo_lumo_gap)
 
-        all_feat = None
-        if not ip_error_if and not ea_error_if and not gei_error_if and not hlg_error_if:
-            all_feat = np.concatenate([ip, ea, gei, hlg])
-
+            all_feat = None
+            if not ip_error_if and not ea_error_if and not gei_error_if and not hlg_error_if:
+                #print("Debug[iaw]:> ip.shape: {}, ea.shape: {}, gei.shape: {}, hlg.shape: {}".format(ip.shape, 
+                #                                     ea.shape, gei.shape, hlg.shape))
+                # -> Debug[iaw]:> ip.shape: (1,), ea.shape: (1,), gei.shape: (1,), hlg.shape: (4, 4)
+                all_feat = np.concatenate([ip, ea, gei, hlg.flatten()])
+            #else:
+            #    print(ip_error_if, ea_error_if, gei_error_if, hlg_error_if)
+        except Exception as e:
+            print("Error[iaw]:> {}".format(e))
+            all_feat = None
+        finally:
+            os.chdir(self.root_path)
         return all_feat
 
 
