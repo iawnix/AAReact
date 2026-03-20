@@ -17,14 +17,20 @@ from dscribe.descriptors import ACSF,SOAP,LMBTR,MBTR
 from ase import Atoms as ASE_ATOMS
 import ase
 
-
+import os
+import re
 import sys
+
 from pathlib import Path
 project_root = Path(__file__).parent.parent
 sys.path.append(str(project_root))
-from util.constants import METAL_TYPE, ELEMENT_LIST
+from util.constants import METAL_TYPE, ELEMENT_LIST, HOMO_LUMO_GAP_NUM
+from tool.cli import CMD_RUN
+from tool.molden_xtb import molden_mol
 
 from typing import List, Union, Tuple
+
+import shutil
 
 def condition_featurizer():
     pass
@@ -184,8 +190,211 @@ class dscribe_featurizer():
         #print("Debug[iaw]>: n_atoms in mol: {}, n_sym in mol: {}".format(len(self.atoms), len(self.atom_syms)))
         mbtr_feat = dscriber.create(self.atoms)
         return mbtr_feat
-    
 
+
+
+def xtb_log_to_data(log_path: str, sign: str) -> Union[Tuple[Tuple[Union[NDArray, None], bool], Tuple[Union[NDArray, None], bool]], Tuple[Union[NDArray, None], bool]]:
+    """
+    这个函数会依赖于grep命令
+    """
+
+    if sign == "Vipea":
+        # Vertical Ionization Potentials and Electron Affinities
+        out1 = CMD_RUN("grep 'delta SCC IP (eV):' {}".format(log_path))
+        ip_error_if = False
+        if type(out1) == bool:
+            ip_error_if = True
+            ip = None
+        else:
+            if out1 == "":
+                ip_error_if = True
+                ip = None
+            else:
+                ip = np.array([float(
+                    out1.rstrip("\n").replace("delta SCC IP (eV):", "").replace(" ", "")
+                )])
+
+        out2 = CMD_RUN("grep 'delta SCC EA (eV):' {}".format(log_path))
+        ea_error_if = False
+        if type(out2) == bool:
+            ea_error_if = True
+            ea = None
+        else:
+            if out2 == "":
+                ea_error_if = True
+                ea = None
+            else:
+                ea = np.array([float(
+                    out2.rstrip("\n").replace("delta SCC EA (eV):", "").replace(" ", "")
+                )])
+        return (ip, ip_error_if), (ea, ea_error_if)
+    elif sign == "Vfukui":
+        # Fukui Index
+        # 这里需要额外的一个参数
+
+        with open(log_path, "r+") as F:
+            lines = F.readlines()
+            start = None
+            end = -1
+
+            for i, line in enumerate(lines):
+                if "Fukui functions:" in line:
+                    start = i
+
+                if (
+                    type(start) == int
+                    and "-------------------------------------------------" in line
+                ):
+                    end = i - 1
+                    break
+
+            # assert type(start) == int and end > start+2, "Error: Can not find Fukui functions in {}".format(log_path)
+            if type(start) != int and end == -1:
+                fukui_data = np.array([])
+                fukui_error_if = False
+                # print("Here")
+            else:
+                # print( type(start) != int , type(end) != int , end, start)
+                fukui_error_if = False
+                fukui_data = []
+                if not fukui_error_if:
+                    for line in lines[start + 2 : end + 1]:
+                        line1 = line.rstrip("\n")
+                        line1 = line1.replace("\t", " ").replace("  ", " ")
+                        var = line1.split(" ")
+                        var = [i for i in var if i != ""]
+
+                        atm_idx = eval(
+                            re.findall(r"\d+|[A-Za-z]+", var[0])[0]
+                        )  # 1C 这里需要提取数字
+                        fukui_plus = eval(var[1])
+                        fukui_minus = eval(var[2])
+                        fukui_radical = eval(var[3])
+
+                        fukui_data.append([fukui_plus, fukui_minus, fukui_radical])
+                    fukui_data = np.array(fukui_data)
+
+            return (fukui_data, fukui_error_if)
+
+    elif sign == "Vomega":
+        # Global Electrophilicity Index
+        out1 = CMD_RUN("grep 'Global electrophilicity index (eV):' {}".format(log_path))
+        gei_error_if = False
+        if isinstance(out1, bool):
+            gei_error_if = True
+            gei = None
+        else:
+            if out1 == "":
+                gei_error_if = True
+                gei = None
+            else:
+                gei = np.array([float(
+                    out1.rstrip("\n")
+                    .replace("Global electrophilicity index (eV):", "")
+                    .replace(" ", "")
+                )])
+        return (gei, gei_error_if)
+
+    elif sign == "HomoLumoGap":
+        hlg_error_if = False
+        try:
+            molden = molden_mol(log_path)
+
+            # 计算homo_lumo的gap
+            lumo_ene, homo_ene = molden.FO()
+            if (n_l := lumo_ene.shape[0]) >= HOMO_LUMO_GAP_NUM and ( n_h := homo_ene.shape[0]) >= HOMO_LUMO_GAP_NUM:
+                print("Error[iaw]:> The number of molecular orbitals of this molecule is not sufficient to calculate a sufficient gap: HOMO: {}, LUMO: {}".format(
+                    n_h, n_l))
+            
+            lumo_ene_select = lumo_ene[:HOMO_LUMO_GAP_NUM]
+            homo_ene_select = homo_ene[:HOMO_LUMO_GAP_NUM]
+
+            lumo_homo_diff = np.subtract.outer(lumo_ene_select, homo_ene_select)
+        except:
+            lumo_homo_diff =  None
+            hlg_error_if = True
+
+        return (lumo_homo_diff, hlg_error_if)
+    else:
+        raise RuntimeError("Error[iaw]:> Support Keys: Vipea, Vfukui, Vomega, HomoLumoGap")
+
+class xtb_featurizer():
+
+    def __init__(self, sdf_fp: str, sanitize: bool = True) -> None:
+        self.mol = Chem.SDMolSupplier(sdf_fp, removeHs=False, sanitize = sanitize)[0]
+        self.fp = sdf_fp
+        if self.mol is None:
+            print("Error[iaw]>: cannot read mol from sdf file, {}!".format(sdf_fp))
+            sys.exit(1)
+
+    def __calc_chrg_uhf__(self) -> Tuple[float, float]:
+        chrg = Chem.GetFormalCharge(self.mol)
+        re = Descriptors.NumRadicalElectrons(self.mol)
+        ve = Descriptors.NumValenceElectrons(self.mol)
+
+        if (ve + chrg) % 2 == 0 and re == 0:
+            uhf = 0
+        else:
+            uhf = re
+        return (chrg, uhf)
+
+    def __init_featurizer__(self, config) -> Any:
+        """
+        初始化一个路径
+        config:
+            bachend:
+            workpath: 
+        """
+        root_path = os.getcwd()
+        if os.path.exists(config.workpath):
+            shutil.rmtree(config.workpath)
+        os.makedirs(config.workpath, exist_ok=True)
+        os.chdir(config.workpath)
+        return root_path
+    
+    def calc_xtb(self, config) -> Union[NDArray, None]:
+        
+        chrg, uhf = self.__calc_chrg_uhf__()
+        self.bachend = config.bachend
+        self.workpath = config.workpath
+
+        self.root_path = self.__init_featurizer__(config)
+        CMD_RUN("{} {} --opt normal --ohess --gfn 2 --chrg {} --uhf {}  --molden > opt.log".format(
+                    config.bachend, self.fp, chrg, uhf))
+        CMD_RUN("mv wbo wbo.opt")
+        CMD_RUN("mv charges charges.opt")
+
+        CMD_RUN("{} xtbopt.sdf --gfn 1 --chrg {} --uhf {} --vipea > Vipea.log".format(
+                config.bachend, chrg, uhf))  
+        
+        # 这里加入--sp会造成错误
+        CMD_RUN("mv wbo wbo.Vipea")
+        CMD_RUN("mv charges charges.Vipea")
+        CMD_RUN("{} xtbopt.sdf --gfn 2 --chrg {} --uhf {} --vfukui > Vfukui.log".format(
+                config.bachend, chrg, uhf))
+        
+        CMD_RUN("mv wbo wbo.Vfukui")
+        CMD_RUN("mv charges charges.Vfukui")
+        CMD_RUN("{} xtbopt.sdf --gfn 1 --chrg {} --uhf {} --vomega > Vomega.log".format(
+                config.bachend, chrg, uhf))
+        CMD_RUN("mv wbo wbo.Vomega")
+        CMD_RUN("mv charges charges.Vomega")
+
+        # 读取数据
+        (ip, ip_error_if), (ea, ea_error_if) = xtb_log_to_data(
+            log_path="./Vipea.log", sign="Vipea"
+        )
+        #fukui_data, fukui_error_if = xtb_log_to_data(
+        #    log_path="./Vfukui.log", sign="Vfukui"
+        #)
+        gei, gei_error_if = xtb_log_to_data(log_path="./Vomega.log", sign="Vomega")
+        hlg, hlg_error_if = xtb_log_to_data(log_path="./molden.input", sign="HomoLumoGap")
+
+        all_feat = None
+        if not ip_error_if and not ea_error_if and not gei_error_if and not hlg_error_if:
+            all_feat = np.concatenate([ip, ea, gei, hlg])
+
+        return all_feat
 
 
     
