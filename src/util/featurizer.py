@@ -132,20 +132,28 @@ class dscribe_featurizer():
             case "solvent":
                 self.center_atom_idx = [self.__calc_mol_center_of_mass__()]
             case "catalyst":
-                self.center_atom_idx = []
+                temp_center_atom_idx = []
+                # 催化剂的时候哦, 这个地方先存放的是一个元组, 包含元素类型以及idx
                 for atom in self.mol.GetAtoms():
                     if atom.GetSymbol() in self.metal_type:
-                        self.center_atom_idx.append(atom.GetIdx())
+                        temp_center_atom_idx.append((atom.GetSymbol(), atom.GetIdx()))
                 
-                if len(self.center_atom_idx) == 0:
+                if len(temp_center_atom_idx) == 0:
                     self.center_atom_idx = None
                     print("Warning[iaw]>: no metal atom found in catalyst mol! fp, {}".format(self.fp))
                     sys.exit(1)
-                elif len(self.center_atom_idx) > 1:
+                elif len(temp_center_atom_idx) > 1:
                     print("Warning[iaw]>: more than one metal atom found in catalyst mol, use first metal atom as center atoms!")
                     # 中心原子需要确定一下, 暂时取第一个
+                    # 20260320更新, 如果存在Fe则先排除Fe, 然后再随机选择一个
+                    self.center_atom_idx = [] 
+                    for (i_sym, i_idx) in temp_center_atom_idx:
+                        if i_sym != "Fe":
+                            self.center_atom_idx.append(i_idx)
                     self.center_atom_idx = [self.center_atom_idx[0]]
                 else:
+                    # 不出意外, 这里铁定是1, 老铁!
+                    self.center_atom_idx = [temp_center_atom_idx[0][-1]]
                     pass
             case _:
                 print("Error[iaw]>: only support 'reactant', 'product', 'solvent' and 'catalyst' mol_type!")
