@@ -17,7 +17,7 @@ sys.path.append(str(project_root))
 
 from util.train_tools import norm_col_parms
 from util.featurizer import rdkit_featurizer, dscribe_featurizer
-
+from util.constants import XTB_BACHEND, OBABEL_BACHEND, XTB_WORK_SCRATCH
 from rich import print as rp
 from rich.status import Status
 
@@ -31,6 +31,7 @@ from rdkit import Chem
 # Parm: 用于初始化终端中的输入
 # _check_in_mol_type_is_sdf: 检查输入分子的格式是否为sdf, True: sdf, False: smi
 # _calc_soap_feat: 内部函数, 计算输入分子的soap特征
+# _calc_xtb_feat: 内部函数, 用于计算输入分子的xtb特征
 # init_features: 初始化data_x, 计算输入数据的特征
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
 
@@ -125,8 +126,8 @@ def _calc_soap_feat(mol_type: str, sdf_fp: str, feat_label: List[str], warning: 
         , "rcut": 6.0
         , "nmax": 4
         , "lmax": 3})
-    rea_featurizer = dscribe_featurizer(sdf_fp = sdf_fp)
-    tmp_feat = rea_featurizer.calc_soap(soap_config)
+    soap_featurizer = dscribe_featurizer(sdf_fp = sdf_fp)
+    tmp_feat = soap_featurizer.calc_soap(soap_config)
     # tmp_feat: 1, n_soap
     n_tmp_feat = tmp_feat.shape[-1]
     tmp_feat_name = {"SOAP{}".format(j): j for j in range(n_tmp_feat)}
@@ -136,6 +137,27 @@ def _calc_soap_feat(mol_type: str, sdf_fp: str, feat_label: List[str], warning: 
     # 1, n_select_soap -> n_select_soap,
     out = out.flatten()
     return out
+
+def _calc_xtb_feat(mol_type: str, sdf_fp: str, feat_label: List[str], warning: bool = True) -> NDArray:
+    if warning:
+        print("Warning[iaw]:> This function is only used to calc soap in main function!")
+
+    xtb_config = SimpleNamespace(**{
+          "mol_type": mol_type
+        ,  "xtb_bachend": XTB_BACHEND
+        , "obabel_bachend": OBABEL_BACHEND
+        , "workpath": XTB_WORK_SCRATCH
+    })
+
+    xtb_featurizer = xtb_featurizer(sdf_fp = sdf_fp)
+    tmp_feat = xtb_featurizer.calc_xtb(xtb_config)
+    # tmp_feat: n_xtb, 
+    n_tmp_feat = tmp_feat.shape[0]
+    tmp_feat_name = {"XTB{}".format(j): j for j in range(n_tmp_feat)}
+    select_idx = [tmp_feat_name[i] for i in feat_label]
+    out = tmp_feat[select_idx]
+    return out
+
 
 def init_features(  mol_s: Tuple[str, str, str]
                    , feat_type: str
@@ -152,6 +174,9 @@ def init_features(  mol_s: Tuple[str, str, str]
     
     _extract_smi_from_sdf: Callable = lambda sdf_fp: Chem.SDMolSupplier(sdf_fp, removeHs=False, sanitize=False)[0].GetProp("SMILES")
 
+    """
+    这个下面有大量的重复逻辑, 需要进一步优化
+    """
     match feat_type:
         case "rdkit":
             # check mol_s is (smi, smi, smi)
@@ -162,6 +187,7 @@ def init_features(  mol_s: Tuple[str, str, str]
             else:
                 smi_s = mol_s
             rea_smi, sol_smi, cat_smi = smi_s
+
             if len(REA_feat_label) != 0:
                 rea_featurizer = rdkit_featurizer(rea_smi)
                 rea_featurizer.reset_rdkit_desc_generator(REA_feat_label)
@@ -197,6 +223,23 @@ def init_features(  mol_s: Tuple[str, str, str]
                 all_feat.append(np.array([temp]))
             if len(PRESSURE_feat_label) == 1:
                 all_feat.append(np.array([pressure]))
+        case "xtb":
+            if not _check_in_mol_type_is_sdf(mol_s, warning=False):
+                raise RuntimeError("Error[iaw]:> the mol must be sdf, when the feat type is xtb!")
+            if len(REA_feat_label) != 0:
+                rea_feat = _calc_xtb_feat(mol_type = "reactant", sdf_fp = mol_s[0], feat_label = REA_feat_label, warning = False)
+                all_feat.append(rea_feat)
+            if len(SOL_feat_label) != 0:
+                sol_feat = _calc_xtb_feat(mol_type = "solvent", sdf_fp = mol_s[1], feat_label = SOL_feat_label, warning = False)
+                all_feat.append(sol_feat)
+            if len(CAT_feat_label) != 0:
+                cat_feat = _calc_xtb_feat(mol_type = "catalyst", sdf_fp = mol_s[2], feat_label = CAT_feat_label, warning = False)
+                all_feat.append(cat_feat)
+            if len(TEMP_feat_label) == 1:
+                all_feat.append(np.array([temp]))
+            if len(PRESSURE_feat_label) == 1:
+                all_feat.append(np.array([pressure]))
+
         case _:
             raise RuntimeError("Error[iaw]:> please input feat, rdkit, soap!")
     return all_feat
@@ -251,13 +294,7 @@ def main():
                 else:
                     first_sign = False
                 
-                match feat_type:
-                    case "rdkit":
-                        i_feat = init_features( (args.rea, args.sol, args.cat) , feat_type , feat , args.temp, args.pressure , first_sign)
-                    case "soap":
-                        i_feat = init_features( (args.rea, args.sol, args.cat) , feat_type , feat , args.temp, args.pressure , first_sign)
-                    case _:
-                        raise RuntimeError("Error[iaw]:> please input feat, rdkit, soap!")
+                i_feat = init_features( (args.rea, args.sol, args.cat) , feat_type , feat , args.temp, args.pressure , first_sign)
                 all_feat.extend(i_feat)
             
             #for i in all_feat:
