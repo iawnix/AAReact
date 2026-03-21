@@ -363,7 +363,7 @@ class xtb_featurizer():
             # 这SB 不支持V3000 的SDF
             _tmp_xyz = os.path.basename(self.fp)[:-len(".sdf")]
             CMD_RUN("{} -isdf {} -oxyz -O {}.xyz".format(config.obabel_bachend, self.fp, _tmp_xyz))
-            CMD_RUN("{} {}.xyz --opt normal --ohess --gfn 2 --chrg {} --uhf {}  --molden > opt.log".format(
+            CMD_RUN("{} {}.xyz --opt normal --ohess --gfn 1 --chrg {} --uhf {}  --molden > opt.log".format(
                         config.xtb_bachend, _tmp_xyz, chrg, uhf))
             CMD_RUN("mv wbo wbo.opt")
             CMD_RUN("mv charges charges.opt")
@@ -374,11 +374,11 @@ class xtb_featurizer():
             # 这里加入--sp会造成错误
             CMD_RUN("mv wbo wbo.Vipea")
             CMD_RUN("mv charges charges.Vipea")
-            CMD_RUN("{} xtbopt.xyz --gfn 2 --chrg {} --uhf {} --vfukui > Vfukui.log".format(
-                    config.xtb_bachend, chrg, uhf))
+            #CMD_RUN("{} xtbopt.xyz --gfn 2 --chrg {} --uhf {} --vfukui > Vfukui.log".format(
+            #        config.xtb_bachend, chrg, uhf))
         
-            CMD_RUN("mv wbo wbo.Vfukui")
-            CMD_RUN("mv charges charges.Vfukui")
+            #CMD_RUN("mv wbo wbo.Vfukui")
+            #CMD_RUN("mv charges charges.Vfukui")
             CMD_RUN("{} xtbopt.xyz --gfn 1 --chrg {} --uhf {} --vomega > Vomega.log".format(
                     config.xtb_bachend, chrg, uhf))
             CMD_RUN("mv wbo wbo.Vomega")
