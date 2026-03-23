@@ -10,6 +10,12 @@ import pandas as pd
 import random
 import pytorch_lightning as pl
 
+
+
+"""
+这是一个旧脚本, 用来训练dl模型的
+"""
+
 def set_seed(seed: int) -> None:
     os.environ['PYTHONHASHSEED'] = str(seed)
     torch.manual_seed(seed)

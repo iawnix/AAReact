@@ -20,3 +20,32 @@ HOMO_LUMO_GAP_NUM_4 = 4
 XTB_BACHEND="/opt/xtb/6.7.1/bin/xtb"
 OBABEL_BACHEND="/usr/bin/obabel"
 XTB_WORK_SCRATCH="/home/iaw/DATA2/AAReact/DataSet/AtropicAcid_416/4_gen_feature/xtb_tmp"
+
+
+RF_PARAM_GRID = {
+  'n_estimators': [1, 3, 5, 10, 20, 30, 50, 70, 100, 120, 130, 140, 145, 150, 155, 160, 200], 
+  'max_depth': [1, 3, 5, 8, 10, 20, 30, 40, 50, None], 
+  'min_samples_split': [2, 5, 10, 30, 50],  
+  'min_samples_leaf': [4, 5, 10, 30, 50], 
+}
+
+XGB_PARAM_GRID = {
+  'n_estimators': [1, 3, 5, 7, 10, 15, 20, 25, 30, 50],  #1, 3, 5, 10, 20 , 30, 50, 70, 100, 120, 130, 140, 145, 150, 155, 160, 200, 太容易过拟合了
+  'max_depth': [1, 3, 5, 8, 10, 20], # , 30, 40, 50
+  "reg_alpha": [0.5, 1.0, 1.5, 2.0, 3.0, 5.0],
+  'reg_lambda': [0.5, 1.0, 1.5, 2.0, 3.0, 5.0],
+  'learning_rate': [0.01, 0.1],      
+  'min_child_weight': [5, 10],         
+  'subsample': [0.5, 0.6, 0.8],  
+  'colsample_bytree': [0.8, 0.9],
+}
+
+LGB_PARAM_GRID = {
+  'n_estimators': [1, 3, 5, 7, 10, 15, 20, 25, 30, 50],
+  'max_depth': [1, 5, 10, 20, 30, 40, 50],
+  'learning_rate': [0.01, 0.1, 0.2],      
+  'num_leaves': [31, 50, 100],  
+  'min_child_samples': [20, 50], 
+  'subsample': [0.8, 0.9, 1.0], 
+  'colsample_bytree': [0.8, 0.9, 1.0], 
+}

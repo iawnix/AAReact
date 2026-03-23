@@ -147,7 +147,7 @@ class dscribe_featurizer():
                     print("Warning[iaw]>: no metal atom found in catalyst mol! fp, {}".format(self.fp))
                     sys.exit(1)
                 elif len(temp_center_atom_idx) > 1:
-                    print("Warning[iaw]>: more than one metal atom found in catalyst mol, use first metal atom as center atoms!")
+                    #print("Warning[iaw]>: more than one metal atom found in catalyst mol, use first metal atom as center atoms!")
                     # 中心原子需要确定一下, 暂时取第一个
                     # 20260320更新, 如果存在Fe则先排除Fe, 然后再随机选择一个
                     self.center_atom_idx = [] 
