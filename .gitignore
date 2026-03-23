@@ -3,6 +3,7 @@ DataSet/
 src/model/__pycache__/
 src/tool/__pycache__/
 src/util/__pycache__/
+src/config/__pycache__/
 src/util/logs/
 train/test/
 test/iter_1/
