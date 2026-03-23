@@ -16,7 +16,7 @@ project_root = Path(__file__).parent.parent
 sys.path.append(str(project_root))
 
 from util.train_tools import norm_col_parms
-from util.featurizer import rdkit_featurizer, dscribe_featurizer
+from util.featurizer import rdkit_featurizer, dscribe_featurizer, xtb_featurizer
 from util.constants import XTB_BACHEND, OBABEL_BACHEND, XTB_WORK_SCRATCH
 from rich import print as rp
 from rich.status import Status
@@ -149,8 +149,8 @@ def _calc_xtb_feat(mol_type: str, sdf_fp: str, feat_label: List[str], warning: b
         , "workpath": XTB_WORK_SCRATCH
     })
 
-    xtb_featurizer = xtb_featurizer(sdf_fp = sdf_fp)
-    tmp_feat = xtb_featurizer.calc_xtb(xtb_config)
+    tmp_xtb_featurizer = xtb_featurizer(sdf_fp = sdf_fp)
+    tmp_feat = tmp_xtb_featurizer.calc_xtb(xtb_config)
     # tmp_feat: n_xtb, 
     n_tmp_feat = tmp_feat.shape[0]
     tmp_feat_name = {"XTB{}".format(j): j for j in range(n_tmp_feat)}
@@ -269,7 +269,7 @@ def Parm() -> Namespace:
     return args
 
 
-def main():
+def main() -> None:
     args = Parm()
     if args.task == "ee":
         with Status("running...", spinner="dots") as status:
