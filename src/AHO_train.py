@@ -109,7 +109,7 @@ def main() -> None:
             train_pred = save_model.predict(X_train)
             test_pred = save_model.predict(X_test)
             # metrics
-            with open(hyper_config.Hyper.params_save, "w+") as F:
+            with open(hyper_config.params_save, "w+") as F:
                 F.writelines("BestParams:\n")
                 for k, v in best_params.items():
                     F.writelines("{}: {}\n".format(k, v))

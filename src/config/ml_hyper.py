@@ -12,19 +12,22 @@ class hyper_params:
     seed: int
     test_size: float                    # 对于机器学习模型, 没有划分valid
     cv: int
-    
+
 @dataclass
 class ml_hyper_config:
     Model_type: str
     Hyper: hyper_params
+    params_save: str
 
 def init_config_from_hyper_toml(toml_fp: str) -> ml_hyper_config:
     with open(toml_fp, "rb") as F:
         ss = tomllib.load(F)
 
     model_type = ss.get("Model").get("name")
+    save_fp = ss.get("Model").get("params_save")
     hyper_config = from_dict(hyper_params, ss.get("Hyper"))
     return ml_hyper_config(
         Model_type = model_type, 
-        Hyper = hyper_config
+        Hyper = hyper_config, 
+        params_save = save_fp
     )
