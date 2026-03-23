@@ -1,0 +1,12 @@
+[Hyper]
+data_x = "/home/iaw/DATA2/AAReact/DataSet/AtropicAcid_416/4_gen_feature/rdkit_3_data_x.npy"
+data_y = "/home/iaw/DATA2/AAReact/DataSet/AtropicAcid_416/4_gen_feature/rdkit_3_data_y.npy"
+x_label = "/home/iaw/DATA2/AAReact/DataSet/AtropicAcid_416/4_gen_feature/rdkit_3_x_label.pkl"
+data_class = "/home/iaw/DATA2/AAReact/DataSet/AtropicAcid_416/4_gen_feature/rdkit_3_data_class.pkl"
+seed = 1
+test_size = 0.2
+cv = 5
+
+[Model]
+name = "xgb"
+params_save = "/home/iaw/DATA2/AAReact/train/ouput/hyper_log/xgb_rdkit_3_seed_0-1_test_0-2_cv_5_hyper.log"

@@ -11,8 +11,9 @@ class hyper_params:
     data_class: str
     seed: int
     test_size: float                    # 对于机器学习模型, 没有划分valid
-    cv: str
-
+    cv: int
+    
+@dataclass
 class ml_hyper_config:
     Model_type: str
     Hyper: hyper_params

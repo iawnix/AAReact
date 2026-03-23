@@ -26,9 +26,11 @@ rf_model_1_rdkit="/home/iaw/DATA2/AAReact/train/rf_model_seed_1_split_0-2_hyper1
 xgb_model_1_rdkit="/home/iaw/DATA2/AAReact/train/xgb_model_seed_1_split_0-2_hyper1_rdkit.pkl"
 xgb_model_2_rdkit="/home/iaw/DATA2/AAReact/train/xgb_model_seed_1_split_0-2_hyper2_rdkit.pkl"
 xgb_model_2_rdkit_soap="/home/iaw/DATA2/AAReact/train/xgb_model_seed_1_split_0-2_hyper2_rdkit_soap.pkl"
+xgb_model_2_rdkit_soap_xtb="/home/iaw/DATA2/AAReact/train/xgb_model_seed_1_split_0-2_hyper2_rdkit_soap_xtb.pkl"
 
 rdkit_3_feat_label="/home/iaw/DATA2/AAReact/DataSet/AtropicAcid_416/4_gen_feature/rdkit_3_x_label.pkl"
 rdkit_soap_3_feat_label="/home/iaw/DATA2/AAReact/DataSet/AtropicAcid_416/4_gen_feature/rdkit_soap_3_x_label.pkl"
+rdkit_soap_xtb_3_feat_label="/home/iaw/DATA2/AAReact/DataSet/AtropicAcid_416/4_gen_feature/rdkit_soap_xtb_3_x_label.pkl"
 
 rea_smi_1="[H]OC(=O)C(C1=C([H])C([H])=C([H])C([H])=C1[H])=C([H])C([H])([H])[H]"
 rea_smi_2="[H]OC(=O)C(=C([H])C1=C([H])C([H])=C([H])C([H])=C1[H])C1=C([H])C([H])=C([H])C([H])=C1[H]"
@@ -60,28 +62,28 @@ press_2=100
 
 echo "cat_1 and raw 4 rea and sol: $sol_smi_1"
 echo "Press: $press_1"
-model_predict $rea_sdf_1 $sol_sdf_1 $cat_sdf_71 $temp $press_1 "./iter_1/cat_71_rea1_${press_1}.npy" $xgb_model_2_rdkit_soap $rdkit_soap_3_feat_label
-model_predict $rea_sdf_2 $sol_sdf_1 $cat_sdf_71 $temp $press_1 "./iter_1/cat_71_rea2_${press_1}.npy" $xgb_model_2_rdkit_soap $rdkit_soap_3_feat_label
-model_predict $rea_sdf_3 $sol_sdf_1 $cat_sdf_71 $temp $press_1 "./iter_1/cat_71_rea3_${press_1}.npy" $xgb_model_2_rdkit_soap $rdkit_soap_3_feat_label
-model_predict $rea_sdf_4 $sol_sdf_1 $cat_sdf_71 $temp $press_1 "./iter_1/cat_71_rea4_${press_1}.npy" $xgb_model_2_rdkit_soap $rdkit_soap_3_feat_label
+model_predict $rea_sdf_1 $sol_sdf_1 $cat_sdf_71 $temp $press_1 "./iter_1/cat_71_rea1_${press_1}.npy" $xgb_model_2_rdkit_soap_xtb $rdkit_soap_xtb_3_feat_label
+model_predict $rea_sdf_2 $sol_sdf_1 $cat_sdf_71 $temp $press_1 "./iter_1/cat_71_rea2_${press_1}.npy" $xgb_model_2_rdkit_soap_xtb $rdkit_soap_xtb_3_feat_label
+model_predict $rea_sdf_3 $sol_sdf_1 $cat_sdf_71 $temp $press_1 "./iter_1/cat_71_rea3_${press_1}.npy" $xgb_model_2_rdkit_soap_xtb $rdkit_soap_xtb_3_feat_label
+model_predict $rea_sdf_4 $sol_sdf_1 $cat_sdf_71 $temp $press_1 "./iter_1/cat_71_rea4_${press_1}.npy" $xgb_model_2_rdkit_soap_xtb $rdkit_soap_xtb_3_feat_label
 echo "Press: $press_2"
-model_predict $rea_sdf_1 $sol_sdf_1 $cat_sdf_71 $temp $press_2 "./iter_1/cat_71_rea1_${press_2}.npy" $xgb_model_2_rdkit_soap $rdkit_soap_3_feat_label
-model_predict $rea_sdf_2 $sol_sdf_1 $cat_sdf_71 $temp $press_2 "./iter_1/cat_71_rea2_${press_2}.npy" $xgb_model_2_rdkit_soap $rdkit_soap_3_feat_label
-model_predict $rea_sdf_3 $sol_sdf_1 $cat_sdf_71 $temp $press_2 "./iter_1/cat_71_rea3_${press_2}.npy" $xgb_model_2_rdkit_soap $rdkit_soap_3_feat_label
-model_predict $rea_sdf_4 $sol_sdf_1 $cat_sdf_71 $temp $press_2 "./iter_1/cat_71_rea4_${press_2}.npy" $xgb_model_2_rdkit_soap $rdkit_soap_3_feat_label
+model_predict $rea_sdf_1 $sol_sdf_1 $cat_sdf_71 $temp $press_2 "./iter_1/cat_71_rea1_${press_2}.npy" $xgb_model_2_rdkit_soap_xtb $rdkit_soap_xtb_3_feat_label
+model_predict $rea_sdf_2 $sol_sdf_1 $cat_sdf_71 $temp $press_2 "./iter_1/cat_71_rea2_${press_2}.npy" $xgb_model_2_rdkit_soap_xtb $rdkit_soap_xtb_3_feat_label
+model_predict $rea_sdf_3 $sol_sdf_1 $cat_sdf_71 $temp $press_2 "./iter_1/cat_71_rea3_${press_2}.npy" $xgb_model_2_rdkit_soap_xtb $rdkit_soap_xtb_3_feat_label
+model_predict $rea_sdf_4 $sol_sdf_1 $cat_sdf_71 $temp $press_2 "./iter_1/cat_71_rea4_${press_2}.npy" $xgb_model_2_rdkit_soap_xtb $rdkit_soap_xtb_3_feat_label
 
 echo "cat_2 and raw 4 rea and sol: $sol_smi_2"
 echo "Press: $press_1"
-model_predict $rea_sdf_1 $sol_sdf_2 $cat_sdf_72 $temp $press_1 "./iter_1/cat_72_rea1_${press_1}.npy" $xgb_model_2_rdkit_soap $rdkit_soap_3_feat_label
-model_predict $rea_sdf_2 $sol_sdf_2 $cat_sdf_72 $temp $press_1 "./iter_1/cat_72_rea2_${press_1}.npy" $xgb_model_2_rdkit_soap $rdkit_soap_3_feat_label
-model_predict $rea_sdf_3 $sol_sdf_2 $cat_sdf_72 $temp $press_1 "./iter_1/cat_72_rea3_${press_1}.npy" $xgb_model_2_rdkit_soap $rdkit_soap_3_feat_label
-model_predict $rea_sdf_4 $sol_sdf_2 $cat_sdf_72 $temp $press_1 "./iter_1/cat_72_rea4_${press_1}.npy" $xgb_model_2_rdkit_soap $rdkit_soap_3_feat_label
+model_predict $rea_sdf_1 $sol_sdf_2 $cat_sdf_72 $temp $press_1 "./iter_1/cat_72_rea1_${press_1}.npy" $xgb_model_2_rdkit_soap_xtb $rdkit_soap_xtb_3_feat_label
+model_predict $rea_sdf_2 $sol_sdf_2 $cat_sdf_72 $temp $press_1 "./iter_1/cat_72_rea2_${press_1}.npy" $xgb_model_2_rdkit_soap_xtb $rdkit_soap_xtb_3_feat_label
+model_predict $rea_sdf_3 $sol_sdf_2 $cat_sdf_72 $temp $press_1 "./iter_1/cat_72_rea3_${press_1}.npy" $xgb_model_2_rdkit_soap_xtb $rdkit_soap_xtb_3_feat_label
+model_predict $rea_sdf_4 $sol_sdf_2 $cat_sdf_72 $temp $press_1 "./iter_1/cat_72_rea4_${press_1}.npy" $xgb_model_2_rdkit_soap_xtb $rdkit_soap_xtb_3_feat_label
 
 echo "cat_3 and raw 4 rea and sol: $sol_smi_2"
-model_predict $rea_sdf_1 $sol_sdf_2 $cat_sdf_73 $temp $press_1 "./iter_1/cat_73_rea1_${press_1}.npy" $xgb_model_2_rdkit_soap $rdkit_soap_3_feat_label
-model_predict $rea_sdf_2 $sol_sdf_2 $cat_sdf_73 $temp $press_1 "./iter_1/cat_73_rea2_${press_1}.npy" $xgb_model_2_rdkit_soap $rdkit_soap_3_feat_label
-model_predict $rea_sdf_3 $sol_sdf_2 $cat_sdf_73 $temp $press_1 "./iter_1/cat_73_rea3_${press_1}.npy" $xgb_model_2_rdkit_soap $rdkit_soap_3_feat_label
-model_predict $rea_sdf_4 $sol_sdf_2 $cat_sdf_73 $temp $press_1 "./iter_1/cat_73_rea4_${press_1}.npy" $xgb_model_2_rdkit_soap $rdkit_soap_3_feat_label
+model_predict $rea_sdf_1 $sol_sdf_2 $cat_sdf_73 $temp $press_1 "./iter_1/cat_73_rea1_${press_1}.npy" $xgb_model_2_rdkit_soap_xtb $rdkit_soap_xtb_3_feat_label
+model_predict $rea_sdf_2 $sol_sdf_2 $cat_sdf_73 $temp $press_1 "./iter_1/cat_73_rea2_${press_1}.npy" $xgb_model_2_rdkit_soap_xtb $rdkit_soap_xtb_3_feat_label
+model_predict $rea_sdf_3 $sol_sdf_2 $cat_sdf_73 $temp $press_1 "./iter_1/cat_73_rea3_${press_1}.npy" $xgb_model_2_rdkit_soap_xtb $rdkit_soap_xtb_3_feat_label
+model_predict $rea_sdf_4 $sol_sdf_2 $cat_sdf_73 $temp $press_1 "./iter_1/cat_73_rea4_${press_1}.npy" $xgb_model_2_rdkit_soap_xtb $rdkit_soap_xtb_3_feat_label
 
 echo "#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#"
 

@@ -5,8 +5,10 @@ project_root = Path(__file__).parent.parent
 sys.path.append(str(project_root))
 
 from util.RegressMetrics import r2_score, mse_score, mae_score, rmse_score
-from util.train_tools import build_model, search_parms, print_metric, split_data, load_data
-from AAReact.src.config.ml_train import init_config_from_train_toml, init_config_from_hyper_toml
+from util.train_tools import build_model, search_parms, split_data, load_data
+from config.ml_train import init_config_from_train_toml
+from config.ml_hyper import init_config_from_hyper_toml
+from tool.analysis import print_metric
 
 import argparse
 from argparse import Namespace
@@ -82,17 +84,17 @@ def main() -> None:
         with Status("Hyper model...", spinner = "pong") as status:
             # split data
             data_x, data_y, x_label, data_class = load_data(
-                hyper_config.Train.data_x, 
-                hyper_config.Train.data_y, 
-                hyper_config.Train.x_label, 
-                hyper_config.Train.data_class
+                hyper_config.Hyper.data_x, 
+                hyper_config.Hyper.data_y, 
+                hyper_config.Hyper.x_label, 
+                hyper_config.Hyper.data_class
             )
             #print("Debug[iaw]:> data_x.shape = {}, data_y.shape = {}, len(x_label) = {}, len(data_class) = {}".format(
             #    data_x.shape, data_y.shape, len(x_label), len(data_class)
             #))
             X_train, X_test, y_train, y_test, class_train, class_test = split_data(data_s = (data_x, data_y, data_class)
-                       , seed = hyper_config.Train.seed
-                       , test_size = hyper_config.Train.test_size)
+                       , seed = hyper_config.Hyper.seed
+                       , test_size = hyper_config.Hyper.test_size)
             best_params = search_parms(
                 model_name = hyper_config.Model_type, 
                 X_train = X_train, 
