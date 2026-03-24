@@ -20,6 +20,7 @@ class rf_params:
     min_samples_leaf: int
     min_samples_split: int
     n_estimators: int
+    ccp_alpha: float
 
 @dataclass
 class train_params:

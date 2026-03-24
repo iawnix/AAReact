@@ -9,6 +9,7 @@ model_save = "/home/iaw/DATA2/AAReact/train/output/pt/rf_model_seed_1_split_0-2_
 
 [Model]
 model_type = "rf"
+ccp_alpha =1e-05
 max_depth = 10
 min_samples_leaf = 4
 min_samples_split = 2
