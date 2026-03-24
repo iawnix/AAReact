@@ -9,4 +9,4 @@ cv = 5
 
 [Model]
 name = "xgb"
-params_save = "/home/iaw/DATA2/AAReact/train/ouput/hyper_log/xgb_rdkit_soap_xtb_3_seed_0-1_test_0-2_cv_5_hyper.log"
+params_save = "/home/iaw/DATA2/AAReact/train/output/hyper_log/xgb_rdkit_soap_xtb_3_seed_0-1_test_0-2_cv_5_hyper.log"

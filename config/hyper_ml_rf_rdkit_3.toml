@@ -9,4 +9,4 @@ cv = 5
 
 [Model]
 name = "rf"
-params_save = "/home/iaw/DATA2/AAReact/train/ouput/hyper_log/rf_rdkit_3_seed_0-1_test_0-2_cv_5_hyper.log"
+params_save = "/home/iaw/DATA2/AAReact/train/output/hyper_log/rf_rdkit_3_seed_0-1_test_0-2_cv_5_hyper.log"

@@ -13,4 +13,16 @@
     * `XTB_WORK_SCRATCH`: 指定XTB计算产生临时文件的路径, 该路径在xtb计算过程中会不断的被覆盖写
 
 
+# Train
+```
+AHO_train.py --task "train" \
+        --model_config "/home/iaw/DATA2/AAReact/config/train_ml_xgb.toml"
+```
+- more information, see `config/train_*.toml`
+# Hyper
+```
+AHO_train.py --task "hyper" \
+        --model_config "/home/iaw/DATA2/AAReact/config/train_ml_xgb.toml"
+```
 
+   

@@ -16,6 +16,8 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent
 sys.path.append(str(project_root))
 
+from sklearn.feature_selection import SelectKBest
+from sklearn.feature_selection import f_regression
 
 def load_raw_csv_data(data_fp: str, desc_type: str) -> Tuple[NDArray, NDArray, List[str], List[int]]:
     """
@@ -60,9 +62,7 @@ def load_raw_csv_data(data_fp: str, desc_type: str) -> Tuple[NDArray, NDArray, L
 
     return data_x, data_y, x_label, data_class
 
-
-
-def std_zero_filter(data_x: NDArray, x_label: list[str]) -> tuple[NDArray, list[str]]:
+def std_zero_filter(data_x: NDArray, x_label: List[str]) -> Tuple[NDArray, List[str]]:
     """
     删除数据中标准差为0的特征
     """
@@ -79,9 +79,10 @@ def std_zero_filter(data_x: NDArray, x_label: list[str]) -> tuple[NDArray, list[
     return data_x, x_label
 
 
-def pearson_corr_filter(data_x: NDArray, data_y: NDArray, x_label: list[str], threshold: float = 0.05) -> tuple[NDArray, list[str]]:
+def pearson_corr_filter(data_x: NDArray, data_y: NDArray, x_label: List[str], threshold: float = 0.05) -> Tuple[NDArray, List[str], List[int]]:
     """
-    相关性筛选, 会去除与预测值相关性小于threshold的特征, 返回筛选后的data_x和x_label
+    相关性筛选, 会去除与预测值相关性小于threshold的特征, 返回筛选后的data_x和x_label, 这个筛选在特征工程的时候, 应该只用于Train, 以防止特征泄漏
+    return: 特征筛选后的data_x, x_label以及选择特征的索引
     """
     
     pear_result = []
@@ -89,16 +90,18 @@ def pearson_corr_filter(data_x: NDArray, data_y: NDArray, x_label: list[str], th
     pear = np.corrcoef(np.hstack([data_x, data_y.reshape(-1, 1)]).T)
     pear_y = pear[:, -1]    # -1是EE
     del_low_pear_idxs = []
-
+    select_idx_s = []
     # 这里不删除TEMP和PRESSURE
     for i, i_txt in enumerate(x_label):
         if abs(pear_y[i]) < threshold:
             if i_txt in ["TEMP", "PRESSURE"]:
                 pear_result.append((i_txt, pear_y[i]))
+                select_idx_s.append(i)
             else:
                 del_low_pear_idxs.append(i)
         else:
             pear_result.append((i_txt, pear_y[i]))
+            select_idx_s.append(i)
     data_x = np.delete(data_x, del_low_pear_idxs, axis=1)
     x_label = [i for j, i in enumerate(x_label) if j not in del_low_pear_idxs]
     print("Infor[iaw]>: after del low pearson corr, data_x shape: {}, x_label shape: {}".format(data_x.shape, len(x_label)))
@@ -109,8 +112,23 @@ def pearson_corr_filter(data_x: NDArray, data_y: NDArray, x_label: list[str], th
         if com_list[i] != i_txt:
             print("Error[iaw]>: pear_result and x_label not match at index {}.".format(i))
 
-    return data_x, x_label    
+    return data_x, x_label, select_idx_s  
 
+def f_regression_filter(data_x: NDArray, data_y: NDArray, x_label: list[str], k: int = 256) -> Tuple[NDArray, List[str], List[int]]:
+    selector = SelectKBest(score_func = f_regression, k = k)
+    selector.fit(data_x, data_y)
+    select_idx_s = selector.get_support(indices=True)
+    select_idx_s = list(select_idx_s)
+    # 不删除温度和压强
+    TEMP_idx = x_label.index("TEMP")
+    PRESSURE_idx = x_label.index("PRESSURE")
+    if TEMP_idx not in select_idx_s:
+        select_idx_s.append(TEMP_idx)
+    if PRESSURE_idx not in select_idx_s:
+        select_idx_s.append(PRESSURE_idx)
+
+    select_idx_s = sorted(select_idx_s, reverse=False) # 从小到大
+    return data_x[:, select_idx_s], [x_label[i] for i in select_idx_s], select_idx_s
 
 def norm_col(x: NDArray) -> NDArray:
     """

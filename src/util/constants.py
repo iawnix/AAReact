@@ -23,10 +23,11 @@ XTB_WORK_SCRATCH="/home/iaw/DATA2/AAReact/DataSet/AtropicAcid_416/4_gen_feature/
 
 
 RF_PARAM_GRID = {
-  'n_estimators': [1, 3, 5, 10, 20, 30, 50, 70, 100, 120, 130, 140, 145, 150, 155, 160, 200], 
+  'n_estimators': [1, 3, 5, 10, 20, 30, 50, 70, 100, 120, 130, 140, 145, 150, 155, 160, 200, 300], 
   'max_depth': [1, 3, 5, 8, 10, 20, 30, 40, 50, None], 
   'min_samples_split': [2, 5, 10, 30, 50],  
   'min_samples_leaf': [4, 5, 10, 30, 50], 
+  "ccp_alpha": [0.00001, 0.001, 0.01, 0.05, 0.1, 0.2]
 }
 
 XGB_PARAM_GRID = {

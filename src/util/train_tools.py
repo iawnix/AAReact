@@ -111,7 +111,7 @@ def load_data(data_x: str, data_y: str, x_label: str, data_class: str) -> Tuple[
 
     return data_x, data_y, x_label, data_class
 
-def split_data(data_s: Tuple[NDArray, NDArray, List[str], List[int]]
+def split_data(data_s: Tuple[NDArray, NDArray, List[int]]
                , seed: int
                , test_size: float) -> Tuple[NDArray, NDArray, NDArray, NDArray, List[int], List[int]]:
     """
