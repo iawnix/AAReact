@@ -198,6 +198,7 @@ def init_features(  mol_s: Tuple[str, str, str]
                 sol_desc = sol_featurizer.calc_rdkit_descrip()
                 all_feat.append(sol_desc)
             if len(CAT_feat_label) != 0:
+                #print(CAT_feat_label, cat_smi)
                 cat_featurizer = rdkit_featurizer(cat_smi)
                 cat_featurizer.reset_rdkit_desc_generator(CAT_feat_label)
                 cat_desc = cat_featurizer.calc_rdkit_descrip()
@@ -284,6 +285,7 @@ def main() -> None:
 
             # featurizer
             inited_feat = init_feat_label(feat_label)
+            #print(inited_feat)
             all_feat = []
             first_sign = False
             for i, (feat_type, feat) in enumerate(inited_feat):
