@@ -1,0 +1,14 @@
+BestParams:
+colsample_bytree: 0.8
+learning_rate: 0.1
+max_depth: 10
+min_child_weight: 5
+n_estimators: 50
+reg_alpha: 0.5
+reg_lambda: 1.5
+subsample: 0.8
+Metric, TrainSet, TestSet
+R2, 0.9179, 0.8191
+MSE, 0.0218, 0.0435
+MAE, 0.0893, 0.1423
+RMSE, 0.1478, 0.2085

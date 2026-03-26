@@ -1,0 +1,11 @@
+BestParams:
+ccp_alpha: 1e-05
+max_depth: 20
+min_samples_leaf: 4
+min_samples_split: 2
+n_estimators: 30
+Metric, TrainSet, TestSet
+R2, 0.8563, 0.7240
+MSE, 0.0382, 0.0663
+MAE, 0.1254, 0.1892
+RMSE, 0.1955, 0.2576
