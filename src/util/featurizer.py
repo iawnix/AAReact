@@ -22,7 +22,7 @@ import sys
 from pathlib import Path
 project_root = Path(__file__).parent.parent
 sys.path.append(str(project_root))
-from util.constants import METAL_TYPE, ELEMENT_LIST, HOMO_LUMO_GAP_NUM_2, HOMO_LUMO_GAP_NUM_4
+from config.constants import METAL_TYPE, ELEMENT_LIST, HOMO_LUMO_GAP_NUM_2, HOMO_LUMO_GAP_NUM_4, SOAP_FIX_PARAMETER
 from tool.cli import CMD_RUN
 from tool.molden_xtb import molden_mol
 
@@ -421,5 +421,36 @@ class xtb_featurizer():
             os.chdir(self.root_path)
         return all_feat
 
+def soap_label_search(label_idx: int) -> Union[str, None]:
+    
+    # init label
+    label = []
+    for i in ELEMENT_LIST:
+        for j in ELEMENT_LIST:
+            for h in range(SOAP_FIX_PARAMETER["nmax"]):
+                for k in range(SOAP_FIX_PARAMETER["lmax"]):
+                    label.append("{}-{}-n_{}-l_{}".format(i, j, h, k))
+    
+    if label_idx >= (n_label:=len(label)):
+        print("Error[iaw]:> Check index[{}], out of label range (the num of label is {})!".format(label_idx, n_label))
+        out = None
+    else:
+        out = label[label_idx]
+    return out
+
+def xtb_label_search(label_idx: int) -> Union[str, None]:
+    
+    # init label
+    label = ["IP", "EA", "GEI"]
+    for i in range(HOMO_LUMO_GAP_NUM_4):
+        for j in range(HOMO_LUMO_GAP_NUM_4):
+            label.append("LH-{}_{}".format(i, j))
+            
+    if label_idx >= (n_label:=len(label)):
+        print("Error[iaw]:> Check index[{}], out of label range (the num of label is {})!".format(label_idx, n_label))
+        out = None
+    else:
+        out = label[label_idx]
+    return out
 
     

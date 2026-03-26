@@ -9,7 +9,7 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent
 sys.path.append(str(project_root))
 from util.RegressMetrics import r2_score
-from util.constants import RF_PARAM_GRID, XGB_PARAM_GRID, LGB_PARAM_GRID
+from config.constants import RF_PARAM_GRID, XGB_PARAM_GRID, LGB_PARAM_GRID
 
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from sklearn.model_selection import train_test_split, GridSearchCV

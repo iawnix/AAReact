@@ -8,7 +8,7 @@ from util.RegressMetrics import r2_score, mse_score, mae_score, rmse_score
 from util.train_tools import build_model, search_parms, split_data, load_data
 from config.ml_train import init_config_from_train_toml
 from config.ml_hyper import init_config_from_hyper_toml
-from tool.analysis import print_metric
+from util.RegressMetrics import print_metric
 
 import argparse
 from argparse import Namespace

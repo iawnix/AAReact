@@ -1,3 +1,5 @@
+import pickle
+
 import pandas as pd
 import numpy as np
 from numpy.typing import NDArray
@@ -61,6 +63,41 @@ def load_raw_csv_data(data_fp: str, desc_type: str) -> Tuple[NDArray, NDArray, L
     assert data_x.shape[-1] == len(x_label), "Error[iaw]>: data_x.shape[-1] != len(x_label)"
 
     return data_x, data_y, x_label, data_class
+
+def load_raw_csv_data_base_label(data_fp: str, x_label: List[str]) -> Tuple[NDArray, NDArray, List[str], List[int]]:
+    """
+    用于新增数据的加载, 此处会基于x_label_fp种的label进行过滤
+    """
+    # load
+    data = pd.read_csv(data_fp)
+    
+    col_n = data.columns.to_list()
+    ee_idx = col_n.index('EE')
+
+    # 开始分割数据
+    # split -> data_x, data_y, x_label, data_class
+    col_n = data.columns.to_list()
+    ee_idx = col_n.index('EE')
+    temp_idx = col_n.index('TEMP')
+    pressure_idx = col_n.index('PRESSURE')
+    class_idx = col_n.index('CLASS')
+    assert class_idx == len(col_n)-1, "Error[iaw]>: class_idx != len(col_n)-1"
+
+    # 不能拼接CLASS
+    data_x = np.concat([data.iloc[:, ee_idx+1:-1].values, data.iloc[:,[temp_idx, pressure_idx]].values], axis = 1)
+    data_y = data.iloc[:, ee_idx].values
+    x_label_out = data.iloc[:, ee_idx+1:-1].columns.to_list() + data.iloc[:,[temp_idx, pressure_idx]].columns.to_list()
+
+    # 这里需要根据x_label对data_x进行删减
+    select_x_label_idx_s = [x_label_out.index(label) for label in x_label]
+    # data_x: n, n_feat
+    data_x = data_x[:, select_x_label_idx_s]
+
+    data_class = data.iloc[:, class_idx].to_list()
+    assert data_x.shape[-1] == len(x_label), "Error[iaw]>: data_x.shape[-1] != len(x_label)"
+
+    return data_x, data_y, x_label, data_class
+
 
 def std_zero_filter(data_x: NDArray, x_label: List[str]) -> Tuple[NDArray, List[str]]:
     """

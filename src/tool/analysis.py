@@ -6,9 +6,6 @@ from matplotlib import pyplot as plt
 
 from typing import Any, List, Union, Tuple, Dict, Callable
 
-
-from rich.table import Table
-from rich import print as rp
 from rich.progress import track
 
 # 绘制模型对不同数据集划分的敏感性
@@ -17,7 +14,6 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent
 sys.path.append(str(project_root))
 from util.RegressMetrics import r2_score
-
 
 
 def get_desc_type_split_line(x_label: list[str]) -> dict[str, int]:
@@ -94,30 +90,6 @@ def draw_data_x_var_distribution(data_x: NDArray, x_label: list[str]):
     ax.set_xticks(type_split)
     ax.set_xticklabels([])
     plt.ylim([0, 0.4])
-
-def print_metric(name: List[str], data_s:List[Tuple[float, float, float]]) ->None:
-    """
-    用于输出评分指标的表格, 输入name和数据, 数据必须是一个包含(Train, Valid, Test)的列表
-    """
-    for i in data_s:
-        if len(i) != 3:
-            raise RuntimeError("Error[iaw]>: please must privide (Train, Valid, Test).")
-    table = Table(
-        title="[green bold]Metric[/green bold]",  
-        show_header=True,
-        header_style="bold yellow",  # 表头样式：加粗+蓝色
-        border_style="white",        # 表格边框颜色
-        title_justify="center",      # 标题居中
-        width=60                     # 表格宽度（可根据需要调整）
-    )
-
-    table.add_column("name", justify="center", style="white")
-    table.add_column("Train", justify="center", style="white")
-    table.add_column("Valid", justify="center", style="white")
-    table.add_column("Test", justify="center", style="white")
-    for metric_name, metric_data in zip(name, data_s):
-        table.add_row(metric_name, "{:.4f}".format(metric_data[0]), "{:.4f}".format(metric_data[1]), "{:.4f}".format(metric_data[2]))
-    rp(table)
 
 def draw_pred_result(y_true_s: Tuple[NDArray, NDArray], y_pred_s: Tuple[NDArray, NDArray], r2_s: Tuple[float, float], class_s: Tuple[List, List]) -> None:   
     """

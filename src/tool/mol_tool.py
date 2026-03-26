@@ -14,7 +14,7 @@ import sys
 from pathlib import Path
 project_root = Path(__file__).parent.parent
 sys.path.append(str(project_root))
-from util.constants import METAL_TYPE, COORD_TYPE
+from config.constants import METAL_TYPE, COORD_TYPE
 
 from copy import deepcopy
 

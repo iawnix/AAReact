@@ -16,7 +16,7 @@ project_root = Path(__file__).parent.parent
 sys.path.append(str(project_root))
 
 from util.featurizer import rdkit_featurizer, dscribe_featurizer, xtb_featurizer
-from util.constants import XTB_BACHEND, OBABEL_BACHEND, XTB_WORK_SCRATCH
+from config.constants import XTB_BACHEND, OBABEL_BACHEND, XTB_WORK_SCRATCH
 from rich import print as rp
 from rich.status import Status
 

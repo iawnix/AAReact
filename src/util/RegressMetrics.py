@@ -1,7 +1,8 @@
-from typing import Union, List
+from typing import Union, List, Tuple
 from numpy.typing import NDArray
 import numpy as np
 from rich import print as rprint
+from rich.table import Table
 
 def r2_score(y_pred: Union[List, NDArray], y_true: Union[List, NDArray]) -> np.float64:
 
@@ -69,6 +70,32 @@ def rmse_score(y_pred: Union[List, NDArray], y_true: Union[List, NDArray]) -> np
     assert y_pred.shape[0] == _dim1_pred and y_true.shape[0] == _dim1_true, "Error[iaw]>: This score if for single regression task."
 
     return np.sqrt(np.mean((y_true - y_pred) ** 2))
+
+def print_metric(name: List[str], data_s: List[Tuple[float, float, float]]) ->None:
+    from rich import print as rp
+    """
+    用于输出评分指标的表格, 输入name和数据, 数据必须是一个包含(Train, Valid, Test)的列表
+    """
+    for i in data_s:
+        if len(i) != 3:
+            raise RuntimeError("Error[iaw]>: please must privide (Train, Valid, Test).")
+    table = Table(
+        title="[green bold]Metric[/green bold]",  
+        show_header=True,
+        header_style="bold yellow",  # 表头样式：加粗+蓝色
+        border_style="white",        # 表格边框颜色
+        title_justify="center",      # 标题居中
+        width=60                     # 表格宽度（可根据需要调整）
+    )
+
+    table.add_column("name", justify="center", style="white")
+    table.add_column("Train", justify="center", style="white")
+    table.add_column("Valid", justify="center", style="white")
+    table.add_column("Test", justify="center", style="white")
+    for metric_name, metric_data in zip(name, data_s):
+        table.add_row(metric_name, "{:.4f}".format(metric_data[0]), "{:.4f}".format(metric_data[1]), "{:.4f}".format(metric_data[2]))
+    rp(table)
+
 
 if __name__ == "__main__":
 

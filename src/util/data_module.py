@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 project_root = Path(__file__).parent.parent
 sys.path.append(str(project_root))
-from util.constants import DF_COLUMNS
+from config.constants import DF_COLUMNS
 from typing import Any, Dict, Callable, Union, List, Tuple
 from types import NoneType
 import numpy as np
