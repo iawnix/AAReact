@@ -27,11 +27,11 @@ declare -A model_s=(
 	["rf_rdkit"]="/home/iaw/DATA2/AAReact/train/output/pt/rf_model_seed_1_split_0-2_hyper2_rdkit.pkl"
 	["rf_rdkit_soap"]="/home/iaw/DATA2/AAReact/train/output/pt/rf_model_seed_1_split_0-2_hyper2_rdkit_soap.pkl"
 	["rf_rdkit_soap_xtb"]="/home/iaw/DATA2/AAReact/train/output/pt/rf_model_seed_1_split_0-2_hyper2_rdkit_soap_xtb.pkl"
-	["rf_soap_xtb"]="/home/iaw/DATA2/AAReact/train/pt/rf_model_seed_1_split_0-2_hyper2_rdkit.pkl"
+	["rf_soap_xtb"]="/home/iaw/DATA2/AAReact/train/output/pt/rf_model_seed_1_split_0-2_hyper2_soap_xtb.pkl"
 	["xgb_rdkit"]="/home/iaw/DATA2/AAReact/train/output/pt/xgb_model_seed_1_split_0-2_hyper2_rdkit.pkl"
 	["xgb_rdkit_soap"]="/home/iaw/DATA2/AAReact/train/output/pt/xgb_model_seed_1_split_0-2_hyper2_rdkit_soap.pkl"
 	["xgb_rdkit_soap_xtb"]="/home/iaw/DATA2/AAReact/train/output/pt/xgb_model_seed_1_split_0-2_hyper2_rdkit_soap_xtb.pkl"
-	["xgb_soap_xtb"]="/home/iaw/DATA2/AAReact/train/pt/xgb_model_seed_1_split_0-2_hyper2_rdkit.pkl"
+	["xgb_soap_xtb"]="/home/iaw/DATA2/AAReact/train/output/pt/xgb_model_seed_1_split_0-2_hyper2_soap_xtb.pkl"
 
 )
 
