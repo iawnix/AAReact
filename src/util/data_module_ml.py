@@ -21,7 +21,7 @@ sys.path.append(str(project_root))
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import f_regression
 
-def load_raw_csv_data(data_fp: str, desc_type: str) -> Tuple[NDArray, NDArray, List[str], List[int]]:
+def load_raw_csv_data(data_fp: str, desc_type: str) -> Tuple[NDArray, NDArray, List[str], List[int], List[str]]:
     """
     用于加载csv数据集, 并删除nan值
     """
@@ -54,17 +54,19 @@ def load_raw_csv_data(data_fp: str, desc_type: str) -> Tuple[NDArray, NDArray, L
     temp_idx = col_n.index('TEMP')
     pressure_idx = col_n.index('PRESSURE')
     class_idx = col_n.index('CLASS')
+    name_idx = col_n.index("DATA_ID")
     assert class_idx == len(col_n)-1, "Error[iaw]>: class_idx != len(col_n)-1"
     # 不能拼接CLASS
     data_x = np.concat([data.iloc[:, ee_idx+1:-1].values, data.iloc[:,[temp_idx, pressure_idx]].values], axis = 1)
     data_y = data.iloc[:, ee_idx].values
     x_label = data.iloc[:, ee_idx+1:-1].columns.to_list() + data.iloc[:,[temp_idx, pressure_idx]].columns.to_list()
     data_class = data.iloc[:, class_idx].to_list()
+    data_name = data.iloc[:, name_idx].to_list()
     assert data_x.shape[-1] == len(x_label), "Error[iaw]>: data_x.shape[-1] != len(x_label)"
 
-    return data_x, data_y, x_label, data_class
+    return data_x, data_y, x_label, data_class, data_name
 
-def load_raw_csv_data_base_label(data_fp: str, x_label: List[str]) -> Tuple[NDArray, NDArray, List[str], List[int]]:
+def load_raw_csv_data_base_label(data_fp: str, x_label: List[str]) -> Tuple[NDArray, NDArray, List[str], List[int], List[str]]:
     """
     用于新增数据的加载, 此处会基于x_label_fp种的label进行过滤
     """
@@ -81,6 +83,7 @@ def load_raw_csv_data_base_label(data_fp: str, x_label: List[str]) -> Tuple[NDAr
     temp_idx = col_n.index('TEMP')
     pressure_idx = col_n.index('PRESSURE')
     class_idx = col_n.index('CLASS')
+    name_idx = col_n.index("DATA_ID")
     assert class_idx == len(col_n)-1, "Error[iaw]>: class_idx != len(col_n)-1"
 
     # 不能拼接CLASS
@@ -92,11 +95,11 @@ def load_raw_csv_data_base_label(data_fp: str, x_label: List[str]) -> Tuple[NDAr
     select_x_label_idx_s = [x_label_out.index(label) for label in x_label]
     # data_x: n, n_feat
     data_x = data_x[:, select_x_label_idx_s]
-
     data_class = data.iloc[:, class_idx].to_list()
+    data_name = data.iloc[:, name_idx].to_list()
     assert data_x.shape[-1] == len(x_label), "Error[iaw]>: data_x.shape[-1] != len(x_label)"
 
-    return data_x, data_y, x_label, data_class
+    return data_x, data_y, x_label, data_class, data_name
 
 
 def std_zero_filter(data_x: NDArray, x_label: List[str]) -> Tuple[NDArray, List[str]]:

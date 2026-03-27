@@ -98,7 +98,7 @@ def eval_dataset_split(seed_s: List[int], test_size_s: List[int], parms: Dict, m
 
     return train_score_mean_s, train_score_std_s, test_score_mean_s, test_score_std_s
 
-def load_data(data_x: str, data_y: str, x_label: str, data_class: str) -> Tuple[NDArray, NDArray, List[str], List[int]]:
+def load_data(data_x: str, data_y: str, x_label: str, data_class: str, data_name: Union[str, None] = None) -> Union[Tuple[NDArray, NDArray, List[str], List[int]], Tuple[NDArray, NDArray, List[str], List[int], List[str]]]:
     """
     加载数据
     """
@@ -109,19 +109,40 @@ def load_data(data_x: str, data_y: str, x_label: str, data_class: str) -> Tuple[
     with open("{}".format(data_class), "rb") as f:
         data_class = pickle.load(f)
 
-    return data_x, data_y, x_label, data_class
+    if data_name == None:
+        return data_x, data_y, x_label, data_class
+    else:
+        with open(data_name, "rb") as f:
+            data_name = pickle.load(f)
+        return data_x, data_y, x_label, data_class, data_name
 
 def split_data(data_s: Tuple[NDArray, NDArray, List[int]]
                , seed: int
-               , test_size: float) -> Tuple[NDArray, NDArray, NDArray, NDArray, List[int], List[int]]:
+               , test_size: float
+               , data_name: Union[List[str], None] = None) -> Union[Tuple[NDArray, NDArray, NDArray, NDArray, List[int], List[int]], Tuple[NDArray, NDArray, NDArray, NDArray, List[int], List[int], List[str], List[str]]]:
     """
     划分训练测试数据
+    20260327引入参数data_name, 并适配旧代码
     """
-    X_train, X_test, y_train, y_test,  class_train, class_test = train_test_split(
-        data_s[0],        
-        data_s[1],
-        data_s[2],
-        test_size=test_size,
-        random_state=seed, 
-    )
-    return X_train, X_test, y_train, y_test, class_train, class_test
+    if data_name == None:
+        X_train, X_test, y_train, y_test,  class_train, class_test = train_test_split(
+            data_s[0],        
+            data_s[1],
+            data_s[2],
+            test_size=test_size,
+            random_state=seed, 
+        )
+        return X_train, X_test, y_train, y_test, class_train, class_test
+    
+    else:
+        X_train, X_test, y_train, y_test,  class_train, class_test, name_train, name_test = train_test_split(
+            data_s[0],        
+            data_s[1],
+            data_s[2],
+            data_name,
+            test_size=test_size,
+            random_state=seed, 
+        )
+        return X_train, X_test, y_train, y_test, class_train, class_test, name_train, name_test
+
+    
