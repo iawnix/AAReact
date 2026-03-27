@@ -28,7 +28,7 @@ def build_model(model_name: str, seed: int) -> Union[RandomForestRegressor, XGBR
     elif model_name == "xgb":
         return XGBRegressor(random_state=seed)
     elif model_name == "lgb":
-        return LGBMRegressor(random_state=seed)
+        return LGBMRegressor(random_state=seed, verbose=-1, silent=True)
     else:
         raise RuntimeError("Error[iaw]>: Unsupported model, {}".format(model_name))
 

@@ -18,6 +18,8 @@ from joblib import dump
 from rich.status import Status
 from rich import print as rp
 from dataclasses import asdict
+import warnings
+warnings.filterwarnings("ignore")
 
 def Parm() -> Namespace:
     """

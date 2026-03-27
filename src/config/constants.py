@@ -43,9 +43,11 @@ XGB_PARAM_GRID = {
 
 LGB_PARAM_GRID = {
   'n_estimators': [1, 3, 5, 7, 10, 15, 20, 25, 30, 50],
-  'max_depth': [1, 5, 10, 20, 30, 40, 50],
-  'learning_rate': [0.01, 0.1, 0.2],      
-  'num_leaves': [31, 50, 100],  
+  'max_depth': [1, 3, 5, 8, 10, 20],
+  'learning_rate': [0.01, 0.1, 0.2],    
+  "reg_alpha": [0.5, 1.0, 1.5, 2.0, 3.0, 5.0],
+  'reg_lambda': [0.5, 1.0, 1.5, 2.0, 3.0, 5.0],
+  'num_leaves': [31, 40, 45, 50],  
   'min_child_samples': [20, 50], 
   'subsample': [0.8, 0.9, 1.0], 
   'colsample_bytree': [0.8, 0.9, 1.0], 
