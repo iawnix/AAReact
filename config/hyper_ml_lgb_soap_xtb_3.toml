@@ -1,8 +1,8 @@
 [Hyper]
-data_x = "/home/iaw/DATA2/AAReact/DataSet/AtropicAcid_416/4_gen_feature/soap_xtb_3_data_x.npy"
-data_y = "/home/iaw/DATA2/AAReact/DataSet/AtropicAcid_416/4_gen_feature/soap_xtb_3_data_y.npy"
-x_label = "/home/iaw/DATA2/AAReact/DataSet/AtropicAcid_416/4_gen_feature/soap_xtb_3_x_label.pkl"
-data_class = "/home/iaw/DATA2/AAReact/DataSet/AtropicAcid_416/4_gen_feature/soap_xtb_3_data_class.pkl"
+data_x = "/home/iaw/DATA2/AAReact/DataSet/AtropicAcid_424/data_for_train/soap_xtb_3_data_x.npy"
+data_y = "/home/iaw/DATA2/AAReact/DataSet/AtropicAcid_424/data_for_train/soap_xtb_3_data_y.npy"
+x_label = "/home/iaw/DATA2/AAReact/DataSet/AtropicAcid_424/data_for_train/soap_xtb_3_x_label.pkl"
+data_class = "/home/iaw/DATA2/AAReact/DataSet/AtropicAcid_424/data_for_train/soap_xtb_3_data_class.pkl"
 seed = 1
 test_size = 0.2
 cv = 5
