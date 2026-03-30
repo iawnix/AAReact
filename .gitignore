@@ -10,4 +10,6 @@ test/iter_1/
 train/eval_ml_model_result.ipynb
 train/hyper_ml_model.ipynb
 train/ouput/
+config/.train1/
+
 README.old
