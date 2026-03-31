@@ -4,6 +4,71 @@ import numpy as np
 from rich import print as rprint
 from rich.table import Table
 
+def r_score(y_pred: Union[List, NDArray], y_true: Union[List, NDArray]) -> np.float64:
+    """
+    pearson correlation coefficient
+    """
+    if type(y_pred) == list:
+        y_pred = np.array(y_pred)
+    if type(y_true) == list:
+        y_true = np.array(y_true)
+
+    _dim1_true = y_true.shape[0]
+    _dim1_pred = y_pred.shape[0]
+    y_pred = y_pred.flatten()
+    y_true = y_true.flatten()
+    assert y_pred.shape[0] == _dim1_pred and y_true.shape[0] == _dim1_true, "Error[iaw]>: This score if for single regression task."
+    
+    # 均值计算
+    mean_true = np.mean(y_true)
+    mean_pred = np.mean(y_pred)
+
+    # 协方差
+    numerator = np.sum((y_true - mean_true) * (y_pred - mean_pred))
+    
+    # 标准差
+    denominator = np.sqrt(np.sum((y_true - mean_true) ** 2)) * np.sqrt(np.sum((y_pred - mean_pred) ** 2))
+    
+    # calc
+    if denominator == 0:
+        return np.float64(0.0) 
+    
+    r = numerator / denominator
+    return np.float64(r)
+
+def spearmanr_score(y_pred: Union[List, NDArray], y_true: Union[List, NDArray]) -> np.float64:
+    """
+    spearmanr correlation coefficient
+    """
+
+    if type(y_pred) == list:
+        y_pred = np.array(y_pred)
+    if type(y_true) == list:
+        y_true = np.array(y_true)
+
+    _dim1_true = y_true.shape[0]
+    _dim1_pred = y_pred.shape[0]
+    y_pred = y_pred.flatten()
+    y_true = y_true.flatten()
+    assert y_pred.shape[0] == _dim1_pred and y_true.shape[0] == _dim1_true, "Error[iaw]>: This score if for single regression task."
+
+    # 计算秩
+    rank_true = np.argsort(np.argsort(y_true))
+    rank_pred = np.argsort(np.argsort(y_pred))
+
+    # 对秩做 Pearson
+    mean_t = np.mean(rank_true)
+    mean_p = np.mean(rank_pred)
+
+    numerator = np.sum((rank_true - mean_t) * (rank_pred - mean_p))
+    denominator = np.sqrt(np.sum((rank_true - mean_t)**2)) * np.sqrt(np.sum((rank_pred - mean_p)**2))
+
+    if denominator == 0:
+        return np.float64(0.0)
+
+    rho = numerator / denominator
+    return np.float64(rho)
+
 def r2_score(y_pred: Union[List, NDArray], y_true: Union[List, NDArray]) -> np.float64:
 
     if type(y_pred) == list:
