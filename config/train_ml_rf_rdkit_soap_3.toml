@@ -1,8 +1,8 @@
 [Train]
-data_x = "/home/iaw/DATA2/AAReact/DataSet/AtropicAcid_416/4_gen_feature/rdkit_soap_3_data_x.npy"
-data_y = "/home/iaw/DATA2/AAReact/DataSet/AtropicAcid_416/4_gen_feature/rdkit_soap_3_data_y.npy"
-x_label = "/home/iaw/DATA2/AAReact/DataSet/AtropicAcid_416/4_gen_feature/rdkit_soap_3_x_label.pkl"
-data_class = "/home/iaw/DATA2/AAReact/DataSet/AtropicAcid_416/4_gen_feature/rdkit_soap_3_data_class.pkl"
+data_x = "/home/iaw/DATA2/AAReact/DataSet/AtropicAcid_424/data_for_train/rdkit_soap_3_data_x.npy"
+data_y = "/home/iaw/DATA2/AAReact/DataSet/AtropicAcid_424/data_for_train/rdkit_soap_3_data_y.npy"
+x_label = "/home/iaw/DATA2/AAReact/DataSet/AtropicAcid_424/data_for_train/rdkit_soap_3_x_label.pkl"
+data_class = "/home/iaw/DATA2/AAReact/DataSet/AtropicAcid_424/data_for_train/rdkit_soap_3_data_class.pkl"
 seed = 1
 test_size = 0.2
 model_save = "/home/iaw/DATA2/AAReact/train/output/pt/rf_model_seed_1_split_0-2_hyper2_rdkit_soap.pkl"
@@ -13,4 +13,4 @@ ccp_alpha = 1e-05
 max_depth = 20
 min_samples_leaf = 4
 min_samples_split = 2
-n_estimators = 30
+n_estimators = 130
