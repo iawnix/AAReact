@@ -15,6 +15,18 @@ class xgb_params:
     subsample: float
 
 @dataclass
+class lgb_params:
+    colsample_bytree: float
+    learning_rate: float
+    max_depth: int
+    min_child_samples: int
+    n_estimators: int
+    num_leaves: int
+    reg_alpha: float
+    reg_lambda: float
+    subsample: float
+
+@dataclass
 class rf_params:
     max_depth: int
     min_samples_leaf: int
@@ -41,7 +53,8 @@ class ml_trian_config:
 
 MODEL_CONFIG_MAP = {
     "rf": rf_params, 
-    "xgb": xgb_params
+    "xgb": xgb_params,
+    "lgb": lgb_params
 }
 
 def init_config_from_train_toml(toml_fp: str) -> ml_trian_config:

@@ -4,7 +4,7 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent
 sys.path.append(str(project_root))
 
-from util.RegressMetrics import r2_score, mse_score, mae_score, rmse_score
+from util.RegressMetrics import r2_score, mse_score, mae_score, rmse_score, r_score, spearmanr_score
 from util.train_tools import build_model, search_parms, split_data, load_data
 from config.ml_train import init_config_from_train_toml
 from config.ml_hyper import init_config_from_hyper_toml
@@ -68,13 +68,23 @@ def main() -> None:
         test_pred = model.predict(X_test)
         train_r2 = r2_score(y_pred=train_pred, y_true=y_train)
         test_r2 = r2_score(y_pred=test_pred, y_true=y_test)
+        train_r = r_score(y_pred=train_pred, y_true=y_train)
+        test_r = r_score(y_pred=test_pred, y_true=y_test)
+        train_spearmanr = spearmanr_score(y_pred=train_pred, y_true=y_train)
+        test_spearmanr = spearmanr_score(y_pred=test_pred, y_true=y_test)
         train_mse = mse_score(y_pred=train_pred, y_true=y_train)
         test_mse = mse_score(y_pred=test_pred, y_true=y_test)
         train_mae = mae_score(y_pred=train_pred, y_true=y_train)
         test_mae = mae_score(y_pred=test_pred, y_true=y_test)
         train_rmse = rmse_score(y_pred=train_pred, y_true=y_train)
         test_rmse = rmse_score(y_pred=test_pred, y_true=y_test)
-        print_metric(["R2", "MSE", "MAE", "RMSE"], [(train_r2, 0, test_r2), (train_mse, 0, test_mse), (train_mae, 0, test_mae), (train_rmse, 0, test_rmse)])
+        print_metric(["R2", "R", "Spearmanr", "MSE", "MAE", "RMSE"]
+                     , [  (train_r2, 0, test_r2)
+                        , (train_r, 0, test_r)
+                        , (train_spearmanr, 0, test_spearmanr)
+                        , (train_mse, 0, test_mse)
+                        , (train_mae, 0, test_mae)
+                        , (train_rmse, 0, test_rmse)])
 
         # save 
         rp("Info\\[iaw]:> The model will be saved as `{}`".format(trian_config.Train.model_save))
