@@ -19,7 +19,7 @@ HOMO_LUMO_GAP_NUM_4 = 4
 
 XTB_BACHEND="/opt/xtb/6.7.1/bin/xtb"
 OBABEL_BACHEND="/usr/bin/obabel"
-XTB_WORK_SCRATCH="/home/iaw/DATA2/AAReact/DataSet/AtropicAcid_416/4_gen_feature/xtb_tmp"
+XTB_WORK_SCRATCH="/home/iaw/DATA2/AAReact/DataSet/.xtb_tmp"
 
 
 RF_PARAM_GRID = {
