@@ -21,9 +21,9 @@ sys.path.append(str(project_root))
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import f_regression
 
-def load_raw_csv_data(data_fp: str, desc_type: str) -> Tuple[NDArray, NDArray, List[str], List[int], List[str]]:
+def load_raw_feat_csv(data_fp: str, desc_type: str, X_LABEL: Union[List[str], False] = False) -> Tuple[NDArray, NDArray, List[str], List[int], List[str], List[int]]:
     """
-    用于加载csv数据集, 并删除nan值
+    用于加载csv数据集, 并删除nan值, 这个函数会依赖于RAW_CSV_COLUMNS进行定位
     """
     # load
     data = pd.read_csv(data_fp)
@@ -36,71 +36,52 @@ def load_raw_csv_data(data_fp: str, desc_type: str) -> Tuple[NDArray, NDArray, L
     col_n = data.columns.to_list()
     ee_idx = col_n.index('EE')
 
-    del_n = []
-    # https://github.com/rdkit/rdkit/issues/1527
-    if desc_type == "rdkit_desc":
-        del_n.append("CAT_Ipc")
-    for i_n in col_n[ee_idx+1:-1]:
-        if np.isinf(data.loc[:, i_n].to_numpy()).any(axis = 0):
-            del_n.append(i_n)
-    for i_n in del_n:
-        del data[i_n]
-    print("Infor[iaw]>: after del inf, data set shape: {}".format(data.shape))
+    if X_LABEL == False:
+        del_n = []
+        # https://github.com/rdkit/rdkit/issues/1527
+        if desc_type == "rdkit_desc":
+            del_n.append("CAT_Ipc")
+        for i_n in col_n[ee_idx+1:-1]:
+            if np.isinf(data.loc[:, i_n].to_numpy()).any(axis = 0):
+                del_n.append(i_n)
+        for i_n in del_n:
+            del data[i_n]
+        print("Infor[iaw]>: after del inf, data set shape: {}".format(data.shape))
 
     # 开始分割数据
-    # split -> data_x, data_y, x_label, data_class
+    # split -> data_x, data_y, x_label, data_class, data_name, data_batch
     col_n = data.columns.to_list()
     ee_idx = col_n.index('EE')
-    temp_idx = col_n.index('TEMP')
+    batch_idx = col_n.index('EE')
+    temp_idx = col_n.index('BATCH')
     pressure_idx = col_n.index('PRESSURE')
     class_idx = col_n.index('CLASS')
     name_idx = col_n.index("DATA_ID")
-    assert class_idx == len(col_n)-1, "Error[iaw]>: class_idx != len(col_n)-1"
-    # 不能拼接CLASS
-    data_x = np.concat([data.iloc[:, ee_idx+1:-1].values, data.iloc[:,[temp_idx, pressure_idx]].values], axis = 1)
-    data_y = data.iloc[:, ee_idx].values
-    x_label = data.iloc[:, ee_idx+1:-1].columns.to_list() + data.iloc[:,[temp_idx, pressure_idx]].columns.to_list()
-    data_class = data.iloc[:, class_idx].to_list()
-    data_name = data.iloc[:, name_idx].to_list()
-    assert data_x.shape[-1] == len(x_label), "Error[iaw]>: data_x.shape[-1] != len(x_label)"
-
-    return data_x, data_y, x_label, data_class, data_name
-
-def load_raw_csv_data_base_label(data_fp: str, x_label: List[str]) -> Tuple[NDArray, NDArray, List[str], List[int], List[str]]:
-    """
-    用于新增数据的加载, 此处会基于x_label_fp种的label进行过滤
-    """
-    # load
-    data = pd.read_csv(data_fp)
-    
-    col_n = data.columns.to_list()
-    ee_idx = col_n.index('EE')
-
-    # 开始分割数据
-    # split -> data_x, data_y, x_label, data_class
-    col_n = data.columns.to_list()
-    ee_idx = col_n.index('EE')
-    temp_idx = col_n.index('TEMP')
-    pressure_idx = col_n.index('PRESSURE')
-    class_idx = col_n.index('CLASS')
-    name_idx = col_n.index("DATA_ID")
-    assert class_idx == len(col_n)-1, "Error[iaw]>: class_idx != len(col_n)-1"
+    # 判断, class位于raw_feat_csv的最后一列
+    if class_idx != len(col_n)-1:
+        print("Error[iaw]>: class_idx != len(col_n)-1")
 
     # 不能拼接CLASS
-    data_x = np.concat([data.iloc[:, ee_idx+1:-1].values, data.iloc[:,[temp_idx, pressure_idx]].values], axis = 1)
+    data_x = np.concat([data.iloc[:, batch_idx+1:-1].values, data.iloc[:,[temp_idx, pressure_idx]].values], axis = 1)
     data_y = data.iloc[:, ee_idx].values
-    x_label_out = data.iloc[:, ee_idx+1:-1].columns.to_list() + data.iloc[:,[temp_idx, pressure_idx]].columns.to_list()
 
-    # 这里需要根据x_label对data_x进行删减
-    select_x_label_idx_s = [x_label_out.index(label) for label in x_label]
-    # data_x: n, n_feat
-    data_x = data_x[:, select_x_label_idx_s]
+    x_label_var = data.iloc[:, batch_idx+1:-1].columns.to_list() + data.iloc[:,[temp_idx, pressure_idx]].columns.to_list()
+    if X_LABEL != False:
+        select_x_label_idx_s = [x_label_var.index(label) for label in X_LABEL]
+        x_label = X_LABEL
+        data_x = data_x[:, select_x_label_idx_s]
+    else:
+        x_label = x_label_var
+
     data_class = data.iloc[:, class_idx].to_list()
     data_name = data.iloc[:, name_idx].to_list()
-    assert data_x.shape[-1] == len(x_label), "Error[iaw]>: data_x.shape[-1] != len(x_label)"
+    data_batch = data.iloc[:, batch_idx].to_list()
 
-    return data_x, data_y, x_label, data_class, data_name
+    # 确保形状正确
+    if  data_x.shape[-1] != len(x_label):
+        print("Error[iaw]>: data_x.shape[-1] != len(x_label)")
 
+    return data_x, data_y, x_label, data_class, data_name, data_batch
 
 def std_zero_filter(data_x: NDArray, x_label: List[str]) -> Tuple[NDArray, List[str]]:
     """

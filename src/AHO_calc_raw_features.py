@@ -69,9 +69,9 @@ def calc_features(dat: pd.DataFrame, desc_type: str, out_fp: str) -> None:
         # calc feat
         if desc_type == "xtb":
             i_feat, i_feat_name, cache = calc_xtb_features(i_sdf_s, i_name_s, cache, first)
-        elif desc_type == "rdkit":
+        elif desc_type == "rdkit_desc":
             i_feat, i_feat_name, cache = calc_rdkit_desc_features(i_smi_s, i_name_s, cache, first)
-        elif desc_type == "morgan":
+        elif desc_type == "rdkit_morgan":
             i_feat, i_feat_name, cache = calc_rdkit_morgan_features(i_smi_s, i_name_s, cache, first)
         elif desc_type == "soap":
             i_feat, i_feat_name, cache = calc_soap_features(i_sdf_s, i_name_s, cache, first)
@@ -86,8 +86,9 @@ def calc_features(dat: pd.DataFrame, desc_type: str, out_fp: str) -> None:
     
     if features_name is None:
         print("Error[iaw]:> Can not gen feature names!")
-        
+
     # merge all data's feat
+    #print("features_data: {}, features_name: {}".format(len(features_data), len(features_name)))
     dat = pd.concat([dat, pd.DataFrame(features_data, columns=features_name), pd.DataFrame({"CLASS": features_class})], axis=1)
     dat.to_csv(out_fp, index = False)
 
@@ -129,7 +130,7 @@ def calc_xtb_features(sdf_s: Tuple[str, str, str]
         if first:
             n_xtb = out_feat[0].shape[-1]
             for j in range(n_xtb):
-                features_name.append("{}_XTB{}".format(i_name[:-len("_NAME")], j))
+                features_name.append("{}_XTB{}".format(i_name[:3], j))
 
     out_feat = np.array(out_feat).flatten()
     return out_feat, features_name, cache
@@ -139,6 +140,7 @@ def calc_rdkit_desc_features(smi_s: Tuple[str, str, str]
                       , cache: Dict[str, Any], first: bool = False) -> Tuple[NDArray, List[str], Dict[str, Any]]:
     out_feat = []
     features_name = []
+    rdkit_desc_name = rdkit_featurizer(smi = "CCC").rdkit_desc_name
 
     for idx, i_smi in enumerate(smi_s):
         i_name = name_s[idx]
@@ -151,9 +153,9 @@ def calc_rdkit_desc_features(smi_s: Tuple[str, str, str]
             cache[i_name] = deepcopy(_i_feat)
 
         # init feat_name when i == 0
-        if first == 0:
-            for j in i_featurizer.rdkit_desc_name:
-                features_name.append("{}_{}".format(i_name[:-len("_NAME")], j))
+        if first:
+            for j in rdkit_desc_name:
+                features_name.append("{}_{}".format(i_name[:3], j))
 
     out_feat = np.array(out_feat).flatten()
     return out_feat, features_name, cache
@@ -176,9 +178,9 @@ def calc_rdkit_morgan_features(smi_s: Tuple[str, str, str]
             cache[i_name] = deepcopy(_i_feat)
 
         # init feat_name when i == 0
-        if first == 0:
+        if first:
             for j in range(1024):
-                features_name.append("{}_MORGAN{}".format(i_name[:-len("_NAME")], j))
+                features_name.append("{}_MORGAN{}".format(i_name[:3], j))
 
     out_feat = np.array(out_feat).flatten()
     return out_feat, features_name, cache
@@ -221,10 +223,10 @@ def calc_soap_features(sdf_s: Tuple[str, str, str]
             cache[i_name] = deepcopy(_i_feat)
             #print(mol_type, len(i_feat), i_feat[-1].shape)
 
-        if first == 0:
+        if first:
             n_soap = out_feat[0].shape[-1]
             for j in range(n_soap):
-                features_name.append("{}_SOAP{}".format(i_name[:-len("_NAME")], j))
+                features_name.append("{}_SOAP{}".format(i_name[:3], j))
     out_feat = np.array(out_feat).flatten()
     return out_feat, features_name, cache
 
@@ -266,10 +268,10 @@ def calc_acsf_features(sdf_s: Tuple[str, str, str]
             cache[i_name] = deepcopy(_i_feat)
             #print(mol_type, len(i_feat), i_feat[-1].shape)
 
-        if first == 0:
+        if first:
             n_acsf = out_feat[0].shape[-1]
             for j in range(n_acsf):
-                features_name.append("{}_ACSF{}".format(i_name[:-len("_NAME")], j))
+                features_name.append("{}_ACSF{}".format(i_name[:3], j))
     out_feat = np.array(out_feat).flatten()
 
     return out_feat, features_name, cache
