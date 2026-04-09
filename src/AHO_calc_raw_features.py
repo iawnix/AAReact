@@ -61,30 +61,39 @@ def calc_features(dat: pd.DataFrame, desc_type: str, out_fp: str) -> None:
         i_rea_idx = dat.loc[i, "REA_NAME"].split("-")[1]
         features_class.append(int(i_rea_idx))
 
+        if i == 0:
+            first = True
+        else:
+            first = False
+
         # calc feat
         if desc_type == "xtb":
-            i_feat, i_feat_name, cache = calc_xtb_features(i_sdf_s, i_name_s, cache)
+            i_feat, i_feat_name, cache = calc_xtb_features(i_sdf_s, i_name_s, cache, first)
         elif desc_type == "rdkit":
-            i_feat, i_feat_name, cache = calc_rdkit_desc_features(i_smi_s, i_name_s, cache)
+            i_feat, i_feat_name, cache = calc_rdkit_desc_features(i_smi_s, i_name_s, cache, first)
         elif desc_type == "morgan":
-            i_feat, i_feat_name, cache = calc_rdkit_morgan_features(i_smi_s, i_name_s, cache)
+            i_feat, i_feat_name, cache = calc_rdkit_morgan_features(i_smi_s, i_name_s, cache, first)
         elif desc_type == "soap":
-            i_feat, i_feat_name, cache = calc_soap_features(i_sdf_s, i_name_s, cache)
+            i_feat, i_feat_name, cache = calc_soap_features(i_sdf_s, i_name_s, cache, first)
         elif desc_type == "acsf":
-            i_feat, i_feat_name, cache = calc_acsf_features(i_sdf_s, i_name_s, cache)
+            i_feat, i_feat_name, cache = calc_acsf_features(i_sdf_s, i_name_s, cache, first)
         else:
             print("Error[iaw]:> Unsupported type, only supported types: {}.".format(", ".join(SUPPORTED_DESC_TYPES)))
-        if features_name is None:
+
+        if features_name is None and first == True:
             features_name = i_feat_name
         features_data.append(i_feat)
     
+    if features_name is None:
+        print("Error[iaw]:> Can not gen feature names!")
+        
     # merge all data's feat
     dat = pd.concat([dat, pd.DataFrame(features_data, columns=features_name), pd.DataFrame({"CLASS": features_class})], axis=1)
     dat.to_csv(out_fp, index = False)
 
 def calc_xtb_features(sdf_s: Tuple[str, str, str]
                       , name_s: Tuple[str, str, str]
-                      , cache: Dict[str, Any]) -> Tuple[NDArray, List[str], Dict[str, Any]]:
+                      , cache: Dict[str, Any], first: bool = False) -> Tuple[NDArray, List[str], Dict[str, Any]]:
     
     out_feat = []
     features_name = []
@@ -117,7 +126,7 @@ def calc_xtb_features(sdf_s: Tuple[str, str, str]
             out_feat.append(_i_feat)
             cache[i_name] = deepcopy(_i_feat)
 
-        if idx == 0:
+        if first:
             n_xtb = out_feat[0].shape[-1]
             for j in range(n_xtb):
                 features_name.append("{}_XTB{}".format(i_name[:-len("_NAME")], j))
@@ -127,7 +136,7 @@ def calc_xtb_features(sdf_s: Tuple[str, str, str]
 
 def calc_rdkit_desc_features(smi_s: Tuple[str, str, str]
                       , name_s: Tuple[str, str, str]
-                      , cache: Dict[str, Any]) -> Tuple[NDArray, List[str], Dict[str, Any]]:
+                      , cache: Dict[str, Any], first: bool = False) -> Tuple[NDArray, List[str], Dict[str, Any]]:
     out_feat = []
     features_name = []
 
@@ -142,7 +151,7 @@ def calc_rdkit_desc_features(smi_s: Tuple[str, str, str]
             cache[i_name] = deepcopy(_i_feat)
 
         # init feat_name when i == 0
-        if idx == 0:
+        if first == 0:
             for j in i_featurizer.rdkit_desc_name:
                 features_name.append("{}_{}".format(i_name[:-len("_NAME")], j))
 
@@ -151,7 +160,7 @@ def calc_rdkit_desc_features(smi_s: Tuple[str, str, str]
 
 def calc_rdkit_morgan_features(smi_s: Tuple[str, str, str]
                       , name_s: Tuple[str, str, str]
-                      , cache: Dict[str, Any]) -> Tuple[NDArray, List[str], Dict[str, Any]]:
+                      , cache: Dict[str, Any], first: bool = False) -> Tuple[NDArray, List[str], Dict[str, Any]]:
     out_feat = []
     features_name = []
 
@@ -167,7 +176,7 @@ def calc_rdkit_morgan_features(smi_s: Tuple[str, str, str]
             cache[i_name] = deepcopy(_i_feat)
 
         # init feat_name when i == 0
-        if idx == 0:
+        if first == 0:
             for j in range(1024):
                 features_name.append("{}_MORGAN{}".format(i_name[:-len("_NAME")], j))
 
@@ -176,7 +185,7 @@ def calc_rdkit_morgan_features(smi_s: Tuple[str, str, str]
 
 def calc_soap_features(sdf_s: Tuple[str, str, str]
                       , name_s: Tuple[str, str, str]
-                      , cache: Dict[str, Any]) -> Tuple[NDArray, List[str], Dict[str, Any]]:
+                      , cache: Dict[str, Any], first: bool = False) -> Tuple[NDArray, List[str], Dict[str, Any]]:
     out_feat = []
     features_name = []
 
@@ -212,7 +221,7 @@ def calc_soap_features(sdf_s: Tuple[str, str, str]
             cache[i_name] = deepcopy(_i_feat)
             #print(mol_type, len(i_feat), i_feat[-1].shape)
 
-        if idx == 0:
+        if first == 0:
             n_soap = out_feat[0].shape[-1]
             for j in range(n_soap):
                 features_name.append("{}_SOAP{}".format(i_name[:-len("_NAME")], j))
@@ -221,7 +230,7 @@ def calc_soap_features(sdf_s: Tuple[str, str, str]
 
 def calc_acsf_features(sdf_s: Tuple[str, str, str]
                       , name_s: Tuple[str, str, str]
-                      , cache: Dict[str, Any]) -> Tuple[NDArray, List[str], Dict[str, Any]]:
+                      , cache: Dict[str, Any], first: bool = False) -> Tuple[NDArray, List[str], Dict[str, Any]]:
     out_feat = []
     features_name = []
 
@@ -257,7 +266,7 @@ def calc_acsf_features(sdf_s: Tuple[str, str, str]
             cache[i_name] = deepcopy(_i_feat)
             #print(mol_type, len(i_feat), i_feat[-1].shape)
 
-        if idx == 0:
+        if first == 0:
             n_acsf = out_feat[0].shape[-1]
             for j in range(n_acsf):
                 features_name.append("{}_ACSF{}".format(i_name[:-len("_NAME")], j))
