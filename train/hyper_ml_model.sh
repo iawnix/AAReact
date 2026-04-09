@@ -1,129 +1,29 @@
+model_s=("lgb" "xgb" "rf" "lgb")
+comb_s=(
+    "rdkit_soap"
+    "soap_xtb"
+    "rdkit_xtb"
+    "soap_acsf"
+    "acsf_xtb"
+    "rdkit_acsf"
+    "rdkit_soap_xtb"
+    "rdkit_soap_acsf"
+    "rdkit_xtb_acsf"
+    "soap_xtb_acsf"
+    "rdkit_soap_xtb_acsf"
+)
+# 双层循环
+for i_m in "${model_s[@]}"; do
+    for i_desc_type in "${comb_s[@]}"; do
+        echo "========================================================================"
+        echo "Hyper: model[$i_m] descripe[$i_desc_type] seed[1] test_size[0.2] cv[5]"
+        echo "========================================================================"
 
-echo "Hyper: model[rf] descripe[rdkit_3] seed[1] test_size[0.2] cv[5]"
-python /home/iaw/DATA2/AAReact/src/AHO_train.py --task "hyper" \
-        --model_config "/home/iaw/DATA2/AAReact/config/hyper_ml_rf_rdkit_3.toml"
-echo "#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#"
-echo ""
-
-echo "Hyper: model[rf] descripe[acsf_3] seed[1] test_size[0.2] cv[5]"
-python /home/iaw/DATA2/AAReact/src/AHO_train.py --task "hyper" \
-        --model_config "/home/iaw/DATA2/AAReact/config/hyper_ml_rf_acsf_3.toml"
-echo "#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#"
-echo ""
-
-echo "Hyper: model[rf] descripe[soap_3] seed[1] test_size[0.2] cv[5]"
-python /home/iaw/DATA2/AAReact/src/AHO_train.py --task "hyper" \
-        --model_config "/home/iaw/DATA2/AAReact/config/hyper_ml_rf_soap_3.toml"
-echo "#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#"
-echo ""
-
-echo "Hyper: model[rf] descripe[xtb_3] seed[1] test_size[0.2] cv[5]"
-python /home/iaw/DATA2/AAReact/src/AHO_train.py --task "hyper" \
-        --model_config "/home/iaw/DATA2/AAReact/config/hyper_ml_rf_xtb_3.toml"
-echo "#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#"
-echo ""
-
-echo "Hyper: model[rf] descripe[rdkit_soap_3] seed[1] test_size[0.2] cv[5]"
-python /home/iaw/DATA2/AAReact/src/AHO_train.py --task "hyper" \
-        --model_config "/home/iaw/DATA2/AAReact/config/hyper_ml_rf_rdkit_soap_3.toml"
-echo "#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#"
-echo ""
-
-echo "Hyper: model[rf] descripe[rdkit_soap_xtb_3] seed[1] test_size[0.2] cv[5]"
-python /home/iaw/DATA2/AAReact/src/AHO_train.py --task "hyper" \
-        --model_config "/home/iaw/DATA2/AAReact/config/hyper_ml_rf_rdkit_soap_xtb_3.toml"
-echo "#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#"
-echo ""
-
-echo "Hyper: model[rf] descripe[soap_xtb_3] seed[1] test_size[0.2] cv[5]"
-python /home/iaw/DATA2/AAReact/src/AHO_train.py --task "hyper" \
-        --model_config "/home/iaw/DATA2/AAReact/config/hyper_ml_rf_soap_xtb_3.toml"
-echo "#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#"
-echo ""
-
-
-echo "Hyper: model[xgb] descripe[rdkit_3] seed[1] test_size[0.2] cv[5]"
-python /home/iaw/DATA2/AAReact/src/AHO_train.py --task "hyper" \
-        --model_config "/home/iaw/DATA2/AAReact/config/hyper_ml_xgb_rdkit_3.toml"
-echo "#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#"
-echo ""
-
-echo "Hyper: model[xgb] descripe[acsf_3] seed[1] test_size[0.2] cv[5]"
-python /home/iaw/DATA2/AAReact/src/AHO_train.py --task "hyper" \
-        --model_config "/home/iaw/DATA2/AAReact/config/hyper_ml_xgb_acsf_3.toml"
-echo "#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#"
-echo ""
-
-echo "Hyper: model[xgb] descripe[soap_3] seed[1] test_size[0.2] cv[5]"
-python /home/iaw/DATA2/AAReact/src/AHO_train.py --task "hyper" \
-        --model_config "/home/iaw/DATA2/AAReact/config/hyper_ml_xgb_soap_3.toml"
-echo "#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#"
-echo ""
-
-echo "Hyper: model[xgb] descripe[xtb_3] seed[1] test_size[0.2] cv[5]"
-python /home/iaw/DATA2/AAReact/src/AHO_train.py --task "hyper" \
-        --model_config "/home/iaw/DATA2/AAReact/config/hyper_ml_xgb_xtb_3.toml"
-echo "#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#"
-echo ""
-
-echo "Hyper: model[xgb] descripe[rdkit_soap_3] seed[1] test_size[0.2] cv[5]"
-python /home/iaw/DATA2/AAReact/src/AHO_train.py --task "hyper" \
-        --model_config "/home/iaw/DATA2/AAReact/config/hyper_ml_xgb_rdkit_soap_3.toml"
-echo "#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#"
-echo ""
-
-echo "Hyper: model[xgb] descripe[rdkit_soap_xtb_3] seed[1] test_size[0.2] cv[5]"
-python /home/iaw/DATA2/AAReact/src/AHO_train.py --task "hyper" \
-        --model_config "/home/iaw/DATA2/AAReact/config/hyper_ml_xgb_rdkit_soap_xtb_3.toml"
-echo "#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#"
-echo ""
-
-echo "Hyper: model[xgb] descripe[soap_xtb_3] seed[1] test_size[0.2] cv[5]"
-python /home/iaw/DATA2/AAReact/src/AHO_train.py --task "hyper" \
-        --model_config "/home/iaw/DATA2/AAReact/config/hyper_ml_xgb_soap_xtb_3.toml"
-echo "#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#"
-echo ""
-
-
-echo "Hyper: model[lgb] descripe[rdkit_3] seed[1] test_size[0.2] cv[5]"
-python /home/iaw/DATA2/AAReact/src/AHO_train.py --task "hyper" \
-        --model_config "/home/iaw/DATA2/AAReact/config/hyper_ml_lgb_rdkit_3.toml"
-echo "#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#"
-echo ""
-
-echo "Hyper: model[lgb] descripe[acsf_3] seed[1] test_size[0.2] cv[5]"
-python /home/iaw/DATA2/AAReact/src/AHO_train.py --task "hyper" \
-        --model_config "/home/iaw/DATA2/AAReact/config/hyper_ml_lgb_acsf_3.toml"
-echo "#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#"
-echo ""
-
-echo "Hyper: model[lgb] descripe[soap_3] seed[1] test_size[0.2] cv[5]"
-python /home/iaw/DATA2/AAReact/src/AHO_train.py --task "hyper" \
-        --model_config "/home/iaw/DATA2/AAReact/config/hyper_ml_lgb_soap_3.toml"
-echo "#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#"
-echo ""
-
-echo "Hyper: model[lgb] descripe[xtb_3] seed[1] test_size[0.2] cv[5]"
-python /home/iaw/DATA2/AAReact/src/AHO_train.py --task "hyper" \
-        --model_config "/home/iaw/DATA2/AAReact/config/hyper_ml_lgb_xtb_3.toml"
-echo "#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#"
-echo ""
-
-
-echo "Hyper: model[lgb] descripe[rdkit_soap_3] seed[1] test_size[0.2] cv[5]"
-python /home/iaw/DATA2/AAReact/src/AHO_train.py --task "hyper" \
-        --model_config "/home/iaw/DATA2/AAReact/config/hyper_ml_lgb_rdkit_soap_3.toml"
-echo "#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#"
-echo ""
-
-echo "Hyper: model[lgb] descripe[rdkit_soap_xtb_3] seed[1] test_size[0.2] cv[5]"
-python /home/iaw/DATA2/AAReact/src/AHO_train.py --task "hyper" \
-        --model_config "/home/iaw/DATA2/AAReact/config/hyper_ml_lgb_rdkit_soap_xtb_3.toml"
-echo "#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#"
-echo ""
-
-echo "Hyper: model[lgb] descripe[soap_xtb_3] seed[1] test_size[0.2] cv[5]"
-python /home/iaw/DATA2/AAReact/src/AHO_train.py --task "hyper" \
-        --model_config "/home/iaw/DATA2/AAReact/config/hyper_ml_lgb_soap_xtb_3.toml"
-echo "#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#"
-echo ""
+        # 运行 Python 脚本（纯 bash 写法）
+        python /home/iaw/DATA2/AAReact/src/AHO_train.py \
+            --task "hyper" \
+            --model_config "/home/iaw/DATA2/AAReact/config/hyper_ml_${i_m}_${i_desc_type}.toml"
+        echo "#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#"
+        echo ""
+    done
+done
