@@ -11,5 +11,6 @@ train/eval_ml_model_result.ipynb
 train/hyper_ml_model.ipynb
 train/output/
 config/.train1/
+config/.train2/
+config/hyper*.toml
 
-README.old
