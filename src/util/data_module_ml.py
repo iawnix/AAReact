@@ -27,6 +27,25 @@ def load_raw_feat_csv(data_fp: str, desc_type: str, X_LABEL: Union[List[str], Fa
     # load
     data = pd.read_csv(data_fp)
 
+    # 只对特征部分进行
+    if X_LABEL == False:
+        
+        
+        print("Infor[iaw]>: raw data set shape: {}".format(data.shape))
+        
+        # https://github.com/rdkit/rdkit/issues/1527
+        if desc_type == "rdkit_desc":
+            if "CAT_Ipc" in data.columns.to_list():
+                data.drop("CAT_Ipc", axis=1, inplace=True)
+        print("Infor[iaw]>: after del inf, data set shape: {}".format(data.shape))
+        
+        batch_idx = data.columns.to_list().index('BATCH')
+        check_nan_inf_feat_s = data.columns[batch_idx+1 : -1]
+        for col in check_nan_inf_feat_s:
+            if data[col].isna().any():
+                data.drop(col, axis=1, inplace=True)
+        print("Infor[iaw]>: after del nan, data set shape: {}".format(data.shape))
+
     # key index
     col_n = data.columns.to_list()
     ee_idx = col_n.index('EE')
@@ -39,31 +58,11 @@ def load_raw_feat_csv(data_fp: str, desc_type: str, X_LABEL: Union[List[str], Fa
     if class_idx != len(col_n)-1:
         print("Error[iaw]>: class_idx != len(col_n)-1")
 
-    # 只对特征部分进行
-    print("Infor[iaw]>: raw data set shape: {}".format(data.shape))
-    check_nan_inf_feat_s = data.columns[batch_idx+1 : -1]
-    for col in check_nan_inf_feat_s:
-        if data[col].isna().any():
-            data.drop(col, axis=1, inplace=True)
-    print("Infor[iaw]>: after del nan, data set shape: {}".format(data.shape))
     
-
     # 开始分割数据
     # split -> data_x, data_y, x_label, data_class, data_name, data_batch
-    if X_LABEL == False:
-        del_n = []
-        # https://github.com/rdkit/rdkit/issues/1527
-        if desc_type == "rdkit_desc":
-            del_n.append("CAT_Ipc")
-        for i_n in col_n[batch_idx+1:-1]:
-            if np.isinf(data.loc[:, i_n].to_numpy()).any(axis = 0):
-                del_n.append(i_n)
-        for i_n in del_n:
-            del data[i_n]
-        print("Infor[iaw]>: after del inf, data set shape: {}".format(data.shape))
-
     # 不能拼接CLASS
-    data_x = np.concat([data.iloc[:, batch_idx+1:-1].values, data.iloc[:,[temp_idx, pressure_idx]].values], axis = 1)
+    data_x = np.concatenate([data.iloc[:, batch_idx+1:-1].values, data.iloc[:,[temp_idx, pressure_idx]].values], axis = 1)
     data_y = data.iloc[:, ee_idx].values
 
     x_label_var = data.iloc[:, batch_idx+1:-1].columns.to_list() + data.iloc[:,[temp_idx, pressure_idx]].columns.to_list()

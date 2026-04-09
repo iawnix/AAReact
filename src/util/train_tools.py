@@ -154,6 +154,15 @@ def group_data(data_s: Tuple[NDArray, NDArray, List[str], List[int], List[str], 
 
     """
     基于batch划分数据集, 这个主要为了统一不同批次的数据
+    return:
+        [0]: group1
+            [0]: data_x
+            [1]: data_y
+            [2]: x_label
+            [3]: data_class
+            [4]: data_name
+            [5]: data_batch
+        [1]: group2
     """    
     data_x, data_y, x_label, data_class, data_name, data_batch = data_s
     
@@ -168,12 +177,12 @@ def group_data(data_s: Tuple[NDArray, NDArray, List[str], List[int], List[str], 
             pass
 
     return (
-        (data_x[[group1_idx_s], :], data_y[[group1_idx_s]]
+        (data_x[group1_idx_s, :], data_y[group1_idx_s]
          , [i_t for i, i_t in enumerate(x_label) if i in group1_idx_s]
          , [i_t for i, i_t in enumerate(data_class) if i in group1_idx_s]
          , [i_t for i, i_t in enumerate(data_name) if i in group1_idx_s]
          , [i_t for i, i_t in enumerate(data_batch) if i in group1_idx_s]) , 
-        (data_x[[group2_idx_s], :], data_y[[group2_idx_s]]
+        (data_x[group2_idx_s, :], data_y[group2_idx_s]
          , [i_t for i, i_t in enumerate(x_label) if i in group2_idx_s]
          , [i_t for i, i_t in enumerate(data_class) if i in group2_idx_s]
          , [i_t for i, i_t in enumerate(data_name) if i in group2_idx_s]

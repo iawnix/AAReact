@@ -139,6 +139,18 @@ def check_atom_charge(mol: Mol, atom_idx: List[int]) -> None:
                                                                      , atom.GetTotalValence()
                                                                      , atom.GetNumRadicalElectrons()))
 
+def find_atom_radicalE(mol: Mol) -> List[int]:
+    out = []
+    for idx in list(range(len(mol.GetAtoms()))):
+        atom = mol.GetAtomWithIdx(idx)
+        if atom.GetNumRadicalElectrons() != 0:
+            print("Info[iaw]>: ATOM[{}-{}], Charge: {}, Valence: {}, RadicalElectron: {}".format(atom.GetSymbol()
+                                                                         , idx
+                                                                         , atom.GetFormalCharge()
+                                                                         , atom.GetTotalValence()
+                                                                         , atom.GetNumRadicalElectrons()))
+            out.append(idx)
+    return out
 
 def correct_valence(mol: Mol, infos: Tuple[int, int, int]) -> Mol:
     mol = Chem.RWMol(mol)
