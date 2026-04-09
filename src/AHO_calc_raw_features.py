@@ -32,7 +32,7 @@ def check_raw_csv(data_fp: str, data: Union[pd.DataFrame, False] =  False) -> bo
         dat = data
 
     dat_columns = dat.columns.to_list()
-    if dat_columns == SUPPORTED_DESC_TYPES:
+    if dat_columns == RAW_CSV_COLUMNS:
         return True
     else:
         return False
@@ -302,12 +302,12 @@ if __name__ == "__main__":
         sys.exit(-1)
 
     
-    N_SAMPLE = dat.shappe[0]
+    N_SAMPLE = dat.shape[0]
     out_path = myp.save_path
     if myp.desc_type == "all":
         for desc_type in SUPPORTED_DESC_TYPES:
-            calc_features(dat_fp, desc_type, out_fp=os.path.join(out_path, "{}_features.csv".format(desc_type)))
+            calc_features(dat, desc_type, out_fp=os.path.join(out_path, "{}_features.csv".format(desc_type)))
     else:
-        calc_features(dat_fp, myp.desc_type, out_fp=os.path.join(out_path, "{}_features.csv".format(myp.desc_type)))
+        calc_features(dat, myp.desc_type, out_fp=os.path.join(out_path, "{}_features.csv".format(myp.desc_type)))
 
 
