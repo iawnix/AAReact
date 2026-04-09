@@ -83,21 +83,24 @@ def load_raw_feat_csv(data_fp: str, desc_type: str, X_LABEL: Union[List[str], Fa
 
     return data_x, data_y, x_label, data_class, data_name, data_batch
 
-def std_zero_filter(data_x: NDArray, x_label: List[str]) -> Tuple[NDArray, List[str]]:
+def std_zero_filter(data_x: NDArray, x_label: List[str]) -> Tuple[NDArray, List[str], List[int]]:
     """
     删除数据中标准差为0的特征
     """
     print("Infor[iaw]>: before del zero std, data_x shape: {}, x_label shape: {}".format(data_x.shape, len(x_label)))
     del_zero_std_idxs = []
+    select_idx_s = []
     for i, i_txt in enumerate(x_label):
         _x = data_x[:, i]
         if np.isclose(np.std(_x, axis=0), 0, atol=1e-8):
             #print("Warning[iaw]>: feature {} has zero std.".format(i_txt))
             del_zero_std_idxs.append(i)
+        else:
+            select_idx_s.append(i)
     data_x = np.delete(data_x, del_zero_std_idxs, axis=1)
     x_label = [i for j, i in enumerate(x_label) if j not in del_zero_std_idxs]
     print("Infor[iaw]>: after del zero std, data_x shape: {}, x_label shape: {}".format(data_x.shape, len(x_label)))
-    return data_x, x_label
+    return data_x, x_label, del_zero_std_idxs
 
 
 def pearson_corr_filter(data_x: NDArray, data_y: NDArray, x_label: List[str], threshold: float = 0.05) -> Tuple[NDArray, List[str], List[int]]:
