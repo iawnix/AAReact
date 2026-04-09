@@ -20,7 +20,7 @@ sys.path.append(str(project_root))
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import f_regression
 
-def load_raw_feat_csv(data_fp: str, desc_type: str, X_LABEL: Union[List[str], False] = False) -> Tuple[NDArray, NDArray, List[str], List[int], List[str], List[int]]:
+def load_raw_feat_csv(data_fp: str, desc_type: Union[str, False], X_LABEL: Union[List[str], False] = False) -> Tuple[NDArray, NDArray, List[str], List[int], List[str], List[int]]:
     """
     用于加载csv数据集, 并删除nan值, 这个函数会依赖于RAW_CSV_COLUMNS进行定位
     """
@@ -29,7 +29,6 @@ def load_raw_feat_csv(data_fp: str, desc_type: str, X_LABEL: Union[List[str], Fa
 
     # 只对特征部分进行
     if X_LABEL == False:
-        
         
         print("Infor[iaw]>: raw data set shape: {}".format(data.shape))
         
