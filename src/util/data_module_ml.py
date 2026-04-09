@@ -98,9 +98,12 @@ def std_zero_filter(data_x: NDArray, x_label: List[str]) -> Tuple[NDArray, List[
         else:
             select_idx_s.append(i)
     data_x = np.delete(data_x, del_zero_std_idxs, axis=1)
-    x_label = [i for j, i in enumerate(x_label) if j not in del_zero_std_idxs]
-    print("Infor[iaw]>: after del zero std, data_x shape: {}, x_label shape: {}".format(data_x.shape, len(x_label)))
-    return data_x, x_label, del_zero_std_idxs
+    x_label1 = [i_txt for i, i_txt in enumerate(x_label) if i not in del_zero_std_idxs]
+    x_label2 = [i_txt for i, i_txt in enumerate(x_label) if i in select_idx_s]
+    if x_label1 != x_label2:
+        print("Error[iaw]:> please check the function `std_zero_filter`!")
+    print("Infor[iaw]>: after del zero std, data_x shape: {}, x_label shape: {}".format(data_x.shape, len(x_label1)))
+    return data_x, x_label1, select_idx_s
 
 
 def pearson_corr_filter(data_x: NDArray, data_y: NDArray, x_label: List[str], threshold: float = 0.05) -> Tuple[NDArray, List[str], List[int]]:
