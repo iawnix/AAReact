@@ -1,7 +1,16 @@
-
 DF_COLUMNS = ["DATA_ID","REACTANT_SMI", "PRODUCT_R_SMI"
  , "PRODUCT_S_SMI", "SOLVENT_SMI", "ION_SMI"
  , "LIGAND_SMI", "TEMP", "PRESSURE", "EE"]
+
+RAW_CSV_COLUMNS = [
+    "DATA_ID", "CAT_NAME", "SOL_NAME", "PRO_R_NAME"
+    , "PRO_S_NAME", "REA_NAME", "CAT_SMI", "SOL_SMI"
+    , "PRO_R_SMI", "PRO_S_SMI", "REA_SMI", "TEMP"
+    , "PRESSURE", "EE", "CONV", "BATCH"
+]
+
+SUPPORTED_DESC_TYPES = ["xtb", "rdkit_desc", "rdkit_morgan", "soap", "acsf"]
+
 
 UNIMOL_EMBED_DIM = {
       "84m": 768
