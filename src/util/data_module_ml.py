@@ -12,7 +12,6 @@ from rich.table import Table
 from rich import print as rp
 from rich.progress import track
 
-# 绘制模型对不同数据集划分的敏感性
 import sys
 from pathlib import Path
 project_root = Path(__file__).parent.parent
@@ -27,39 +26,41 @@ def load_raw_feat_csv(data_fp: str, desc_type: str, X_LABEL: Union[List[str], Fa
     """
     # load
     data = pd.read_csv(data_fp)
-    
-    # drop nan and inf
-    print("Infor[iaw]>: raw data set shape: {}".format(data.shape))
-    data = data.dropna(axis=1)
-    print("Infor[iaw]>: after del nan, data set shape: {}".format(data.shape))
-    
+
+    # key index
     col_n = data.columns.to_list()
     ee_idx = col_n.index('EE')
-
-    if X_LABEL == False:
-        del_n = []
-        # https://github.com/rdkit/rdkit/issues/1527
-        if desc_type == "rdkit_desc":
-            del_n.append("CAT_Ipc")
-        for i_n in col_n[ee_idx+1:-1]:
-            if np.isinf(data.loc[:, i_n].to_numpy()).any(axis = 0):
-                del_n.append(i_n)
-        for i_n in del_n:
-            del data[i_n]
-        print("Infor[iaw]>: after del inf, data set shape: {}".format(data.shape))
-
-    # 开始分割数据
-    # split -> data_x, data_y, x_label, data_class, data_name, data_batch
-    col_n = data.columns.to_list()
-    ee_idx = col_n.index('EE')
-    batch_idx = col_n.index('EE')
-    temp_idx = col_n.index('BATCH')
+    batch_idx = col_n.index('BATCH')
+    temp_idx = col_n.index('TEMP')
     pressure_idx = col_n.index('PRESSURE')
     class_idx = col_n.index('CLASS')
     name_idx = col_n.index("DATA_ID")
     # 判断, class位于raw_feat_csv的最后一列
     if class_idx != len(col_n)-1:
         print("Error[iaw]>: class_idx != len(col_n)-1")
+
+    # 只对特征部分进行
+    print("Infor[iaw]>: raw data set shape: {}".format(data.shape))
+    check_nan_inf_feat_s = data.columns[batch_idx+1 : -1]
+    for col in check_nan_inf_feat_s:
+        if data[col].isna().any():
+            data.drop(col, axis=1, inplace=True)
+    print("Infor[iaw]>: after del nan, data set shape: {}".format(data.shape))
+    
+
+    # 开始分割数据
+    # split -> data_x, data_y, x_label, data_class, data_name, data_batch
+    if X_LABEL == False:
+        del_n = []
+        # https://github.com/rdkit/rdkit/issues/1527
+        if desc_type == "rdkit_desc":
+            del_n.append("CAT_Ipc")
+        for i_n in col_n[batch_idx+1:-1]:
+            if np.isinf(data.loc[:, i_n].to_numpy()).any(axis = 0):
+                del_n.append(i_n)
+        for i_n in del_n:
+            del data[i_n]
+        print("Infor[iaw]>: after del inf, data set shape: {}".format(data.shape))
 
     # 不能拼接CLASS
     data_x = np.concat([data.iloc[:, batch_idx+1:-1].values, data.iloc[:,[temp_idx, pressure_idx]].values], axis = 1)
@@ -176,4 +177,10 @@ class norm_col_parms():
     def __call__(self,x: NDArray) -> NDArray:
         return (x - self.min_col) / (self.max_col - self.min_col + 1e-8)
 
+
+class ml_data_point():
+    """
+    有一个datapoint比较好, 但是需要重构的太多了, 下一个项目吸取这个教训
+    """
+    pass
 

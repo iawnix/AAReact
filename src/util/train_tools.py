@@ -146,3 +146,37 @@ def split_data(data_s: Tuple[NDArray, NDArray, List[int]]
         return X_train, X_test, y_train, y_test, class_train, class_test, name_train, name_test
 
     
+
+def group_data(data_s: Tuple[NDArray, NDArray, List[str], List[int], List[str], List[int]]
+               , group1: List[int]
+               , group2: List[int]) -> Tuple[Tuple[NDArray, NDArray, List[str], List[int], List[str], List[int]], 
+                                                 Tuple[NDArray, NDArray, List[str], List[int], List[str], List[int]]]:
+
+    """
+    基于batch划分数据集, 这个主要为了统一不同批次的数据
+    """    
+    data_x, data_y, x_label, data_class, data_name, data_batch = data_s
+    
+    group1_idx_s = []
+    group2_idx_s = []
+    for i, i_b in enumerate(data_batch):
+        if i_b in group1:
+            group1_idx_s.append(i)
+        elif i_b in group2:
+            group2_idx_s.append(i)
+        else:
+            pass
+
+    return (
+        (data_x[[group1_idx_s], :], data_y[[group1_idx_s]]
+         , [i_t for i, i_t in enumerate(x_label) if i in group1_idx_s]
+         , [i_t for i, i_t in enumerate(data_class) if i in group1_idx_s]
+         , [i_t for i, i_t in enumerate(data_name) if i in group1_idx_s]
+         , [i_t for i, i_t in enumerate(data_batch) if i in group1_idx_s]) , 
+        (data_x[[group2_idx_s], :], data_y[[group2_idx_s]]
+         , [i_t for i, i_t in enumerate(x_label) if i in group2_idx_s]
+         , [i_t for i, i_t in enumerate(data_class) if i in group2_idx_s]
+         , [i_t for i, i_t in enumerate(data_name) if i in group2_idx_s]
+         , [i_t for i, i_t in enumerate(data_batch) if i in group2_idx_s])
+    )
+
