@@ -1,12 +1,12 @@
 
 
-def touch_toml(out_fp: str, data_for_train_path: str, model_name: str, desc_type : str):
+def touch_toml(out_fp: str, data_for_train_path: str, model_name: str, desc_type : str, batch_type: str):
     with open(out_fp, "w+") as F:
         F.writelines("[Hyper]\n")
-        F.writelines("data_x = \"{}/{}_data_x.npy\"\n".format(data_for_train_path, desc_type))
-        F.writelines("data_y = \"{}/{}_data_y.npy\"\n".format(data_for_train_path, desc_type))
-        F.writelines("x_label = \"{}/{}_x_label.pkl\"\n".format(data_for_train_path, desc_type))
-        F.writelines("data_class = \"{}/{}_data_class.pkl\"\n".format(data_for_train_path, desc_type))
+        F.writelines("data_x = \"{}/{}/{}_data_x.npy\"\n".format(data_for_train_path, desc_type, batch_type))
+        F.writelines("data_y = \"{}/{}/{}_data_y.npy\"\n".format(data_for_train_path, desc_type, batch_type))
+        F.writelines("x_label = \"{}/{}/{}_x_label.pkl\"\n".format(data_for_train_path, desc_type, batch_type))
+        F.writelines("data_class = \"{}/{}/{}_data_class.pkl\"\n".format(data_for_train_path, desc_type, batch_type))
         F.writelines("seed = 1\n")
         F.writelines("test_size = 0.2\n")
         F.writelines("cv = 5\n")
@@ -29,4 +29,5 @@ for i_m in model_s:
             , data_for_train_path = "/home/iaw/DATA2/AAReact/DataSet/Data_All/3_data_for_train/"
             , model_name = i_m
             , desc_type = i_desc_type
+            , batch_type = "train_test"
         )
