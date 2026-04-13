@@ -26,7 +26,7 @@ for i_m in model_s:
         i_desc_type = "_".join(i_c)
         touch_toml(
               out_fp = "/home/iaw/DATA2/AAReact/config/hyper_ml_{}_{}.toml".format(i_m, i_desc_type)
-            , data_for_train_path = "/home/iaw/DATA2/AAReact/DataSet/Data_All/3_data_for_train/"
+            , data_for_train_path = "/home/iaw/DATA2/AAReact/DataSet/Data_All/4_data_for_train/"
             , model_name = i_m
             , desc_type = i_desc_type
             , batch_type = "train_test"
