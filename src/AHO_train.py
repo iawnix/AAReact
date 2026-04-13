@@ -28,7 +28,7 @@ def Parm() -> Namespace:
     parser = argparse.ArgumentParser(description="AAReact: Atropic Acid Enantioselectivity Prediction")
     parser.add_argument("--task", type=str, help="Indicate whether the task is `hyperparameter tuning`[hyper] or pure `model training`[train].")
     parser.add_argument("--model_config", type=str, help="Model training config file in TOML format.")
-    
+    parser.add_argument("--verbose",type=bool, default = False, help="Enable detailed output: True / False")
     args = parser.parse_args()
     return args
 
@@ -85,7 +85,14 @@ def main() -> None:
                         , (train_mse, 0, test_mse)
                         , (train_mae, 0, test_mae)
                         , (train_rmse, 0, test_rmse)])
-
+        if myp.verbose == True:
+            # R2[train, test], R[train, test], Spearmanr[train, test], MSE[train, test], MAE[train, test], RMSE[train, test]
+            print("Info[iaw]:> Result, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}".format(train_r2, test_r2
+                                                                                      , train_r, test_r
+                                                                                      , train_spearmanr, test_spearmanr
+                                                                                      , train_mse, test_mse
+                                                                                      , train_mae, test_mae
+                                                                                      , train_rmse, test_rmse))
         # save 
         rp("Info\\[iaw]:> The model will be saved as `{}`".format(trian_config.Train.model_save))
         dump(model, trian_config.Train.model_save)

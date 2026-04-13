@@ -1,4 +1,4 @@
-model_s=("lgb" "xgb" "rf" "lgb")
+model_s=("lgb" "xgb" "rf")
 comb_s=(
     "rdkit_soap"
     "soap_xtb"

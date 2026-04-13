@@ -17,7 +17,7 @@ def touch_toml(out_fp: str, data_for_train_path: str, model_name: str, desc_type
 
 
 
-model_s = ["lgb", "xgb", "rf", "lgb"]
+model_s = ["lgb", "xgb", "rf"]
 comb_s = [("rdkit", "soap"), ("soap", "xtb"), ("rdkit", "xtb"), ("soap", "acsf"), ("acsf", "xtb"), ("rdkit", "acsf")
                , ("rdkit", "soap", "xtb"), ("rdkit", "soap", "acsf"),("rdkit", "xtb", "acsf"), ("soap", "xtb", "acsf") 
                , ("rdkit", "soap", "xtb", "acsf")]
