@@ -65,16 +65,18 @@ def search_parms(model_name: str, X_train, y_train, seed: int, cv: int = 5) -> d
 
 def eval_dataset_split(seed_s: List[int], test_size_s: List[int], parms: Dict, model_name: str
                         , data_x: NDArray, data_y: NDArray, data_class: List
-                        , eval_func: callable) -> Tuple[list[float], list[float], list[float], list[float]]:
+                        , eval_func: callable) -> Tuple[list[float], list[float], list[float], list[float], Dict[str, List]]:
     """
     评估模型对数据集大小的依赖
     """
     train_score_mean_s, train_score_std_s = [], []
     test_score_mean_s, test_score_std_s = [], []
+    feature_importance_s = {}
     for i_size in test_size_s:
         train_score_tmp = []
         test_score_tmp = []
         for i_seed in seed_s:
+            
             _X_train, _X_test, _y_train, _y_test,  _class_train, _class_test = train_test_split(
                 data_x,        
                 data_y,
@@ -88,6 +90,12 @@ def eval_dataset_split(seed_s: List[int], test_size_s: List[int], parms: Dict, m
             model.fit(_X_train, _y_train)
             train_pred = model.predict(_X_train)
             test_pred = model.predict(_X_test)
+            importances: NDArray = model.feature_importances_
+            
+            if str(i_seed) not in feature_importance_s.keys():
+                feature_importance_s[str(i_seed)] = [importances]
+            else:
+                feature_importance_s[str(i_seed)].append(importances)
 
             train_score_tmp.append(eval_func(y_pred = train_pred, y_true = _y_train ))
             test_score_tmp.append(eval_func(y_pred = test_pred, y_true = _y_test))
@@ -96,7 +104,7 @@ def eval_dataset_split(seed_s: List[int], test_size_s: List[int], parms: Dict, m
         test_score_mean_s.append(np.mean(test_score_tmp))
         test_score_std_s.append(np.std(test_score_tmp))
 
-    return train_score_mean_s, train_score_std_s, test_score_mean_s, test_score_std_s
+    return train_score_mean_s, train_score_std_s, test_score_mean_s, test_score_std_s, feature_importance_s
 
 def load_data(data_x: str, data_y: str, x_label: str, data_class: str, data_name: Union[str, None] = None) -> Union[Tuple[NDArray, NDArray, List[str], List[int]], Tuple[NDArray, NDArray, List[str], List[int], List[str]]]:
     """
