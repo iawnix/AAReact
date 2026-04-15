@@ -15,4 +15,5 @@ config/.train2/
 config/.train3/
 config/hyper*.toml
 config/train*.toml
+train/nohup.out
 

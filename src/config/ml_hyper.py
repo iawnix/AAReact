@@ -27,9 +27,11 @@ def init_config_from_hyper_toml(toml_fp: str) -> ml_hyper_config:
 
     model_type = ss.get("Model").get("name")
     save_fp = ss.get("Model").get("params_save")
+    model_n_cpu = ss.get("Model").get("n_cpu")
     hyper_config = from_dict(hyper_params, ss.get("Hyper"))
     return ml_hyper_config(
         Model_type = model_type, 
+        n_cpu = model_n_cpu, 
         Hyper = hyper_config, 
         params_save = save_fp
     )
