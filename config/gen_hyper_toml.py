@@ -10,9 +10,11 @@ def touch_toml(out_fp: str, data_for_train_path: str, model_name: str, desc_type
         F.writelines("seed = 1\n")
         F.writelines("test_size = 0.2\n")
         F.writelines("cv = 5\n")
+        F.writelines("n_cpu = 16\n")
         F.writelines("\n")
         F.writelines("[Model]\n")
         F.writelines("name = \"{}\"\n".format(model_name))
+        F.writelines("n_cpu = 5\n")
         F.writelines("params_save = \"/home/iaw/DATA2/AAReact/train/output/hyper_log/{}_{}_seed_0-1_test_0-2_cv_5_hyper.log\"\n".format(model_name, desc_type))
 
 

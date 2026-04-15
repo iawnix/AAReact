@@ -26,6 +26,7 @@ def touch_toml(out_fp: str,
         F.writelines("test_size = 0.2\n")
         F.writelines("model_save = \"/home/iaw/DATA2/AAReact/train/output/pt/{}_{}_seed_0-1_test_0-2.pkl\"\n".format(model_name, desc_type))
         F.writelines("cv = 5\n")
+        F.writelines("n_cpu = 5\n")
         F.writelines("\n")
         F.writelines("[Model]\n")
         F.writelines("model_type = \"{}\"\n".format(model_name))

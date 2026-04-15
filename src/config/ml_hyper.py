@@ -12,10 +12,12 @@ class hyper_params:
     seed: int
     test_size: float                    # 对于机器学习模型, 没有划分valid
     cv: int
+    n_cpu: int                          # 新增优化器cpu核数
 
 @dataclass
 class ml_hyper_config:
     Model_type: str
+    n_cpu: int                          # 新增优化器cpu核数
     Hyper: hyper_params
     params_save: str
 

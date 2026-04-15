@@ -19,22 +19,23 @@ from lightgbm import LGBMRegressor
 
 import pickle
 
-def build_model(model_name: str, seed: int) -> Union[RandomForestRegressor, XGBRegressor, LGBMRegressor]:
+def build_model(model_name: str, seed: int, n_cpu: int) -> Union[RandomForestRegressor, XGBRegressor, LGBMRegressor]:
     """
     构建模型
     """
     if model_name == "rf":
-        return RandomForestRegressor(random_state=seed)
+        return RandomForestRegressor(random_state=seed, n_jobs = n_cpu)
     elif model_name == "xgb":
-        return XGBRegressor(random_state=seed)
+        return XGBRegressor(random_state=seed, n_jobs= n_cpu)
     elif model_name == "lgb":
-        return LGBMRegressor(random_state=seed, verbose=-1, silent=True)
+        return LGBMRegressor(random_state=seed, verbose=-1, silent=True, num_threads=n_cpu if n_cpu != -1 else 0)
     else:
         raise RuntimeError("Error[iaw]>: Unsupported model, {}".format(model_name))
 
-def search_parms(model_name: str, X_train, y_train, seed: int, cv: int = 5) -> dict:
+def search_parms(model_name: str, X_train, y_train, seed: int, n_cpu_opt: int, n_cpu_model: int, cv: int = 5) -> dict:
     """
     用于网格超参
+    增加模型所用核数与超参所用核数 2026-04-15 add by iaw
     """
     if model_name == "rf":
         # grid search
@@ -46,13 +47,13 @@ def search_parms(model_name: str, X_train, y_train, seed: int, cv: int = 5) -> d
     else:
         raise RuntimeError("Error[iaw]>: Unsupported model, {}".format(model_name))
     
-    base_model = build_model(model_name, seed)
+    base_model = build_model(model_name, seed, n_cpu = n_cpu_model)
     grid_search = GridSearchCV(
         estimator=base_model,
         param_grid=param_grid,
         cv=cv,                                  # k折
         scoring= "neg_mean_squared_error",      # 'neg_mean_squared_error',
-        n_jobs=-1,
+        n_jobs= n_cpu_opt,
         verbose=0,
         return_train_score=True
     )
@@ -65,7 +66,7 @@ def search_parms(model_name: str, X_train, y_train, seed: int, cv: int = 5) -> d
 
 def eval_dataset_split(seed_s: List[int], test_size_s: List[int], parms: Dict, model_name: str
                         , data_x: NDArray, data_y: NDArray, data_class: List
-                        , eval_func: callable) -> Tuple[list[float], list[float], list[float], list[float], Dict[str, List]]:
+                       , eval_func: callable, n_cpu: int) -> Tuple[list[float], list[float], list[float], list[float], Dict[str, List]]:
     """
     评估模型对数据集大小的依赖
     """
@@ -85,7 +86,7 @@ def eval_dataset_split(seed_s: List[int], test_size_s: List[int], parms: Dict, m
                 random_state=i_seed, 
             )
 
-            model = build_model(model_name, i_seed)
+            model = build_model(model_name, i_seed, n_cpu)
             model.set_params(**parms)
             model.fit(_X_train, _y_train)
             train_pred = model.predict(_X_train)
