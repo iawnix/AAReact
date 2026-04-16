@@ -59,7 +59,7 @@ def main() -> None:
 
             # train model
             #print("Debug[iaw]:> trian_config.Model: {}".format(asdict(trian_config.Model)))
-            model = build_model(trian_config.Model_type, trian_config.Train.seed, train_config.Train.n_cpu)
+            model = build_model(trian_config.Model_type, trian_config.Train.seed, trian_config.Train.n_cpu)
             model.set_params(**asdict(trian_config.Model))
             model.fit(X_train, y_train)
 
