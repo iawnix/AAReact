@@ -125,7 +125,7 @@ def main() -> None:
                 )
             print("Info[iaw]>: {} best params: {}".format(hyper_config.Model_type, best_params))
             # best model
-            save_model = build_model(hyper_config.Model_type, hyper_config.Hyper.seed)
+            save_model = build_model(hyper_config.Model_type, hyper_config.Hyper.seed, hyper_config.n_cpu)
             save_model.set_params(**best_params)
             save_model.fit(X_train, y_train)
             train_pred = save_model.predict(X_train)
