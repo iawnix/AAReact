@@ -13,6 +13,10 @@ comb_s=(
     "rdkit_xtb_acsf"
     "soap_xtb_acsf"
     "rdkit_soap_xtb_acsf"
+    "rdkit"
+    "xtb"
+    "acsf"
+    "soap"
 )
 # 双层循环
 for i_m in "${model_s[@]}"; do

@@ -57,10 +57,13 @@ def read_hyper_log(fp: str) -> Dict[str, str]:
 model_s = ["lgb", "xgb", "rf"]
 comb_s = [("rdkit", "soap"), ("soap", "xtb"), ("rdkit", "xtb"), ("soap", "acsf"), ("acsf", "xtb"), ("rdkit", "acsf")
                , ("rdkit", "soap", "xtb"), ("rdkit", "soap", "acsf"),("rdkit", "xtb", "acsf"), ("soap", "xtb", "acsf") 
-               , ("rdkit", "soap", "xtb", "acsf")]
+               , ("rdkit", "soap", "xtb", "acsf"), ("rdkit", ), ("soap", ), ("xtb", ), ("acsf", ) ]
 for i_m in model_s:
     for i_c in comb_s:
-        i_desc_type = "_".join(i_c)
+        if len(i_c) != 1:
+            i_desc_type = "_".join(i_c)
+        else:
+            i_desc_type = i_c[0]
         log_f = "/home/iaw/DATA2/AAReact/train/output/hyper_log/{}_{}_seed_0-1_test_0-2_cv_5_hyper.log".format(i_m, i_desc_type)
         hyper_params = read_hyper_log(log_f)
         touch_toml(
