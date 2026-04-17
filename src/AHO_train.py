@@ -59,7 +59,7 @@ def main() -> None:
 
             # train model
             #print("Debug[iaw]:> trian_config.Model: {}".format(asdict(trian_config.Model)))
-            model = build_model(trian_config.Model_type, trian_config.Train.seed)
+            model = build_model(trian_config.Model_type, trian_config.Train.seed, trian_config.Train.n_cpu)
             model.set_params(**asdict(trian_config.Model))
             model.fit(X_train, y_train)
 
@@ -119,10 +119,13 @@ def main() -> None:
                 X_train = X_train, 
                 y_train = y_train,
                 seed = hyper_config.Hyper.seed, 
-                cv = hyper_config.Hyper.cv)
+                n_cpu_opt = hyper_config.Hyper.n_cpu, 
+                n_cpu_model = hyper_config.n_cpu,
+                cv = hyper_config.Hyper.cv
+                )
             print("Info[iaw]>: {} best params: {}".format(hyper_config.Model_type, best_params))
             # best model
-            save_model = build_model(hyper_config.Model_type, hyper_config.Hyper.seed)
+            save_model = build_model(hyper_config.Model_type, hyper_config.Hyper.seed, hyper_config.n_cpu)
             save_model.set_params(**best_params)
             save_model.fit(X_train, y_train)
             train_pred = save_model.predict(X_train)

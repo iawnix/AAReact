@@ -12,10 +12,12 @@ class hyper_params:
     seed: int
     test_size: float                    # 对于机器学习模型, 没有划分valid
     cv: int
+    n_cpu: int                          # 新增优化器cpu核数
 
 @dataclass
 class ml_hyper_config:
     Model_type: str
+    n_cpu: int                          # 新增优化器cpu核数
     Hyper: hyper_params
     params_save: str
 
@@ -25,9 +27,11 @@ def init_config_from_hyper_toml(toml_fp: str) -> ml_hyper_config:
 
     model_type = ss.get("Model").get("name")
     save_fp = ss.get("Model").get("params_save")
+    model_n_cpu = ss.get("Model").get("n_cpu")
     hyper_config = from_dict(hyper_params, ss.get("Hyper"))
     return ml_hyper_config(
         Model_type = model_type, 
+        n_cpu = model_n_cpu, 
         Hyper = hyper_config, 
         params_save = save_fp
     )

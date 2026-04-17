@@ -1,3 +1,5 @@
+#!/usr/bin/bash
+
 model_s=("lgb" "xgb" "rf")
 comb_s=(
     "rdkit_soap"
@@ -20,9 +22,9 @@ for i_m in "${model_s[@]}"; do
         echo "========================================================================"
 
         # 运行 Python 脚本（纯 bash 写法）
-        python /home/iaw/DATA2/AAReact/src/AHO_train.py \
+        python /home/iaw/DATA/AAReact/src/AHO_train.py \
             --task "hyper" \
-            --model_config "/home/iaw/DATA2/AAReact/config/hyper_ml_${i_m}_${i_desc_type}.toml"
+            --model_config "/home/iaw/DATA/AAReact/config/hyper_ml_${i_m}_${i_desc_type}.toml"
         echo "#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#"
         echo ""
     done

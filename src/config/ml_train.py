@@ -43,6 +43,7 @@ class train_params:
     seed: int
     test_size: float                    # 对于机器学习模型, 没有划分valid
     model_save: str
+    n_cpu: int                          # 新增模型训练CPU核数
 
 
 @dataclass
