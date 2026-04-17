@@ -107,23 +107,27 @@ def eval_dataset_split(seed_s: List[int], test_size_s: List[int], parms: Dict, m
 
     return train_score_mean_s, train_score_std_s, test_score_mean_s, test_score_std_s, feature_importance_s
 
-def load_data(data_x: str, data_y: str, x_label: str, data_class: str, data_name: Union[str, None] = None) -> Union[Tuple[NDArray, NDArray, List[str], List[int]], Tuple[NDArray, NDArray, List[str], List[int], List[str]]]:
+def load_data(data_x: str, data_y: str, x_label: str, data_class: str, data_name: Union[str, None] = None, data_batch: Union[str, None] = None) -> List:
     """
     加载数据
     """
+
     data_x = np.load("{}".format(data_x))
     data_y = np.load("{}".format(data_y))
     with open("{}".format(x_label), "rb") as f:
         x_label = pickle.load(f)
     with open("{}".format(data_class), "rb") as f:
         data_class = pickle.load(f)
-
-    if data_name == None:
-        return data_x, data_y, x_label, data_class
-    else:
+    out = [data_x, data_y, x_label, data_class]
+    if data_name != None:
         with open(data_name, "rb") as f:
             data_name = pickle.load(f)
-        return data_x, data_y, x_label, data_class, data_name
+            out.append(data_name)
+    if data_batch != None:
+        with open(data_batch, "rb") as f:
+            data_batch = pickle.load(f)
+            out.append(data_batch)
+    return out
 
 def split_data(data_s: Tuple[NDArray, NDArray, List[int]]
                , seed: int
