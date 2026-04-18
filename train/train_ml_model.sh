@@ -2,6 +2,10 @@
 
 model_s=("lgb" "xgb" "rf")
 comb_s=(
+    "rdkit"
+    "soap"
+    "xtb"
+    "acsf"
     "rdkit_soap"
     "soap_xtb"
     "rdkit_xtb"
