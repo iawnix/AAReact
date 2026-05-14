@@ -1,5 +1,20 @@
 
-DataSet/
+DataSet/AHO
+DataSet/.xtb_tmp/
+DataSet/AtropicAcid*
+DataSet/Data_All2
+DataSet/debug
+DataSet/Example
+DataSet/iter_02
+DataSet/logs
+DataSet/Unimol
+DataSet/1_process.ipynb
+DataSet/2_unimol.ipynb
+DataSet/raw-data-202601113.csv
+DataSet/Data_All/2_raw_features/
+DataSet/Data_All/3_data_for_train/
+DataSet/Data_All/4_data_for_train/
+DataSet/Data_All/README.md
 src/model/__pycache__/
 src/tool/__pycache__/
 src/util/__pycache__/
