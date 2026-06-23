@@ -1,7 +1,6 @@
 import argparse
 from argparse import Namespace
 import os
-from re import T
 import sys
 from pathlib import Path
 from joblib import dump, load
@@ -109,7 +108,7 @@ def _check_in_mol_type_is_sdf(mol_s: Tuple[str, str, str], warning: bool = True)
     match sum(sign_s): 
         case 3:
             return True
-        case -3:
+        case 0:
             return False
         case _:
             raise RuntimeError("Error[iaw]:> the mol must only be smi or sdf!")
