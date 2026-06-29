@@ -10,13 +10,16 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent
 sys.path.append(str(project_root))
 from util.featurizer import dscribe_featurizer, rdkit_featurizer, xtb_featurizer
-from config.constants import SOAP_FIX_PARAMETER, ACSF_FIX_PARAMETER, XTB_BACHEND, OBABEL_BACHEND, XTB_WORK_SCRATCH, RAW_CSV_COLUMNS, SUPPORTED_DESC_TYPES
+from config.constants import SOAP_FIX_PARAMETER, ACSF_FIX_PARAMETER, XTB_BACHEND, OBABEL_BACHEND, XTB_WORK_SCRATCH, RAW_CSV_COLUMNS, SUPPORTED_DESC_TYPES, HOMO_LUMO_GAP_NUM_4
 from copy import deepcopy
 
 from typing import List, Tuple, Dict, Any, Union
 
 import argparse
 from argparse import Namespace
+from rdkit import Chem
+
+XTB_FEATURE_DIM = 3 + HOMO_LUMO_GAP_NUM_4 ** 2
 
 """
 # 重新设计
@@ -36,6 +39,27 @@ def check_raw_csv(data_fp: str, data: Union[pd.DataFrame, False] =  False) -> bo
         return True
     else:
         return False
+
+def _smiles_from_sdf(sdf_fp: str, mol_name: str) -> str:
+    if not os.path.exists(sdf_fp):
+        raise FileNotFoundError("SDF file not found for {}: {}".format(mol_name, sdf_fp))
+
+    supplier = Chem.SDMolSupplier(sdf_fp, removeHs=False, sanitize=False)
+    mol = supplier[0] if len(supplier) > 0 else None
+    if mol is None:
+        raise ValueError("Cannot read molecule from SDF for {}: {}".format(mol_name, sdf_fp))
+
+    return Chem.MolToSmiles(mol)
+
+def _resolve_smiles(smi: Any, sdf_fp: str, mol_name: str) -> str:
+    if isinstance(smi, str) and smi.strip():
+        return smi
+    if pd.notna(smi):
+        smi_str = str(smi).strip()
+        if smi_str:
+            return smi_str
+
+    return _smiles_from_sdf(sdf_fp, mol_name)
 
 def calc_features(dat: pd.DataFrame, desc_type: str, out_fp: str) -> None:
 
@@ -124,12 +148,23 @@ def calc_xtb_features(sdf_s: Tuple[str, str, str]
             
             i_featurizer = xtb_featurizer(sdf_fp = i_sdf)
             _i_feat = i_featurizer.calc_xtb(xtb_config)
+            if _i_feat is None:
+                print("Warning[iaw]:> xTB failed for {}; fill XTB features with NaN.".format(i_name))
+                _i_feat = np.full(XTB_FEATURE_DIM, np.nan)
+            else:
+                _i_feat = np.asarray(_i_feat).flatten()
+                if _i_feat.shape[0] != XTB_FEATURE_DIM:
+                    print("Warning[iaw]:> xTB feature length for {} is {}, expected {}; pad/truncate with NaN.".format(
+                        i_name, _i_feat.shape[0], XTB_FEATURE_DIM))
+                    fixed_feat = np.full(XTB_FEATURE_DIM, np.nan)
+                    n_copy = min(_i_feat.shape[0], XTB_FEATURE_DIM)
+                    fixed_feat[:n_copy] = _i_feat[:n_copy]
+                    _i_feat = fixed_feat
             out_feat.append(_i_feat)
             cache[i_name] = deepcopy(_i_feat)
 
         if first:
-            n_xtb = out_feat[0].shape[-1]
-            for j in range(n_xtb):
+            for j in range(XTB_FEATURE_DIM):
                 features_name.append("{}_XTB{}".format(i_name[:3], j))
 
     out_feat = np.array(out_feat).flatten()
@@ -147,7 +182,8 @@ def calc_rdkit_desc_features(smi_s: Tuple[str, str, str]
         if i_name in cache.keys():
             out_feat.append(cache[i_name])
         else:
-            i_featurizer = rdkit_featurizer(smi = i_smi)
+            i_sdf = os.path.join(SDF_HOME, i_name + ".sdf")
+            i_featurizer = rdkit_featurizer(smi = _resolve_smiles(i_smi, i_sdf, i_name))
             _i_feat = i_featurizer.calc_rdkit_descrip()
             out_feat.append(_i_feat)
             cache[i_name] = deepcopy(_i_feat)
@@ -171,8 +207,8 @@ def calc_rdkit_morgan_features(smi_s: Tuple[str, str, str]
         if i_name in cache.keys():
             out_feat.append(cache[i_name])
         else:
-
-            i_featurizer = rdkit_featurizer(smi = i_smi)
+            i_sdf = os.path.join(SDF_HOME, i_name + ".sdf")
+            i_featurizer = rdkit_featurizer(smi = _resolve_smiles(i_smi, i_sdf, i_name))
             _i_feat = i_featurizer.calc_morgan_fp().ToList()
             out_feat.append(_i_feat)
             cache[i_name] = deepcopy(_i_feat)
@@ -320,5 +356,3 @@ if __name__ == "__main__":
             calc_features(dat, desc_type, out_fp=os.path.join(out_path, "{}_features.csv".format(desc_type)))
     else:
         calc_features(dat, myp.desc_type, out_fp=os.path.join(out_path, "{}_features.csv".format(myp.desc_type)))
-
-

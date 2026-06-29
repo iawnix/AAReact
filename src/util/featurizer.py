@@ -296,7 +296,7 @@ def xtb_log_to_data(log_path: str, sign: str, addition: Any = None) -> Union[Tup
         hlg_error_if = False
         
         # 这个时候必须需要这个额外的参数
-        if addition == None and isinstance(addition, int):
+        if addition is None or not isinstance(addition, int):
             return (None, True)
         
         n_hlg = addition
@@ -305,12 +305,16 @@ def xtb_log_to_data(log_path: str, sign: str, addition: Any = None) -> Union[Tup
 
             # 计算homo_lumo的gap
             lumo_ene, homo_ene = molden.FO()
-            if (n_l := lumo_ene.shape[0]) < n_hlg and ( n_h := homo_ene.shape[0]) < n_hlg:
-                print("Error[iaw]:> The number of molecular orbitals of this molecule is not sufficient to calculate a sufficient gap: HOMO: {}, LUMO: {}".format(
+            n_l = lumo_ene.shape[0]
+            n_h = homo_ene.shape[0]
+            if n_l < n_hlg or n_h < n_hlg:
+                print("Warning[iaw]:> The number of molecular orbitals of this molecule is not sufficient to calculate a sufficient gap: HOMO: {}, LUMO: {}".format(
                     n_h, n_l))
             
-            lumo_ene_select = lumo_ene[:n_hlg]
-            homo_ene_select = homo_ene[:n_hlg]
+            lumo_ene_select = np.full(n_hlg, np.nan)
+            homo_ene_select = np.full(n_hlg, np.nan)
+            lumo_ene_select[:min(n_l, n_hlg)] = lumo_ene[:n_hlg]
+            homo_ene_select[:min(n_h, n_hlg)] = homo_ene[:n_hlg]
 
             lumo_homo_diff = np.subtract.outer(lumo_ene_select, homo_ene_select)
         except:

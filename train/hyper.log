@@ -1,0 +1,420 @@
+========================================================================
+Hyper: model[lgb] descripe[rdkit_soap] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: lgb
+Info[iaw]:> The trian mean mse: 0.0344, the test mean mse: 0.0763
+Info[iaw]>: lgb best params: {'colsample_bytree': 0.8, 'learning_rate': 0.2, 'max_depth': 5,
+'min_child_samples': 20, 'n_estimators': 50, 'num_leaves': 31, 'reg_alpha': 0.5, 'reg_lambda': 1.0,
+'subsample': 0.8}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[lgb] descripe[soap_xtb] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: lgb
+Info[iaw]:> The trian mean mse: 0.0374, the test mean mse: 0.0780
+Info[iaw]>: lgb best params: {'colsample_bytree': 0.9, 'learning_rate': 0.2, 'max_depth': 5,
+'min_child_samples': 20, 'n_estimators': 50, 'num_leaves': 31, 'reg_alpha': 0.5, 'reg_lambda': 2.0,
+'subsample': 0.8}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[lgb] descripe[rdkit_xtb] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: lgb
+Info[iaw]:> The trian mean mse: 0.0355, the test mean mse: 0.0790
+Info[iaw]>: lgb best params: {'colsample_bytree': 0.8, 'learning_rate': 0.2, 'max_depth': 8,
+'min_child_samples': 20, 'n_estimators': 50, 'num_leaves': 31, 'reg_alpha': 0.5, 'reg_lambda': 3.0,
+'subsample': 0.8}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[lgb] descripe[soap_acsf] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: lgb
+Info[iaw]:> The trian mean mse: 0.0336, the test mean mse: 0.0769
+Info[iaw]>: lgb best params: {'colsample_bytree': 1.0, 'learning_rate': 0.2, 'max_depth': 8,
+'min_child_samples': 20, 'n_estimators': 50, 'num_leaves': 31, 'reg_alpha': 0.5, 'reg_lambda': 0.5,
+'subsample': 0.8}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[lgb] descripe[acsf_xtb] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: lgb
+Info[iaw]:> The trian mean mse: 0.0409, the test mean mse: 0.0858
+Info[iaw]>: lgb best params: {'colsample_bytree': 0.8, 'learning_rate': 0.2, 'max_depth': 8,
+'min_child_samples': 20, 'n_estimators': 50, 'num_leaves': 31, 'reg_alpha': 0.5, 'reg_lambda': 3.0,
+'subsample': 0.8}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[lgb] descripe[rdkit_acsf] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: lgb
+Info[iaw]:> The trian mean mse: 0.0350, the test mean mse: 0.0810
+Info[iaw]>: lgb best params: {'colsample_bytree': 1.0, 'learning_rate': 0.2, 'max_depth': 5,
+'min_child_samples': 20, 'n_estimators': 50, 'num_leaves': 31, 'reg_alpha': 0.5, 'reg_lambda': 0.5,
+'subsample': 0.8}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[lgb] descripe[rdkit_soap_xtb] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: lgb
+Info[iaw]:> The trian mean mse: 0.0333, the test mean mse: 0.0767
+Info[iaw]>: lgb best params: {'colsample_bytree': 0.8, 'learning_rate': 0.2, 'max_depth': 8,
+'min_child_samples': 20, 'n_estimators': 50, 'num_leaves': 31, 'reg_alpha': 0.5, 'reg_lambda': 5.0,
+'subsample': 0.8}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[lgb] descripe[rdkit_soap_acsf] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: lgb
+Info[iaw]:> The trian mean mse: 0.0350, the test mean mse: 0.0761
+Info[iaw]>: lgb best params: {'colsample_bytree': 0.9, 'learning_rate': 0.2, 'max_depth': 8,
+'min_child_samples': 20, 'n_estimators': 50, 'num_leaves': 31, 'reg_alpha': 0.5, 'reg_lambda': 1.5,
+'subsample': 0.8}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[lgb] descripe[rdkit_xtb_acsf] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: lgb
+Info[iaw]:> The trian mean mse: 0.0343, the test mean mse: 0.0762
+Info[iaw]>: lgb best params: {'colsample_bytree': 0.8, 'learning_rate': 0.2, 'max_depth': 8,
+'min_child_samples': 20, 'n_estimators': 50, 'num_leaves': 31, 'reg_alpha': 0.5, 'reg_lambda': 3.0,
+'subsample': 0.8}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[lgb] descripe[soap_xtb_acsf] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: lgb
+Info[iaw]:> The trian mean mse: 0.0332, the test mean mse: 0.0755
+Info[iaw]>: lgb best params: {'colsample_bytree': 0.8, 'learning_rate': 0.2, 'max_depth': 8,
+'min_child_samples': 20, 'n_estimators': 50, 'num_leaves': 31, 'reg_alpha': 0.5, 'reg_lambda': 1.0,
+'subsample': 0.8}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[lgb] descripe[rdkit_soap_xtb_acsf] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: lgb
+Info[iaw]:> The trian mean mse: 0.0331, the test mean mse: 0.0746
+Info[iaw]>: lgb best params: {'colsample_bytree': 0.8, 'learning_rate': 0.2, 'max_depth': 8,
+'min_child_samples': 20, 'n_estimators': 50, 'num_leaves': 31, 'reg_alpha': 0.5, 'reg_lambda': 2.0,
+'subsample': 0.8}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[lgb] descripe[rdkit] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: lgb
+Info[iaw]:> The trian mean mse: 0.0377, the test mean mse: 0.0831
+Info[iaw]>: lgb best params: {'colsample_bytree': 0.9, 'learning_rate': 0.2, 'max_depth': 5,
+'min_child_samples': 20, 'n_estimators': 50, 'num_leaves': 31, 'reg_alpha': 0.5, 'reg_lambda': 2.0,
+'subsample': 0.8}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[lgb] descripe[xtb] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: lgb
+Info[iaw]:> The trian mean mse: 0.0449, the test mean mse: 0.0932
+Info[iaw]>: lgb best params: {'colsample_bytree': 0.8, 'learning_rate': 0.2, 'max_depth': 10,
+'min_child_samples': 20, 'n_estimators': 50, 'num_leaves': 31, 'reg_alpha': 0.5, 'reg_lambda': 0.5,
+'subsample': 0.8}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[lgb] descripe[acsf] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: lgb
+Info[iaw]:> The trian mean mse: 0.0447, the test mean mse: 0.0868
+Info[iaw]>: lgb best params: {'colsample_bytree': 0.9, 'learning_rate': 0.2, 'max_depth': 8,
+'min_child_samples': 20, 'n_estimators': 50, 'num_leaves': 31, 'reg_alpha': 0.5, 'reg_lambda': 5.0,
+'subsample': 0.8}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[lgb] descripe[soap] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: lgb
+Info[iaw]:> The trian mean mse: 0.1410, the test mean mse: 0.1724
+Info[iaw]>: lgb best params: {'colsample_bytree': 1.0, 'learning_rate': 0.2, 'max_depth': 3,
+'min_child_samples': 20, 'n_estimators': 15, 'num_leaves': 31, 'reg_alpha': 0.5, 'reg_lambda': 2.0,
+'subsample': 0.8}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[xgb] descripe[rdkit_soap] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: xgb
+Info[iaw]:> The trian mean mse: 0.0208, the test mean mse: 0.0662
+Info[iaw]>: xgb best params: {'colsample_bytree': 0.8, 'learning_rate': 0.1, 'max_depth': 10,
+'min_child_weight': 5, 'n_estimators': 50, 'reg_alpha': 0.5, 'reg_lambda': 0.5, 'subsample': 0.8}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[xgb] descripe[soap_xtb] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: xgb
+Info[iaw]:> The trian mean mse: 0.0211, the test mean mse: 0.0707
+Info[iaw]>: xgb best params: {'colsample_bytree': 0.8, 'learning_rate': 0.1, 'max_depth': 20,
+'min_child_weight': 5, 'n_estimators': 50, 'reg_alpha': 0.5, 'reg_lambda': 0.5, 'subsample': 0.8}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[xgb] descripe[rdkit_xtb] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: xgb
+Info[iaw]:> The trian mean mse: 0.0233, the test mean mse: 0.0688
+Info[iaw]>: xgb best params: {'colsample_bytree': 0.8, 'learning_rate': 0.1, 'max_depth': 10,
+'min_child_weight': 5, 'n_estimators': 50, 'reg_alpha': 0.5, 'reg_lambda': 1.5, 'subsample': 0.8}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[xgb] descripe[soap_acsf] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: xgb
+Info[iaw]:> The trian mean mse: 0.0224, the test mean mse: 0.0730
+Info[iaw]>: xgb best params: {'colsample_bytree': 0.9, 'learning_rate': 0.1, 'max_depth': 8,
+'min_child_weight': 5, 'n_estimators': 50, 'reg_alpha': 0.5, 'reg_lambda': 1.0, 'subsample': 0.8}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[xgb] descripe[acsf_xtb] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: xgb
+Info[iaw]:> The trian mean mse: 0.0224, the test mean mse: 0.0730
+Info[iaw]>: xgb best params: {'colsample_bytree': 0.8, 'learning_rate': 0.1, 'max_depth': 20,
+'min_child_weight': 5, 'n_estimators': 50, 'reg_alpha': 0.5, 'reg_lambda': 0.5, 'subsample': 0.8}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[xgb] descripe[rdkit_acsf] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: xgb
+Info[iaw]:> The trian mean mse: 0.0216, the test mean mse: 0.0696
+Info[iaw]>: xgb best params: {'colsample_bytree': 0.9, 'learning_rate': 0.1, 'max_depth': 8,
+'min_child_weight': 5, 'n_estimators': 50, 'reg_alpha': 0.5, 'reg_lambda': 0.5, 'subsample': 0.8}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[xgb] descripe[rdkit_soap_xtb] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: xgb
+Info[iaw]:> The trian mean mse: 0.0207, the test mean mse: 0.0680
+Info[iaw]>: xgb best params: {'colsample_bytree': 0.9, 'learning_rate': 0.1, 'max_depth': 10,
+'min_child_weight': 5, 'n_estimators': 50, 'reg_alpha': 0.5, 'reg_lambda': 0.5, 'subsample': 0.8}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[xgb] descripe[rdkit_soap_acsf] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: xgb
+Info[iaw]:> The trian mean mse: 0.0222, the test mean mse: 0.0692
+Info[iaw]>: xgb best params: {'colsample_bytree': 0.9, 'learning_rate': 0.1, 'max_depth': 8,
+'min_child_weight': 5, 'n_estimators': 50, 'reg_alpha': 0.5, 'reg_lambda': 1.0, 'subsample': 0.8}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[xgb] descripe[rdkit_xtb_acsf] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: xgb
+Info[iaw]:> The trian mean mse: 0.0216, the test mean mse: 0.0718
+Info[iaw]>: xgb best params: {'colsample_bytree': 0.9, 'learning_rate': 0.1, 'max_depth': 8,
+'min_child_weight': 5, 'n_estimators': 50, 'reg_alpha': 0.5, 'reg_lambda': 0.5, 'subsample': 0.8}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[xgb] descripe[soap_xtb_acsf] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: xgb
+Info[iaw]:> The trian mean mse: 0.0231, the test mean mse: 0.0706
+Info[iaw]>: xgb best params: {'colsample_bytree': 0.9, 'learning_rate': 0.1, 'max_depth': 8,
+'min_child_weight': 5, 'n_estimators': 50, 'reg_alpha': 0.5, 'reg_lambda': 1.5, 'subsample': 0.8}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[xgb] descripe[rdkit_soap_xtb_acsf] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: xgb
+Info[iaw]:> The trian mean mse: 0.0224, the test mean mse: 0.0683
+Info[iaw]>: xgb best params: {'colsample_bytree': 0.8, 'learning_rate': 0.1, 'max_depth': 20,
+'min_child_weight': 5, 'n_estimators': 50, 'reg_alpha': 0.5, 'reg_lambda': 1.5, 'subsample': 0.8}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[xgb] descripe[rdkit] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: xgb
+Info[iaw]:> The trian mean mse: 0.0238, the test mean mse: 0.0700
+Info[iaw]>: xgb best params: {'colsample_bytree': 0.9, 'learning_rate': 0.1, 'max_depth': 8,
+'min_child_weight': 5, 'n_estimators': 50, 'reg_alpha': 0.5, 'reg_lambda': 1.5, 'subsample': 0.8}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[xgb] descripe[xtb] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: xgb
+Info[iaw]:> The trian mean mse: 0.0252, the test mean mse: 0.0740
+Info[iaw]>: xgb best params: {'colsample_bytree': 0.8, 'learning_rate': 0.1, 'max_depth': 20,
+'min_child_weight': 5, 'n_estimators': 50, 'reg_alpha': 0.5, 'reg_lambda': 0.5, 'subsample': 0.8}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[xgb] descripe[acsf] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: xgb
+Info[iaw]:> The trian mean mse: 0.0254, the test mean mse: 0.0768
+Info[iaw]>: xgb best params: {'colsample_bytree': 0.9, 'learning_rate': 0.1, 'max_depth': 10,
+'min_child_weight': 5, 'n_estimators': 50, 'reg_alpha': 0.5, 'reg_lambda': 1.0, 'subsample': 0.8}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[xgb] descripe[soap] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: xgb
+Info[iaw]:> The trian mean mse: 0.1411, the test mean mse: 0.1723
+Info[iaw]>: xgb best params: {'colsample_bytree': 0.8, 'learning_rate': 0.1, 'max_depth': 3,
+'min_child_weight': 5, 'n_estimators': 20, 'reg_alpha': 0.5, 'reg_lambda': 2.0, 'subsample': 0.8}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[rf] descripe[rdkit_soap] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: rf
+Info[iaw]:> The trian mean mse: 0.0536, the test mean mse: 0.1097
+Info[iaw]>: rf best params: {'ccp_alpha': 1e-05, 'max_depth': 20, 'min_samples_leaf': 4,
+'min_samples_split': 2, 'n_estimators': 155}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[rf] descripe[soap_xtb] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: rf
+Info[iaw]:> The trian mean mse: 0.0505, the test mean mse: 0.1043
+Info[iaw]>: rf best params: {'ccp_alpha': 1e-05, 'max_depth': 20, 'min_samples_leaf': 4,
+'min_samples_split': 2, 'n_estimators': 10}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[rf] descripe[rdkit_xtb] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: rf
+Info[iaw]:> The trian mean mse: 0.0588, the test mean mse: 0.1113
+Info[iaw]>: rf best params: {'ccp_alpha': 1e-05, 'max_depth': 20, 'min_samples_leaf': 4,
+'min_samples_split': 2, 'n_estimators': 10}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[rf] descripe[soap_acsf] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: rf
+Info[iaw]:> The trian mean mse: 0.0586, the test mean mse: 0.0991
+Info[iaw]>: rf best params: {'ccp_alpha': 1e-05, 'max_depth': 8, 'min_samples_leaf': 4,
+'min_samples_split': 2, 'n_estimators': 5}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[rf] descripe[acsf_xtb] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: rf
+Info[iaw]:> The trian mean mse: 0.0540, the test mean mse: 0.1021
+Info[iaw]>: rf best params: {'ccp_alpha': 1e-05, 'max_depth': 20, 'min_samples_leaf': 4,
+'min_samples_split': 2, 'n_estimators': 10}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[rf] descripe[rdkit_acsf] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: rf
+Info[iaw]:> The trian mean mse: 0.0552, the test mean mse: 0.1088
+Info[iaw]>: rf best params: {'ccp_alpha': 1e-05, 'max_depth': 10, 'min_samples_leaf': 4,
+'min_samples_split': 2, 'n_estimators': 10}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[rf] descripe[rdkit_soap_xtb] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: rf
+Info[iaw]:> The trian mean mse: 0.0554, the test mean mse: 0.1073
+Info[iaw]>: rf best params: {'ccp_alpha': 1e-05, 'max_depth': 20, 'min_samples_leaf': 4,
+'min_samples_split': 2, 'n_estimators': 10}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[rf] descripe[rdkit_soap_acsf] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: rf
+Info[iaw]:> The trian mean mse: 0.0536, the test mean mse: 0.1089
+Info[iaw]>: rf best params: {'ccp_alpha': 1e-05, 'max_depth': 20, 'min_samples_leaf': 4,
+'min_samples_split': 2, 'n_estimators': 155}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[rf] descripe[rdkit_xtb_acsf] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: rf
+Info[iaw]:> The trian mean mse: 0.0561, the test mean mse: 0.1040
+Info[iaw]>: rf best params: {'ccp_alpha': 1e-05, 'max_depth': 8, 'min_samples_leaf': 4,
+'min_samples_split': 2, 'n_estimators': 10}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[rf] descripe[soap_xtb_acsf] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: rf
+Info[iaw]:> The trian mean mse: 0.0591, the test mean mse: 0.1026
+Info[iaw]>: rf best params: {'ccp_alpha': 1e-05, 'max_depth': 8, 'min_samples_leaf': 4,
+'min_samples_split': 2, 'n_estimators': 5}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[rf] descripe[rdkit_soap_xtb_acsf] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: rf
+Info[iaw]:> The trian mean mse: 0.0554, the test mean mse: 0.1048
+Info[iaw]>: rf best params: {'ccp_alpha': 1e-05, 'max_depth': 10, 'min_samples_leaf': 4,
+'min_samples_split': 2, 'n_estimators': 10}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[rf] descripe[rdkit] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: rf
+Info[iaw]:> The trian mean mse: 0.0581, the test mean mse: 0.1150
+Info[iaw]>: rf best params: {'ccp_alpha': 1e-05, 'max_depth': 20, 'min_samples_leaf': 4,
+'min_samples_split': 2, 'n_estimators': 155}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[rf] descripe[xtb] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: rf
+Info[iaw]:> The trian mean mse: 0.0626, the test mean mse: 0.1202
+Info[iaw]>: rf best params: {'ccp_alpha': 1e-05, 'max_depth': 30, 'min_samples_leaf': 4,
+'min_samples_split': 2, 'n_estimators': 155}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[rf] descripe[acsf] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: rf
+Info[iaw]:> The trian mean mse: 0.0649, the test mean mse: 0.1082
+Info[iaw]>: rf best params: {'ccp_alpha': 1e-05, 'max_depth': 10, 'min_samples_leaf': 4,
+'min_samples_split': 2, 'n_estimators': 10}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+========================================================================
+Hyper: model[rf] descripe[soap] seed[1] test_size[0.2] cv[5]
+========================================================================
+Info[iaw]:> Start hyper model: rf
+Info[iaw]:> The trian mean mse: 0.1422, the test mean mse: 0.1686
+Info[iaw]>: rf best params: {'ccp_alpha': 1e-05, 'max_depth': 3, 'min_samples_leaf': 4,
+'min_samples_split': 30, 'n_estimators': 120}
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
