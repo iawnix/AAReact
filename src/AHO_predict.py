@@ -15,7 +15,8 @@ project_root = Path(__file__).parent.parent
 sys.path.append(str(project_root))
 
 from util.featurizer import rdkit_featurizer, dscribe_featurizer, xtb_featurizer
-from config.constants import XTB_BACHEND, OBABEL_BACHEND, XTB_WORK_SCRATCH
+from util.feature_transform import feature_name_from_label_key, ordered_label_items
+from config.constants import XTB_BACHEND, OBABEL_BACHEND, XTB_WORK_SCRATCH, ACSF_FIX_PARAMETER, normalize_target, target_display
 from rich import print as rp
 from rich.status import Status
 
@@ -75,11 +76,9 @@ def init_feat_label(feat_label: Dict[str, List[str]]) -> List[Tuple[str, Tuple[L
 
     """
     out = []
-    key_s = list(feat_label.keys())
-    feat_key_withsign = sorted(key_s, key=lambda x: int(x.split('_')[0].replace('label', '')))
-    feat_key = [item.split('_')[1] for item in feat_key_withsign]
-    for i, i_feat_name in enumerate(feat_key):
-        i_feat_splited = _split_feat(feat_label_value = feat_label[feat_key_withsign[i]], warning = False)
+    for feat_key_withsign, labels in ordered_label_items(feat_label):
+        i_feat_name = feature_name_from_label_key(feat_key_withsign)
+        i_feat_splited = _split_feat(feat_label_value = labels, warning = False)
         out.append((i_feat_name, i_feat_splited))
     return out
 
@@ -154,6 +153,27 @@ def _calc_xtb_feat(mol_type: str, sdf_fp: str, feat_label: List[str], warning: b
     tmp_feat_name = {"XTB{}".format(j): j for j in range(n_tmp_feat)}
     select_idx = [tmp_feat_name[i] for i in feat_label]
     out = tmp_feat[select_idx]
+    return out
+
+
+def _calc_acsf_feat(mol_type: str, sdf_fp: str, feat_label: List[str], warning: bool = True) -> NDArray:
+    if warning:
+        print("Warning[iaw]:> This function is only used to calc acsf in main function!")
+
+    acsf_config = SimpleNamespace(**{
+          "type": "acsf"
+        , "mol_type": mol_type
+        , "rcut": ACSF_FIX_PARAMETER["rcut"]
+        , "g2_params": ACSF_FIX_PARAMETER["g2_params"]
+        , "g4_params": ACSF_FIX_PARAMETER["g4_params"]
+    })
+    acsf_featurizer = dscribe_featurizer(sdf_fp = sdf_fp)
+    tmp_feat = acsf_featurizer.calc_acsf(acsf_config)
+    n_tmp_feat = tmp_feat.shape[-1]
+    tmp_feat_name = {"ACSF{}".format(j): j for j in range(n_tmp_feat)}
+    select_idx = [tmp_feat_name[i] for i in feat_label]
+    out = tmp_feat[:, select_idx]
+    out = out.flatten()
     return out
 
 
@@ -238,9 +258,25 @@ def init_features(  mol_s: Tuple[str, str, str]
                 all_feat.append(np.array([temp]))
             if len(PRESSURE_feat_label) == 1:
                 all_feat.append(np.array([pressure]))
+        case "acsf":
+            if not _check_in_mol_type_is_sdf(mol_s, warning=False):
+                raise RuntimeError("Error[iaw]:> the mol must be sdf, when the feat type is acsf!")
+            if len(REA_feat_label) != 0:
+                rea_feat = _calc_acsf_feat(mol_type = "reactant", sdf_fp = mol_s[0], feat_label = REA_feat_label, warning = False)
+                all_feat.append(rea_feat)
+            if len(SOL_feat_label) != 0:
+                sol_feat = _calc_acsf_feat(mol_type = "solvent", sdf_fp = mol_s[1], feat_label = SOL_feat_label, warning = False)
+                all_feat.append(sol_feat)
+            if len(CAT_feat_label) != 0:
+                cat_feat = _calc_acsf_feat(mol_type = "catalyst", sdf_fp = mol_s[2], feat_label = CAT_feat_label, warning = False)
+                all_feat.append(cat_feat)
+            if len(TEMP_feat_label) == 1:
+                all_feat.append(np.array([temp]))
+            if len(PRESSURE_feat_label) == 1:
+                all_feat.append(np.array([pressure]))
 
         case _:
-            raise RuntimeError("Error[iaw]:> please input feat, rdkit, soap!")
+            raise RuntimeError("Error[iaw]:> please input feat, rdkit, soap, xtb or acsf!")
     return all_feat
 
 def Parm() -> Namespace:
@@ -251,7 +287,8 @@ def Parm() -> Namespace:
         2. sdf: 模型需要3d信息, 且sdf中必须存有smiles, 默认的属性名为`SMILES`
     """
     parser = argparse.ArgumentParser(description="AAReact: Atropic Acid Enantioselectivity Prediction")
-    parser.add_argument("--task", type=str, help="The task to perform: ee or conv.")
+    parser.add_argument("--task", type=str, default=None, help="The task to perform: ee, ddg or conv.")
+    parser.add_argument("--target", type=str, default=None, help="Prediction target: ee or ddg. Overrides model metadata.")
     parser.add_argument("--rea", type=str, help="The smiles or sdf of Reatant.")
     parser.add_argument("--sol", type=str, help="The smiles or sdf of Solvent.")
     parser.add_argument("--cat", type=str, help="The smiles or sdf of Catalyst.")
@@ -268,14 +305,39 @@ def Parm() -> Namespace:
     return args
 
 
+def _load_model_and_metadata(model_fp: str):
+    model = load(model_fp)
+    if isinstance(model, dict) and "model" in model:
+        artifact = model
+        model = artifact["model"]
+        return model, artifact.get("target"), artifact.get("x_label")
+    return model, getattr(model, "aa_target", None), getattr(model, "aa_x_label", None)
+
+
+def _resolve_target(args: Namespace, model_target: Union[str, None]) -> str:
+    task = args.task.strip().lower() if args.task is not None else None
+    if task not in [None, "ee", "ddg"]:
+        raise ValueError("Unsupported prediction task: {}. Use ee, ddg or conv.".format(args.task))
+    return normalize_target(args.target or task or model_target or "ee")
+
+
 def main() -> None:
     args = Parm()
-    if args.task == "ee":
+    task = args.task.strip().lower() if args.task is not None else None
+    if task == "conv":
+        pass
+    elif task in [None, "ee", "ddg"]:
         with Status("running...", spinner="dots") as status:
             # int model
-            model = load(args.model)
-            with open(args.feat_label, "rb") as f:
-                feat_label = pickle.load(f)
+            model, model_target, model_feat_label = _load_model_and_metadata(args.model)
+            target = _resolve_target(args, model_target)
+            if args.feat_label is not None:
+                with open(args.feat_label, "rb") as f:
+                    feat_label = pickle.load(f)
+            elif model_feat_label is not None:
+                feat_label = model_feat_label
+            else:
+                raise RuntimeError("Error[iaw]>: please provide --feat_label or use a model saved with aa_x_label metadata.")
 
             # min_max_normer
             #data_x_max = np.load("data_x_max.npy")
@@ -306,29 +368,29 @@ def main() -> None:
             data_x = np.concatenate(all_feat)
             #print("Debug[iaw]:> the data_x.shape = {}".format(data_x.shape))
             # predict
-            ee = model.predict(data_x.reshape(1, -1))[0]
+            pred = model.predict(data_x.reshape(1, -1))[0]
         
         if args.save_feat is not None:
             # 保存过程中产生的特征
             np.save("{}".format(args.save_feat), data_x)
 
+        target_name, target_unit = target_display(target)
+        unit_suffix = " {}".format(target_unit) if target_unit else ""
         if args.verbose == 1:
-            rp("Info\\[iaw]>:\n\tThe Rea.: {}\n\tThe Sol.: {}\n\tTheCat.: {}\n\tThe Temp: {}\n\tThe Pressure: {}\n\tThe ee: {:.6f}".format(
-                args.rea_smi
-                , args.sol_smi
-                , args.cat_smi
+            rp("Info\\[iaw]>:\n\tThe Rea.: {}\n\tThe Sol.: {}\n\tThe Cat.: {}\n\tThe Temp: {}\n\tThe Pressure: {}\n\tThe {}: {:.6f}{}".format(
+                args.rea
+                , args.sol
+                , args.cat
                 , args.temp
                 , args.pressure
-                , ee
+                , target_name
+                , pred
+                , unit_suffix
             ))
         else:
-            rp("Info\\[iaw]>: The ee: {:.6f}".format(ee))
-
-
-    elif args.task == "conv":
-        pass
+            rp("Info\\[iaw]>: The {}: {:.6f}{}".format(target_name, pred, unit_suffix))
     else:
-        rp("Error\\[iaw]>: Please specify the task to perform: ee or conv.")
+        rp("Error\\[iaw]>: Please specify the task to perform: ee, ddg or conv.")
         sys.exit(1)
 
     # init model

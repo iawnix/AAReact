@@ -1,0 +1,36 @@
+{
+  "source_rows": 405,
+  "summary_rows": 45,
+  "targets": [
+    "ddg"
+  ],
+  "hyper_splits": [
+    "seed_1_test_0-2"
+  ],
+  "train_splits": [
+    "seed_1_test_0-15",
+    "seed_1_test_0-2",
+    "seed_1_test_0-3",
+    "seed_12_test_0-15",
+    "seed_12_test_0-2",
+    "seed_12_test_0-3",
+    "seed_42_test_0-15",
+    "seed_42_test_0-2",
+    "seed_42_test_0-3"
+  ],
+  "outputs": [
+    "summary_by_model_descriptor.csv",
+    "rmse_test_mean_heatmap.png",
+    "rmse_test_mean_heatmap.svg",
+    "rmse_test_std_heatmap.png",
+    "rmse_test_std_heatmap.svg",
+    "rmse_test_box_top_descriptors.png",
+    "rmse_test_box_top_descriptors.svg",
+    "rmse_gap_vs_rmse_test.png",
+    "rmse_gap_vs_rmse_test.svg",
+    "test_size_sensitivity.png",
+    "test_size_sensitivity.svg",
+    "split_heatmap_top_models.png",
+    "split_heatmap_top_models.svg"
+  ]
+}

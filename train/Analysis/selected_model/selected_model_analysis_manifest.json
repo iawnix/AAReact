@@ -1,0 +1,91 @@
+{
+  "target": "ddg",
+  "hyper_split": "seed_1_test_0-2",
+  "search_method": "optuna",
+  "split": "seed_1_test_0-2",
+  "model_name": "xgb",
+  "descriptor": "rdkit_xtb_acsf",
+  "config": "/home/iaw/DATA2/AAReact/config/train/ddg/hyper_seed_1_test_0-2/search_optuna/seed_1_test_0-2/train_ml_xgb_rdkit_xtb_acsf.toml",
+  "model": "/home/iaw/DATA2/AAReact/train/output/pt/ddg/hyper_seed_1_test_0-2/search_optuna/seed_1_test_0-2/xgb_rdkit_xtb_acsf.pkl",
+  "data_x": "/home/iaw/DATA2/AAReact/DataSet/Data_All/3_data_for_train/ddg/seed_1_test_0-2/rdkit_xtb_acsf/train_test_data_x.npy",
+  "seed": 1,
+  "test_size": 0.2,
+  "n_train": 326,
+  "n_test": 82,
+  "n_features": 443,
+  "train_metrics": {
+    "R2": 0.9927636944190236,
+    "MSE": 0.006241970718284772,
+    "MAE": 0.04482322391726054,
+    "RMSE": 0.07900614354773161
+  },
+  "test_metrics": {
+    "R2": 0.9426653582915153,
+    "MSE": 0.04770652561326052,
+    "MAE": 0.1514382060852936,
+    "RMSE": 0.2184182355327973
+  },
+  "sign_metrics": {
+    "train": {
+      "n_total": 326,
+      "n_evaluable_nonzero": 265,
+      "n_correct": 264,
+      "n_incorrect": 1,
+      "n_true_zero_excluded": 61,
+      "n_invalid": 0,
+      "accuracy_nonzero": 0.9962264150943396
+    },
+    "test": {
+      "n_total": 82,
+      "n_evaluable_nonzero": 71,
+      "n_correct": 63,
+      "n_incorrect": 8,
+      "n_true_zero_excluded": 11,
+      "n_invalid": 0,
+      "accuracy_nonzero": 0.8873239436619719
+    }
+  },
+  "test_sign_metrics": {
+    "n_total": 82,
+    "n_evaluable_nonzero": 71,
+    "n_correct": 63,
+    "n_incorrect": 8,
+    "n_true_zero_excluded": 11,
+    "n_invalid": 0,
+    "accuracy_nonzero": 0.8873239436619719
+  },
+  "shap_samples": 326,
+  "shap_sample_indices": [],
+  "source_data": {
+    "source_csv": "/home/iaw/DATA2/AAReact/DataSet/Data_All/full_data_436-20260723.csv",
+    "source_available": true,
+    "source_n": 436,
+    "formula_n_valid": 436,
+    "ddg_formula": "DDG = R*(TEMP+273.15)*ln((1+EE)/(1-EE))",
+    "ddg_r_kcal": 0.001987,
+    "max_abs_ddg_formula_error": 4.877431791783238e-12,
+    "mean_abs_ddg_formula_error": 1.0300364107141266e-12,
+    "opposite_sign_ee_ddg_count": 0
+  },
+  "outputs": [
+    "/home/iaw/DATA2/AAReact/train/Analysis/selected_model/selected_model_train_test_predictions.csv",
+    "/home/iaw/DATA2/AAReact/train/Analysis/selected_model/selected_model_ee_ddg_mapping.png",
+    "/home/iaw/DATA2/AAReact/train/Analysis/selected_model/selected_model_ee_ddg_mapping.svg",
+    "/home/iaw/DATA2/AAReact/train/Analysis/selected_model/selected_model_train_test_regression.png",
+    "/home/iaw/DATA2/AAReact/train/Analysis/selected_model/selected_model_train_test_regression.svg",
+    "/home/iaw/DATA2/AAReact/train/Analysis/selected_model/selected_model_test_sign_accuracy.png",
+    "/home/iaw/DATA2/AAReact/train/Analysis/selected_model/selected_model_test_sign_accuracy.svg",
+    "/home/iaw/DATA2/AAReact/train/Analysis/selected_model/selected_model_shap_feature_importance.csv",
+    "/home/iaw/DATA2/AAReact/train/Analysis/selected_model/selected_model_shap_contribution_summary.csv",
+    "/home/iaw/DATA2/AAReact/train/Analysis/selected_model/selected_model_shap_importance.png",
+    "/home/iaw/DATA2/AAReact/train/Analysis/selected_model/selected_model_shap_importance.svg",
+    "/home/iaw/DATA2/AAReact/train/Analysis/selected_model/selected_model_shap_beeswarm.png",
+    "/home/iaw/DATA2/AAReact/train/Analysis/selected_model/selected_model_shap_beeswarm.svg",
+    "/home/iaw/DATA2/AAReact/train/Analysis/selected_model/selected_model_shap_dependence_top4.png",
+    "/home/iaw/DATA2/AAReact/train/Analysis/selected_model/selected_model_shap_dependence_top4.svg",
+    "/home/iaw/DATA2/AAReact/train/Analysis/selected_model/selected_model_shap_contribution_summary.png",
+    "/home/iaw/DATA2/AAReact/train/Analysis/selected_model/selected_model_shap_contribution_summary.svg",
+    "/home/iaw/DATA2/AAReact/train/Analysis/selected_model/selected_model_interpretation.md",
+    "/home/iaw/DATA2/AAReact/train/Analysis/selected_model/selected_model_analysis_manifest.json"
+  ]
+}

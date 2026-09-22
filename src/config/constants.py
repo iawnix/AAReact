@@ -6,10 +6,37 @@ RAW_CSV_COLUMNS = [
     "DATA_ID", "CAT_NAME", "SOL_NAME", "PRO_R_NAME"
     , "PRO_S_NAME", "REA_NAME", "CAT_SMI", "SOL_SMI"
     , "PRO_R_SMI", "PRO_S_SMI", "REA_SMI", "TEMP"
-    , "PRESSURE", "EE", "CONV", "BATCH"
+    , "PRESSURE", "EE", "DDG", "CONV", "BATCH"
 ]
 
 SUPPORTED_DESC_TYPES = ["xtb", "rdkit_desc", "rdkit_morgan", "soap", "acsf"]
+
+SUPPORTED_TARGETS = {
+    "ee": "EE",
+    "ddg": "DDG",
+}
+
+TARGET_DISPLAY = {
+    "ee": ("ee", ""),
+    "ddg": ("ddG", "kcal/mol"),
+}
+
+
+def normalize_target(target: str) -> str:
+    target_key = str(target).strip().lower()
+    if target_key not in SUPPORTED_TARGETS:
+        raise ValueError("Error[iaw]>: Unsupported target: {}. Supported targets: {}".format(
+            target, ", ".join(sorted(SUPPORTED_TARGETS.keys()))
+        ))
+    return target_key
+
+
+def target_column(target: str) -> str:
+    return SUPPORTED_TARGETS[normalize_target(target)]
+
+
+def target_display(target: str) -> tuple[str, str]:
+    return TARGET_DISPLAY[normalize_target(target)]
 
 
 UNIMOL_EMBED_DIM = {

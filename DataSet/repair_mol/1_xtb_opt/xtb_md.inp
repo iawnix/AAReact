@@ -1,0 +1,20 @@
+$md
+ temp=500
+ time=1.0
+ dump=10.0
+ step=1.0
+ velo=false
+ nvt=true
+ hmass=1
+ shake=1
+$end
+$write
+ density=false
+ fod=false
+ charges=false
+ mulliken=false
+ geosum=false
+ inertia=false
+ mos=false
+ wiberg=false
+$end

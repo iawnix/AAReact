@@ -20,15 +20,24 @@ sys.path.append(str(project_root))
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import f_regression
 
-def load_raw_feat_csv(data_fp: str, desc_type: Union[str, False], X_LABEL: Union[List[str], False] = False) -> Tuple[NDArray, NDArray, List[str], List[int], List[str], List[int]]:
+from config.constants import target_column
+
+
+def load_raw_feat_csv(
+    data_fp: str,
+    desc_type: Union[str, False],
+    X_LABEL: Union[List[str], False] = False,
+    target: str = "ee",
+) -> Tuple[NDArray, NDArray, List[str], List[int], List[str], List[int]]:
     """
     用于加载csv数据集, 并删除nan值, 这个函数会依赖于RAW_CSV_COLUMNS进行定位
     """
     # load
     data = pd.read_csv(data_fp)
+    target_col = target_column(target)
 
     # 只对特征部分进行
-    if X_LABEL == False:
+    if X_LABEL is False:
         
         print("Infor[iaw]>: raw data set shape: {}".format(data.shape))
         
@@ -47,7 +56,9 @@ def load_raw_feat_csv(data_fp: str, desc_type: Union[str, False], X_LABEL: Union
 
     # key index
     col_n = data.columns.to_list()
-    ee_idx = col_n.index('EE')
+    if target_col not in col_n:
+        raise ValueError("Error[iaw]>: Target column {} is not in {}".format(target_col, data_fp))
+    target_idx = col_n.index(target_col)
     batch_idx = col_n.index('BATCH')
     temp_idx = col_n.index('TEMP')
     pressure_idx = col_n.index('PRESSURE')
@@ -62,10 +73,13 @@ def load_raw_feat_csv(data_fp: str, desc_type: Union[str, False], X_LABEL: Union
     # split -> data_x, data_y, x_label, data_class, data_name, data_batch
     # 不能拼接CLASS
     data_x = np.concatenate([data.iloc[:, batch_idx+1:-1].values, data.iloc[:,[temp_idx, pressure_idx]].values], axis = 1)
-    data_y = data.iloc[:, ee_idx].values
+    data_y = data.iloc[:, target_idx].values.astype(float)
 
     x_label_var = data.iloc[:, batch_idx+1:-1].columns.to_list() + data.iloc[:,[temp_idx, pressure_idx]].columns.to_list()
-    if X_LABEL != False:
+    leakage_cols = [col for col in ["EE", "DDG", "CONV"] if col in x_label_var]
+    if leakage_cols:
+        raise ValueError("Target/leakage columns found in features: {}".format(", ".join(leakage_cols)))
+    if X_LABEL is not False:
         select_x_label_idx_s = [x_label_var.index(label) for label in X_LABEL]
         x_label = X_LABEL
         data_x = data_x[:, select_x_label_idx_s]
@@ -114,7 +128,7 @@ def pearson_corr_filter(data_x: NDArray, data_y: NDArray, x_label: List[str], th
     pear_result = []
     # 拼接
     pear = np.corrcoef(np.hstack([data_x, data_y.reshape(-1, 1)]).T)
-    pear_y = pear[:, -1]    # -1是EE
+    pear_y = pear[:, -1]    # -1 is the selected target.
     del_low_pear_idxs = []
     select_idx_s = []
     # 这里不删除TEMP和PRESSURE
@@ -187,4 +201,3 @@ class ml_data_point():
     有一个datapoint比较好, 但是需要重构的太多了, 下一个项目吸取这个教训
     """
     pass
-

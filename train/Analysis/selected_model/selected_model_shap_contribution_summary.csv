@@ -1,0 +1,10 @@
+summary,group,label,mean_abs_shap_sum,percent
+descriptor_source,rdkit,RDKit,0.8504281380480664,65.47996031414476
+descriptor_source,xtb,xTB,0.18253543506646572,14.054583226174685
+descriptor_source,acsf,ACSF,0.15477307920613498,11.916979966557617
+descriptor_source,condition,Condition,0.11102427234708909,8.548476493122925
+molecular_role,catalyst,Catalyst features,0.9137355051353724,70.35440378444713
+molecular_role,reactant,Reactant features,0.23308174748338645,17.94647059796725
+molecular_role,pressure,Pressure,0.10580447095801962,8.146570238482196
+molecular_role,solvent,Solvent features,0.0409193997019083,3.1506491244626975
+molecular_role,temperature,Temperature,0.005219801389069462,0.40190625464072766

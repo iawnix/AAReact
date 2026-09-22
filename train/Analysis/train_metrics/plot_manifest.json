@@ -1,0 +1,37 @@
+{
+  "source_rows": 405,
+  "summary_rows": 45,
+  "primary_seed": 1,
+  "primary_test_size": 0.2,
+  "rmse_gap_vs_rmse_test_scope": "test_size=0.2000; panels are seeds",
+  "targets": [
+    "ddg"
+  ],
+  "hyper_splits": [
+    "seed_1_test_0-2"
+  ],
+  "search_methods": [
+    "optuna"
+  ],
+  "train_splits": [
+    "seed_1_test_0-15",
+    "seed_1_test_0-2",
+    "seed_1_test_0-3",
+    "seed_12_test_0-15",
+    "seed_12_test_0-2",
+    "seed_12_test_0-3",
+    "seed_42_test_0-15",
+    "seed_42_test_0-2",
+    "seed_42_test_0-3"
+  ],
+  "outputs": [
+    "summary_by_model_descriptor.csv",
+    "primary_selection_by_model_descriptor.csv",
+    "rmse_test_box_top_descriptors.png",
+    "rmse_test_box_top_descriptors.svg",
+    "rmse_gap_vs_rmse_test.png",
+    "rmse_gap_vs_rmse_test.svg",
+    "test_size_sensitivity.png",
+    "test_size_sensitivity.svg"
+  ]
+}

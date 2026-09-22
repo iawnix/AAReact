@@ -5,12 +5,14 @@ project_root = Path(__file__).parent.parent
 sys.path.append(str(project_root))
 
 from util.RegressMetrics import r2_score, mse_score, mae_score, rmse_score, r_score, spearmanr_score
-from util.train_tools import build_model, search_parms, split_data, load_data
+from util.train_tools import build_model, search_params, split_data, load_data
 from config.ml_train import init_config_from_train_toml
 from config.ml_hyper import init_config_from_hyper_toml
+from config.constants import normalize_target, target_column
 from util.RegressMetrics import print_metric
 
 import argparse
+import json
 from argparse import Namespace
 
 from joblib import dump
@@ -42,6 +44,7 @@ def main() -> None:
 
             config_fp = myp.model_config
             trian_config = init_config_from_train_toml(config_fp) 
+            target = normalize_target(trian_config.Train.target)
 
             # split data
             data_x, data_y, x_label, data_class = load_data(
@@ -95,11 +98,18 @@ def main() -> None:
                                                                                       , train_rmse, test_rmse))
         # save 
         rp("Info\\[iaw]:> The model will be saved as `{}`".format(trian_config.Train.model_save))
+        model.aa_target = target
+        model.aa_target_column = target_column(target)
+        model.aa_x_label = x_label
+        Path(trian_config.Train.model_save).parent.mkdir(parents=True, exist_ok=True)
         dump(model, trian_config.Train.model_save)
     elif myp.task == "hyper":
         config_fp = myp.model_config
         hyper_config = init_config_from_hyper_toml(config_fp) 
-        print("Info[iaw]:> Start hyper model: {}".format(hyper_config.Model_type))
+        target = normalize_target(hyper_config.Hyper.target)
+        print("Info[iaw]:> Start hyper model: {}, target: {}, search: {}".format(
+            hyper_config.Model_type, target, hyper_config.Search.method
+        ))
         with Status("Hyper model...", spinner = "pong") as status:
             # split data
             data_x, data_y, x_label, data_class = load_data(
@@ -114,14 +124,22 @@ def main() -> None:
             X_train, X_test, y_train, y_test, class_train, class_test = split_data(data_s = (data_x, data_y, data_class)
                        , seed = hyper_config.Hyper.seed
                        , test_size = hyper_config.Hyper.test_size)
-            best_params = search_parms(
+            best_params, search_summary = search_params(
                 model_name = hyper_config.Model_type, 
                 X_train = X_train, 
                 y_train = y_train,
                 seed = hyper_config.Hyper.seed, 
                 n_cpu_opt = hyper_config.Hyper.n_cpu, 
                 n_cpu_model = hyper_config.n_cpu,
-                cv = hyper_config.Hyper.cv
+                cv = hyper_config.Search.cv,
+                method = hyper_config.Search.method,
+                metric = hyper_config.Search.metric,
+                shuffle_cv = hyper_config.Search.shuffle_cv,
+                n_trials = hyper_config.Search.n_trials,
+                n_startup_trials = hyper_config.Search.n_startup_trials,
+                objective_std_penalty = hyper_config.Search.objective_std_penalty,
+                train_gap_penalty = hyper_config.Search.train_gap_penalty,
+                study_dir = hyper_config.Search.study_dir if hyper_config.Search.study_dir else None,
                 )
             print("Info[iaw]>: {} best params: {}".format(hyper_config.Model_type, best_params))
             # best model
@@ -131,7 +149,9 @@ def main() -> None:
             train_pred = save_model.predict(X_train)
             test_pred = save_model.predict(X_test)
             # metrics
+            Path(hyper_config.params_save).parent.mkdir(parents=True, exist_ok=True)
             with open(hyper_config.params_save, "w+") as F:
+                F.writelines("SearchMethod: {}\n".format(hyper_config.Search.method))
                 F.writelines("BestParams:\n")
                 for k, v in best_params.items():
                     F.writelines("{}: {}\n".format(k, v))
@@ -148,6 +168,8 @@ def main() -> None:
                 F.writelines("RMSE, {:.4F}, {:.4F}\n".format(
                     rmse_score(y_pred=train_pred, y_true=y_train), rmse_score(y_pred=test_pred, y_true=y_test)
                 ))
+                F.writelines("Target, {}\n".format(target))
+                F.writelines("SearchSummary, {}\n".format(json.dumps(search_summary, sort_keys=True)))
     else:
         print("Error\\[iaw]:> The task is `hyperparameter tuning`[hyper] or pure `model training`[train]!")
         
