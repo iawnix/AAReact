@@ -14,7 +14,7 @@ import pandas as pd
 
 TRAIN_DIR = Path(__file__).resolve().parents[1]
 DEFAULT_INPUT = TRAIN_DIR / "train.csv"
-DEFAULT_OUTPUT = TRAIN_DIR / "Analysis" / "train_metrics" / "model_metrics_table.csv"
+DEFAULT_OUTPUT = TRAIN_DIR / "analysis" / "Data_All" / "train_metrics" / "model_metrics_table.csv"
 PRIMARY_SEED = 1
 PRIMARY_TEST_SIZE = 0.2
 

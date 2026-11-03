@@ -5,7 +5,8 @@ __pycache__/
 DataSet/AHO
 DataSet/.xtb_tmp/
 DataSet/AtropicAcid*
-DataSet/Data_All2
+DataSet/Data_All2/*
+!DataSet/Data_All2/README.md
 DataSet/debug
 DataSet/Example
 DataSet/iter_02
@@ -19,7 +20,10 @@ DataSet/Data_All/3_data_for_train/
 DataSet/Data_All/4_data_for_train/
 DataSet/Data_All/logs/
 DataSet/Data_All/sync_raw_feature_targets.report.json
-DataSet/Data_All/README.md
+DataSet/Data_All3/2_raw_features/
+DataSet/Data_All3/3_data_for_train/
+DataSet/Data_All4/2_raw_features/
+DataSet/Data_All4/3_data_for_train/
 src/model/__pycache__/
 src/tool/__pycache__/
 src/util/__pycache__/
@@ -29,7 +33,8 @@ train/test/
 test/iter_1/
 train/eval_ml_model_result.ipynb
 train/hyper_ml_model.ipynb
-train/output/
+train/output/*
+!train/output/README.md
 hyper/output/
 config/.train1/
 config/.train2/

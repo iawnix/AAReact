@@ -56,7 +56,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--seed", type=int, default=1)
     parser.add_argument("--test-size", type=float, default=0.2)
     parser.add_argument("--train-batches", nargs="+", type=int, default=[0])
-    parser.add_argument("--extra-batches", nargs="+", type=int, default=[1])
+    parser.add_argument(
+        "--extra-batches",
+        nargs="*",
+        type=int,
+        default=[1],
+        help="Optional BATCH values for the extra/prediction set. Pass the flag without values to create no extra set.",
+    )
     parser.add_argument("--rdkit-k", type=int, default=FEATURE_CONFIGS["rdkit"].k)
     parser.add_argument("--soap-k", type=int, default=FEATURE_CONFIGS["soap"].k)
     parser.add_argument("--acsf-k", type=int, default=FEATURE_CONFIGS["acsf"].k)

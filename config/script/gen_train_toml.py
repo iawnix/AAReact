@@ -9,7 +9,7 @@ CONFIG_ROOT = Path(__file__).resolve().parents[1]
 PROJECT_ROOT = CONFIG_ROOT.parent
 HYPER_LOG_DIR = PROJECT_ROOT / "hyper" / "output" / "hyper_log"
 TRAIN_CONFIG_ROOT = CONFIG_ROOT / "train"
-TRAIN_MODEL_ROOT = PROJECT_ROOT / "train" / "output" / "pt"
+TRAIN_MODEL_ROOT = PROJECT_ROOT / "train" / "output" / "Data_All" / "pt"
 
 MODEL_NAMES = ("lgb", "xgb", "rf")
 DESCRIPTOR_NAMES = (

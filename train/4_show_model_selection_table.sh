@@ -6,7 +6,7 @@ PROJECT_ROOT="$(cd "${TRAIN_DIR}/.." && pwd)"
 PYTHON="${PYTHON:-/home/iaw/soft/conda/2024.06.1/envs/python3.12/bin/python}"
 
 INPUT_CSV="${INPUT_CSV:-${TRAIN_DIR}/train.csv}"
-OUTPUT_CSV="${OUTPUT_CSV:-${TRAIN_DIR}/Analysis/train_metrics/model_metrics_table.csv}"
+OUTPUT_CSV="${OUTPUT_CSV:-${TRAIN_DIR}/analysis/Data_All/train_metrics/model_metrics_table.csv}"
 VIEW="${VIEW:-primary}"
 PRIMARY_SEED="${PRIMARY_SEED:-1}"
 PRIMARY_TEST_SIZE="${PRIMARY_TEST_SIZE:-0.2}"

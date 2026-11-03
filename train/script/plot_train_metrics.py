@@ -13,7 +13,7 @@ import pandas as pd
 
 TRAIN_DIR = Path(__file__).resolve().parents[1]
 DEFAULT_INPUT = TRAIN_DIR / "train.csv"
-DEFAULT_OUTPUT_DIR = TRAIN_DIR / "Analysis" / "train_metrics"
+DEFAULT_OUTPUT_DIR = TRAIN_DIR / "analysis" / "Data_All" / "train_metrics"
 PRIMARY_SEED = 1
 PRIMARY_TEST_SIZE = 0.2
 

@@ -1,102 +1,85 @@
-function model_predict() {
-	rea=$1
-	sol=$2
-	cat=$3
-	temp=$4
-	press=$5
-	save_feat=$6
-	model=$7
-	feat_label=$8
-	python ../src/AHO_predict.py --task "ee" \
-		--rea $rea \
-		--sol $sol \
-		--cat $cat \
-		--temp $temp \
-		--pressure $press \
-		--model $model \
-		--feat_label $feat_label \
-		--verbose 0 \
-		--save_feat $save_feat
+#!/usr/bin/env bash
+# 使用 Data_All 的 DDG 模型和同一划分的特征标签。原反应条件保持不变。
+set -euo pipefail
 
-}
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+PYTHON="${PYTHON:-/home/iaw/soft/conda/2024.06.1/envs/python3.12/bin/python}"
+SPLIT="${SPLIT:-seed_1_test_0-2}"
+HYPER_SPLIT="${HYPER_SPLIT:-seed_1_test_0-2}"
+SEARCH_METHOD="${SEARCH_METHOD:-optuna}"
+SDF_DIR="${SDF_DIR:-${PROJECT_ROOT}/DataSet/Data_All/1_sdf}"
+MODEL_DIR="${PROJECT_ROOT}/train/output/Data_All/pt/ddg/hyper_${HYPER_SPLIT}/search_${SEARCH_METHOD}/${SPLIT}"
+FEATURE_DIR="${PROJECT_ROOT}/DataSet/Data_All/3_data_for_train/ddg/${SPLIT}"
+read -r -a model_names <<< "${MODELS:-rf_rdkit rf_rdkit_soap rf_rdkit_soap_xtb rf_soap_xtb xgb_rdkit xgb_rdkit_soap xgb_rdkit_soap_xtb xgb_soap_xtb}"
 
-echo "#+++++++++++++++++++++++++++++++++++++++++++++++++# Rea #++++++++++++++++++++++++++++++++++++++++++++++#"
+if [[ $# -gt 1 || ( $# -eq 1 && "$1" != "--check-only" ) ]]; then
+  printf 'Usage: bash %s [--check-only]\n' "${BASH_SOURCE[0]}" >&2
+  exit 2
+fi
+# 核对模型目标、特征数量及顺序；先检查全部配置，避免中途才发现缺失。
+"${PYTHON}" - "${MODEL_DIR}" "${FEATURE_DIR}" "${model_names[@]}" <<'CHECK'
+import pickle
+import sys
+from pathlib import Path
+from joblib import load
 
-declare -A model_s=(
-	["rf_rdkit"]="/home/iaw/DATA2/AAReact/train/output/pt/rf_model_seed_1_split_0-2_hyper2_rdkit.pkl"
-	["rf_rdkit_soap"]="/home/iaw/DATA2/AAReact/train/output/pt/rf_model_seed_1_split_0-2_hyper2_rdkit_soap.pkl"
-	["rf_rdkit_soap_xtb"]="/home/iaw/DATA2/AAReact/train/output/pt/rf_model_seed_1_split_0-2_hyper2_rdkit_soap_xtb.pkl"
-	["rf_soap_xtb"]="/home/iaw/DATA2/AAReact/train/output/pt/rf_model_seed_1_split_0-2_hyper2_soap_xtb.pkl"
-	["xgb_rdkit"]="/home/iaw/DATA2/AAReact/train/output/pt/xgb_model_seed_1_split_0-2_hyper2_rdkit.pkl"
-	["xgb_rdkit_soap"]="/home/iaw/DATA2/AAReact/train/output/pt/xgb_model_seed_1_split_0-2_hyper2_rdkit_soap.pkl"
-	["xgb_rdkit_soap_xtb"]="/home/iaw/DATA2/AAReact/train/output/pt/xgb_model_seed_1_split_0-2_hyper2_rdkit_soap_xtb.pkl"
-	["xgb_soap_xtb"]="/home/iaw/DATA2/AAReact/train/output/pt/xgb_model_seed_1_split_0-2_hyper2_soap_xtb.pkl"
+model_dir, feature_dir = map(Path, sys.argv[1:3])
+for name in sys.argv[3:]:
+    algorithm, descriptor = name.split('_', 1)
+    if algorithm not in {'rf', 'xgb'}:
+        raise ValueError(f'Unsupported legacy model: {name}')
+    model = load(model_dir / f'{name}.pkl')
+    with (feature_dir / descriptor / 'train_test_x_label.pkl').open('rb') as f:
+        labels = pickle.load(f)
+    if getattr(model, 'aa_target', None) != 'ddg':
+        raise ValueError(f'{name}: expected a DDG model')
+    if getattr(model, 'aa_x_label', None) != labels:
+        raise ValueError(f'{name}: model and dataset feature labels differ')
+    if model.n_features_in_ != sum(map(len, labels.values())):
+        raise ValueError(f'{name}: feature count mismatch')
+print(f'[OK] {len(sys.argv[3:])} models and their DDG feature labels match')
+CHECK
 
-)
+# 分子结构核对：旧 CAT-41/42 -> 当前 CAT-35/36；REA-5 到 REA-10 编号不变。
+OUTPUT_DIR="${OUTPUT_DIR:-${SCRIPT_DIR}/iter_1/new_rea_ddg/${SPLIT}}"
+reactants=(REA-5 REA-6 REA-7 REA-8 REA-9 REA-10)
+combinations=("CAT-35 SOL-2 20" "CAT-36 SOL-2 20")
 
-declare -A feat_label_s=(
-	["rdkit"]="/home/iaw/DATA2/AAReact/DataSet/AtropicAcid_416/4_gen_feature/rdkit_3_x_label.pkl"
-	["rdkit_soap"]="/home/iaw/DATA2/AAReact/DataSet/AtropicAcid_416/4_gen_feature/rdkit_soap_3_x_label.pkl"
-	["rdkit_soap_xtb"]="/home/iaw/DATA2/AAReact/DataSet/AtropicAcid_416/4_gen_feature/rdkit_soap_xtb_3_x_label.pkl"
-	["soap_xtb"]="/home/iaw/DATA2/AAReact/DataSet/AtropicAcid_416/4_gen_feature/soap_xtb_3_x_label.pkl"
-)
-
-declare -A model_feat_map=(
-	["rf_rdkit"]="rdkit"
-	["rf_rdkit_soap"]="rdkit_soap"
-	["rf_rdkit_soap_xtb"]="rdkit_soap_xtb"
-	["rf_soap_xtb"]="soap_xtb"
-	["xgb_rdkit"]="rdkit"
-	["xgb_rdkit_soap"]="rdkit_soap"
-	["xgb_rdkit_soap_xtb"]="rdkit_soap_xtb"
-	["xgb_soap_xtb"]="soap_xtb"
-
-)
-
-
-rea_smi_5="C/C(C)=C(C(O)=O)\C1=CC=C(F)C=C1"
-rea_smi_6="CC1=CC=CC(/C(C(O)=O)=C(C)\C)=C1"
-rea_smi_7="C/C(C)=C(C(O)=O)\C1=CC=C(C)C=C1"
-rea_smi_8="C/C(C)=C(C(O)=O)\C1=CC=C(C(C)C)C=C1"
-rea_smi_9="C/C(C)=C(C(O)=O)\C1=CC=C(CCCCC)C=C1"
-rea_smi_10="O=C(/C(C1=CC=CC=C1)=C2CCCC/2)O"
-cat_smi_41="[Fe+2]123456789<-[C:3]%10([P:1]%11(->[Rh+:61]%12%13%14(<-[P:2]%15([C:12]->1%16=[C:17]->2([H:18])[C:15]->3([H:16])=[C:14]->4([H:53])[C-:13]->5%16[H:52])[C@:29]([H:30])([C@@:62]([H:63])([H:64])[H:65])[C@:54]([H:57])([H:58])[C@:56]([H:59])([H:60])[C@@:51]%15([H:55])[C@@:66]([H:67])([H:68])[H:69])<-[C:31]1([H:32])=[C:33]->%12([H:34])[C@:35]([H:36])([H:37])[C@@:38]([H:39])([H:40])[C:41]->%13([H:42])=[C:43]->%14([H:44])[C@:45]([H:46])([H:47])[C@@:48]1([H:49])[H:50])[C@:19]([H:20])([C@@:70]([H:71])([H:72])[H:73])[C@@:21]([H:22])([H:23])[C@:24]([H:25])([H:26])[C@@:27]%11([H:28])[C@@:74]([H:75])([H:76])[H:77])=[C:4]->6([H:5])[C:6]->7([H:7])=[C:8]->8([H:9])[C-:10]->9%10[H:11]"
-cat_smi_42="[Fe+2]123456789<-[C:3]%10([P:1]%11(->[Rh+:61]%12%13%14(<-[P:2]%15([C-:12]->1%16[C:13]->2([H:52])=[C:14]->3([H:53])[C:15]->4([H:16])=[C:17]->5%16[H:18])[C@@:29]([H:30])([C@:66]([H:67])([H:68])[C@@:69]([H:70])([H:71])[H:72])[C@:54]([H:57])([H:58])[C@:56]([H:59])([H:60])[C@:51]%15([H:55])[C@:73]([C@@:62]([H:63])([H:64])[H:65])([H:74])[H:75])<-[C:31]1([H:32])=[C:33]->%12([H:34])[C@:35]([H:36])([H:37])[C@@:38]([H:39])([H:40])[C:41]->%13([H:42])=[C:43]->%14([H:44])[C@:45]([H:46])([H:47])[C@@:48]1([H:49])[H:50])[C@@:19]([H:20])([C@:83]([H:84])([H:85])[C@@:86]([H:87])([H:88])[H:89])[C@@:21]([H:22])([H:23])[C@:24]([H:25])([H:26])[C@:27]%11([H:28])[C@:76]([H:77])([H:78])[C@@:79]([H:80])([H:81])[H:82])=[C:10]->6([H:11])[C-:8]->7([H:9])[C:6]->8([H:7])=[C:4]->9%10[H:5]"
-sol_smi_2="[H]C([H])([H])C([H])([H])N(C([H])([H])C([H])([H])[H])C([H])([H])C([H])([H])[H].[H]OC([H])([H])[H]"
-
-#+++++++++++++++++++++++++++++++++++++++++++++++++# Rea #++++++++++++++++++++++++++++++++++++++++++++++#
-rea_list=(
-	"/home/iaw/DATA2/AAReact/DataSet/AtropicAcid_IterativePredict_1/Final/REA-5.sdf"
-	"/home/iaw/DATA2/AAReact/DataSet/AtropicAcid_IterativePredict_1/Final/REA-6.sdf"
-	"/home/iaw/DATA2/AAReact/DataSet/AtropicAcid_IterativePredict_1/Final/REA-7.sdf"
-	"/home/iaw/DATA2/AAReact/DataSet/AtropicAcid_IterativePredict_1/Final/REA-8.sdf"
-	"/home/iaw/DATA2/AAReact/DataSet/AtropicAcid_IterativePredict_1/Final/REA-9.sdf"
-	"/home/iaw/DATA2/AAReact/DataSet/AtropicAcid_IterativePredict_1/Final/REA-10.sdf"
-)
-sol_sdf_2="/home/iaw/DATA2/AAReact/DataSet/AtropicAcid_416/3_opted_mol2/sdf/SOL-2.sdf"
-cat_list=(
-	"/home/iaw/DATA2/AAReact/DataSet/AtropicAcid_416/3_opted_mol2/sdf/CAT-41.sdf"
-	"/home/iaw/DATA2/AAReact/DataSet/AtropicAcid_416/3_opted_mol2/sdf/CAT-42.sdf"
-)
-
-temp=60
-press=20
-for model_name in "rf_rdkit" "rf_rdkit_soap" "rf_rdkit_soap_xtb" "rf_soap_xtb" "xgb_rdkit" "xgb_rdkit_soap" "xgb_rdkit_soap_xtb" "xgb_soap_xtb"
-do
-	model_pt=${model_s[$model_name]}
-	feat_label_name=${model_feat_map[$model_name]}
-	feat_label=${feat_label_s[$feat_label_name]}
-	for cat_sdf in "${cat_list[@]}"; do
-		cat_name=$(basename "$cat_sdf" .sdf)
-		sol_name=$(basename "$sol_sdf_2" .sdf)
-		for rea_sdf in "${rea_list[@]}"; do
-			rea_name=$(basename "$rea_sdf" .sdf)
-			save_path="./iter_1/${model_name}-${rea_name}_${sol_name}_${cat_name}_T${temp}_P${press}.npy"
-			echo "${model_name}-${rea_name}_${sol_name}_${cat_name}_T${temp}_P${press}"
-			model_predict $rea_sdf $sol_sdf_2 $cat_sdf $temp $press $save_path $model_pt $feat_label
-		done
-	done
+# 在调用分子计算前检查所有结构路径。
+for rea in "${reactants[@]}"; do
+  [[ -s "${SDF_DIR}/${rea}.sdf" ]] || { printf '[FAIL] Missing %s\n' "${SDF_DIR}/${rea}.sdf" >&2; exit 1; }
 done
+for combination in "${combinations[@]}"; do
+  read -r cat sol pressure <<< "${combination}"
+  for molecule in "${cat}" "${sol}"; do
+    [[ -s "${SDF_DIR}/${molecule}.sdf" ]] || { printf '[FAIL] Missing %s\n' "${SDF_DIR}/${molecule}.sdf" >&2; exit 1; }
+  done
+done
+printf '[OK] Structures checked; target=ddg; split=%s; output=%s\n' "${SPLIT}" "${OUTPUT_DIR}"
+if [[ "${1:-}" == "--check-only" ]]; then exit 0; fi
 
-echo "#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#"
-
+mkdir -p "${OUTPUT_DIR}"
+# xTB 共用临时目录：本脚本顺序执行，不要与其他分子计算并发运行。
+export OMP_NUM_THREADS="${OMP_NUM_THREADS:-1}"
+export MKL_NUM_THREADS="${MKL_NUM_THREADS:-1}"
+for model_name in "${model_names[@]}"; do
+  descriptor="${model_name#*_}"
+  for combination in "${combinations[@]}"; do
+    read -r cat sol pressure <<< "${combination}"
+    for rea in "${reactants[@]}"; do
+      sample="${model_name}-${rea}_${sol}_${cat}_T60_P${pressure}"
+      printf '%s\n' "${sample}"
+      "${PYTHON}" "${PROJECT_ROOT}/src/AHO_predict.py" \
+        --task ddg \
+        --rea "${SDF_DIR}/${rea}.sdf" \
+        --sol "${SDF_DIR}/${sol}.sdf" \
+        --cat "${SDF_DIR}/${cat}.sdf" \
+        --temp 60 --pressure "${pressure}" \
+        --model "${MODEL_DIR}/${model_name}.pkl" \
+        --feat_label "${FEATURE_DIR}/${descriptor}/train_test_x_label.pkl" \
+        --verbose 0 --save_feat "${OUTPUT_DIR}/${sample}.npy" \
+        | tee "${OUTPUT_DIR}/${sample}.log"
+    done
+  done
+done

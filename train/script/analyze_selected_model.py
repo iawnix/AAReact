@@ -31,7 +31,7 @@ DEFAULT_SEARCH_METHOD = "optuna"
 DEFAULT_SPLIT = "seed_1_test_0-2"
 DEFAULT_MODEL_NAME = "xgb"
 DEFAULT_DESCRIPTOR = "rdkit_xtb_acsf"
-DEFAULT_OUTPUT_DIR = TRAIN_DIR / "Analysis" / "selected_model"
+DEFAULT_OUTPUT_DIR = TRAIN_DIR / "analysis" / "Data_All" / "selected_model"
 DDG_R_KCAL = 0.001987
 CELSIUS_TO_KELVIN = 273.15
 

@@ -94,6 +94,7 @@ def inferred_model_path(args: argparse.Namespace) -> Path:
     return (
         TRAIN_DIR
         / "output"
+        / "Data_All"
         / "pt"
         / args.target
         / f"hyper_{args.hyper_split}"
@@ -113,7 +114,7 @@ def inferred_output_path(args: argparse.Namespace) -> Path:
         args.descriptor,
         args.dataset,
     )
-    return TRAIN_DIR / "predict_new" / name
+    return TRAIN_DIR / "predictions" / "Data_All" / name
 
 
 def existing_optional(path: Path | None) -> Path | None:

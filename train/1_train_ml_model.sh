@@ -44,7 +44,7 @@ ok() {
 
 setup_logging() {
   RUN_ID="${RUN_ID:-$(date +%Y%m%d_%H%M%S)}"
-  LOG_DIR="${LOG_DIR:-${TRAIN_DIR}/logs}"
+  LOG_DIR="${LOG_DIR:-${TRAIN_DIR}/logs/Data_All}"
   RUN_LOG="${RUN_LOG:-${LOG_DIR}/train_${RUN_ID}.log}"
   mkdir -p "$(dirname "${RUN_LOG}")"
   exec > >(tee -a "${RUN_LOG}") 2>&1
